@@ -1,0 +1,12 @@
+{
+  "package": "org.dimdev.vanillafix.mixins",
+  "refmap": "mixins.vanillafix.refmap.json",
+  "target": "@env(DEFAULT)",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinNetHandlerPlayServer"
+  ],
+  "client": [
+    "client.MixinMinecraft"
+  ]
+}

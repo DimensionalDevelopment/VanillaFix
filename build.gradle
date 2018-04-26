@@ -1,0 +1,119 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven { url = "http://files.minecraftforge.net/maven" }
+        maven { url = "http://repo.spongepowered.org/maven" }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+    }
+}
+
+plugins {
+    id 'io.franzbecker.gradle-lombok' version '1.11'
+    id 'java'
+}
+
+apply plugin: 'java'
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'org.spongepowered.mixin'
+
+repositories {
+    maven { url = "http://repo.spongepowered.org/maven" }
+}
+
+configurations {
+    embed
+    implementation.extendsFrom(embed)
+}
+
+dependencies {
+    embed("org.spongepowered:mixin:0.7.8-SNAPSHOT") { transitive = false }
+}
+
+// Mod version
+version = ext.modversion = "1.0.0"
+group = "org.dimdev.vanillafix"
+archivesBaseName = "VanillaFix"
+
+// Build number
+String fullVersion = version
+if (System.getenv("TRAVIS_BUILD_NUMBER") != null) {
+    fullVersion += "+${System.getenv("TRAVIS_BUILD_NUMBER")}"
+} else {
+    fullVersion += "+UNOFFICIAL"
+}
+String jarVersion = fullVersion.replace("+", "-") // Github/Travis doesn't seem to support + in filenames
+
+// Minecraft, MCP, Forge, and Java versions
+sourceCompatibility = targetCompatibility = "1.8"
+ext.mcversion = "1.12.2"
+ext.forgeversion = "14.23.2.2623"
+String mcpversion = "snapshot_20180227"
+
+// Configuration
+minecraft {
+    version = "$mcversion-$forgeversion"
+    runDir = "run"
+    mappings = mcpversion
+    replace '${version}', fullVersion
+    makeObfSourceJar = false
+    ext.args = [
+            "-Dfml.noGrab=false",
+            "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixCoreMod",
+            "-Dmixin.env.compatLevel=JAVA_8",
+            "-Dmixin.debug=true",
+            "-Dmixin.debug.verbose=true",
+            "-Dmixin.debug.export=true",
+            "-Dmixin.checks.interfaces=true"
+    ]
+}
+
+sourceSets {
+    main {
+        ext.refMap = "mixins.vanillafix.refmap.json"
+    }
+}
+
+// Tasks
+
+jar {
+    archiveName = archivesBaseName + "-" + jarVersion + ".jar"
+    from(configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }) {
+        exclude "LICENSE.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
+    }
+    manifest.attributes(
+            "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+            "MixinConfigs": "mixins.vanillafix.json",
+            "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixCoreMod",
+            "ForceLoadAsMod": "true"
+    )
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveName = archivesBaseName + "-" + jarVersion + "-sources.jar"
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+processResources {
+    // This will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    // Replace stuff in mcmod.info, nothing else
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+        expand 'version': project.version, 'mcversion': project.minecraft.version
+    }
+
+    // Copy everything else except mcmod.info
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}

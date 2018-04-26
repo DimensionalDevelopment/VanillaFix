@@ -1,0 +1,23 @@
+{
+  "modListVersion": 2,
+  "modList": [
+    {
+      "modid": "vanillafix",
+      "name": "VanillaFix",
+      "description": "Bug fixes, stability improvements, and better crash reports for Minecraft.",
+      "version": "${version}",
+      "credits": "The Dimensional Development team",
+      "mcversion": "1.12.2",
+      "url": "https://github.com/DimensionalDevelopment/VanillaFix",
+      "updateUrl": "",
+      "authorList": [
+        "Runemoro"
+      ],
+      "parent": "",
+      "screenshots": [],
+      "dependencies": [
+        "forge"
+      ]
+    }
+  ]
+}
