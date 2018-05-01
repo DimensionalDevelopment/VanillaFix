@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 
-public class SSLUtils {
+public final class SSLUtils {
 
     /**
      * Disables SSL certificate validation.

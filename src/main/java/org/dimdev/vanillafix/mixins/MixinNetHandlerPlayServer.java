@@ -19,6 +19,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @SuppressWarnings({"unused", "NonConstantFieldWithUpperCaseName"}) // Shadow
 @Mixin(NetHandlerPlayServer.class)
@@ -50,18 +53,10 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
     @Shadow public void setPlayerLocation(double x, double y, double z, float yaw, float pitch) {}
 
     /**
-     * Rewrite buggy vanilla method:
-     * <p>
-     * 1. After a teleport, the player should be teleported to the correct location even if they don't
-     * send a confirmation packet. This fixes MC-98153, preventing players from abusing it to teleport
-     * to the nether without changing coordinates by disconnecting before sending that packet, or to remain
-     * invulnerable (but unable to move) by not sending the confirmation packet. Interdimensional teleportation
-     * also seems much faster now.
-     * <p>
-     * 2. Block collisions should not be called until the move has been confirmed to be correct (the player
-     * didn't cheat). This prevents players from cheating to trigger block collision methods such as end
-     * portals. Also fixes MC-123364, where if anti-cheat is triggered when walking into an end portal,
-     * the position gets reverted but not the world, likely dropping the player into the void.
+     * @reason Rewrite buggy vanilla method:
+     * - Player is set to correct position rather than reverting on incorrect move packet
+     * - Player's position is not reverted after a teleport, there is no guarantee that the player will ever confirm it
+     * - Players no longer invulnerable until confirming teleport
      * <p>
      * Bugs fixed:
      * - https://bugs.mojang.com/browse/MC-89928
@@ -75,8 +70,8 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
      * <p>
      * Improvements:
      * - Correct position rather than cause jump-backs when player moves wrongly/into a block
+     * @author Runemoro
      */
-
     @Overwrite
     @Override
     public void processPlayer(CPacketPlayer packet) {
@@ -267,7 +262,8 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
     }
 
     /**
-     * Update this method for changes made above.
+     * @author Runemoro
+     * @reason Update this method for changes made above.
      * <p>
      * Bugs fixed:
      * - Movements made by server are reverted when client confirms teleport
@@ -285,5 +281,18 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
                 targetPos = null;
             }
         }
+    }
+
+    /**
+     * @author Runemoro
+     * @reason Capture position after entity update, not before (teleport player immediately to correct
+     * position after dimesion change).
+     * <p>
+     * Bugs fixed:
+     * - https://bugs.mojang.com/browse/MC-98153
+     */
+    @Inject(method = "update", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/entity/player/EntityPlayerMP;onUpdateEntity()V", ordinal = 0))
+    public void savePositionAfterUpdate(CallbackInfo ci) {
+        captureCurrentPosition();
     }
 }

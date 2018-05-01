@@ -87,7 +87,6 @@ jar {
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "MixinConfigs": "mixins.vanillafix.json",
             "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixCoreMod",
-            "ForceLoadAsMod": "true"
     )
 }
 

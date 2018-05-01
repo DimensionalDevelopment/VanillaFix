@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.utils.HasteUpload;
 import org.dimdev.utils.SSLUtils;
-import org.dimdev.vanillafix.mixins.client.IPatchedMinecraft;
 
 import java.io.File;
 import java.net.URI;
@@ -74,15 +73,16 @@ public class GuiCrashScreen extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, "Minecraft crashed!", width / 2, height / 4 - 60 + 20, 0xFFFFFF);
-        drawString(fontRenderer, "Minecraft ran into a problem and crashed.", width / 2 - 160, height / 4 - 60 + 60, 0xA0A0A0);
-        drawString(fontRenderer, "This is probably caused by a bug in one of your mods or vanilla", width / 2 - 160, height / 4 - 60 + 60 + 18, 0xA0A0A0);
-        drawString(fontRenderer, "Minecraft. Since you have VanillaFix installed, you can return to", width / 2 - 160, height / 4 - 60 + 60 + 27, 0xA0A0A0);
-        drawString(fontRenderer, "the main menu and keep playing despite the crash.", width / 2 - 160, height / 4 - 60 + 60 + 36, 0xA0A0A0);
-        drawString(fontRenderer, "A crash report has been generated, and can be found here (click):", width / 2 - 160, height / 4 - 60 + 60 + 54, 0xA0A0A0);
-        drawCenteredString(fontRenderer, reportFile != null ? "\u00A7n" + reportFile.getName() : "(report failed to save, see the log instead)", width / 2, height / 4 - 60 + 60 + 65, 0x00FF00);
-        drawString(fontRenderer, "You are encouraged to send it to the mod's author to fix this issue", width / 2 - 160, height / 4 - 60 + 60 + 78, 0xA0A0A0);
-        drawString(fontRenderer, "Click the \"Get Link\" button to upload the crash report.", width / 2 - 160, height / 4 - 60 + 60 + 87, 0xA0A0A0);
+        drawCenteredString(fontRenderer, "Minecraft crashed!", width / 2, height / 4 - 40, 0xFFFFFF);
+        drawString(fontRenderer, "Minecraft ran into a problem and crashed.", width / 2 - 160, height / 4, 0xA0A0A0);
+        drawString(fontRenderer, "This is probably caused by a bug in one of your mods or vanilla", width / 2 - 160, height / 4 + 18, 0xA0A0A0);
+        drawString(fontRenderer, "Minecraft. Since you have VanillaFix installed, you can return to", width / 2 - 160, height / 4 + 27, 0xA0A0A0);
+        drawString(fontRenderer, "the main menu and keep playing despite the crash.", width / 2 - 160, height / 4 + 36, 0xA0A0A0);
+        drawString(fontRenderer, "A crash report has been generated, and can be found here (click):", width / 2 - 160, height / 4 + 54, 0xA0A0A0);
+        drawCenteredString(fontRenderer, reportFile != null ? "\u00A7n" + reportFile.getName() : "(report failed to save, see the log instead)", width / 2, height / 4 + 65, 0x00FF00);
+        drawString(fontRenderer, "You are encouraged to send it to the mod's author to fix this issue", width / 2 - 160, height / 4 + 78, 0xA0A0A0);
+        drawString(fontRenderer, "Click the \"Get link\" button to view the crash report, which contains", width / 2 - 160, height / 4 + 87, 0xA0A0A0);
+        drawString(fontRenderer, "more info such as which mod(s) caused the crash.", width / 2 - 160, height / 4 + 96, 0xA0A0A0);
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 }

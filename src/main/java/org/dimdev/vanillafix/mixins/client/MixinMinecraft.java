@@ -1,10 +1,12 @@
 package org.dimdev.vanillafix.mixins.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiMemoryErrorScreen;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.profiler.ISnooperInfo;
@@ -15,6 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.vanillafix.GuiCrashScreen;
+import org.dimdev.vanillafix.IPatchedMinecraft;
 import org.lwjgl.LWJGLException;
 import org.spongepowered.asm.mixin.*;
 
@@ -38,6 +41,9 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public WorldClient world;
     @Shadow public static byte[] memoryReserve;
     @Shadow public RenderGlobal renderGlobal;
+    @Shadow public GameSettings gameSettings;
+    @Shadow public GuiIngame ingameGUI;
+    @Shadow public EntityRenderer entityRenderer;
 
     @Shadow private void init() throws LWJGLException, IOException {}
     @Shadow private void runGameLoop() throws IOException {}
@@ -46,13 +52,14 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public void shutdownMinecraftApplet() {}
     @Shadow public void displayCrashReport(CrashReport crashReportIn) {}
     @Shadow public abstract void loadWorld(@Nullable WorldClient worldClientIn);
+
     private CrashReport currentReport = null;
 
     /**
-     * Allows the player to choose to return to the title screen after a crash, or get
+     * @author Runemoro
+     * @reason Allows the player to choose to return to the title screen after a crash, or get
      * a pasteable link to the crash report on paste.dimdev.org.
      */
-    @SuppressWarnings("CallToSystemGC")
     @Overwrite
     public void run() {
         running = true;
@@ -71,15 +78,11 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
                 if (!hasCrashed || crashReporter == null) {
                     try {
                         runGameLoop();
-                    } catch (OutOfMemoryError e) {
-                        freeMemory();
-                        // TODO: Use displayCrashScreen?
-                        displayGuiScreen(new GuiMemoryErrorScreen());
                     } catch (ReportedException e) {
                         addGraphicsAndWorldToCrashReport(e.getCrashReport());
                         freeMemory();
                         LOGGER.fatal("Reported exception thrown!", e);
-                        displayCrashScreen(e.getCrashReport());
+                        //displayCrashScreen(e.getCrashReport());
                     } catch (Throwable e) {
                         CrashReport report = addGraphicsAndWorldToCrashReport(new CrashReport("Unexpected error", e));
                         freeMemory();
@@ -133,10 +136,16 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
 
         // Display the crash screen
         displayGuiScreen(new GuiCrashScreen(reportFile, report));
+
+        // Vanilla does this when switching to main menu but not our custom crash screen
+        // nor the out of memory screen (see https://bugs.mojang.com/browse/MC-128953)
+        gameSettings.showDebugInfo = false;
+        ingameGUI.getChatGUI().clearChatMessages(true);
     }
 
     /**
-     * Disconnect from the current world and free memory, using a memory reserve
+     * @author Runemoro
+     * @reason Disconnect from the current world and free memory, using a memory reserve
      * to make sure that an OutOfMemory doesn't happen while doing this.
      * <p>
      * Bugs Fixed:
@@ -159,6 +168,12 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
                 world.sendQuittingDisconnectingPacket();
             }
             loadWorld(null);
+
+            // Probably not necessary, but do this now rathe than next tick to make
+            // it identical to a regular disconnect:
+            if (entityRenderer.isShaderActive()) {
+                entityRenderer.stopUseShader();
+            }
         } catch (Throwable ignored) {}
 
         System.gc();
