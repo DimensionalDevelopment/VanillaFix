@@ -13,14 +13,13 @@ import net.minecraft.profiler.ISnooperInfo;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.MinecraftError;
 import net.minecraft.util.ReportedException;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.vanillafix.GuiCrashScreen;
 import org.dimdev.vanillafix.IPatchedMinecraft;
 import org.lwjgl.LWJGLException;
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -29,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @SuppressWarnings({"unused", "NonConstantFieldWithUpperCaseName", "RedundantThrows"}) // Shadow
-@SideOnly(Side.CLIENT)
 @Mixin(Minecraft.class)
 @Implements(@Interface(iface = IPatchedMinecraft.class, prefix = "minecraft$"))
 public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, IPatchedMinecraft {
@@ -47,11 +45,17 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public EntityRenderer entityRenderer;
 
     @Shadow private void init() throws LWJGLException, IOException {}
+
     @Shadow private void runGameLoop() throws IOException {}
+
     @Shadow public void displayGuiScreen(@Nullable GuiScreen guiScreenIn) {}
+
     @Shadow public CrashReport addGraphicsAndWorldToCrashReport(CrashReport theCrash) { return null; }
+
     @Shadow public void shutdownMinecraftApplet() {}
+
     @Shadow public void displayCrashReport(CrashReport crashReportIn) {}
+
     @Shadow public abstract void loadWorld(@Nullable WorldClient worldClientIn);
 
     private CrashReport currentReport = null;
@@ -187,7 +191,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     public void clearCurrentReport() {
         currentReport = null;
     }
-
 
     @ModifyConstant(method = "runTickKeyboard", constant = @Constant(longValue = 6000L, ordinal = 0))
     public long getDebugCrashKeyPressTime(long value) {

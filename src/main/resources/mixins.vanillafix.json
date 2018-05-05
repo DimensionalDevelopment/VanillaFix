@@ -8,6 +8,8 @@
     "MixinNetHandlerPlayServer"
   ],
   "client": [
-    "client.MixinMinecraft"
+    "client.MixinMinecraft",
+    "client.MixinNetHandlerPlayClient",
+    "client.MixinEntityPlayerSP"
   ]
 }
