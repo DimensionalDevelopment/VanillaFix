@@ -20,6 +20,7 @@ import org.dimdev.vanillafix.GuiCrashScreen;
 import org.dimdev.vanillafix.IPatchedMinecraft;
 import org.lwjgl.LWJGLException;
 import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.*;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -69,7 +70,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         } catch (Throwable throwable) {
             CrashReport report = CrashReport.makeCrashReport(throwable, "Initializing game");
             report.makeCategory("Initialization");
-            displayCrashReport(addGraphicsAndWorldToCrashReport(report)); // TODO: GUI for this too
+            displayCrashScreen(addGraphicsAndWorldToCrashReport(report)); // TODO: GUI for this too
             return;
         }
 
@@ -185,5 +186,11 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Override
     public void clearCurrentReport() {
         currentReport = null;
+    }
+
+
+    @ModifyConstant(method = "runTickKeyboard", constant = @Constant(longValue = 6000L, ordinal = 0))
+    public long getDebugCrashKeyPressTime(long value) {
+        return 0; // TODO: config
     }
 }

@@ -49,7 +49,7 @@ String jarVersion = fullVersion.replace("+", "-") // Github/Travis doesn't seem 
 // Minecraft, MCP, Forge, and Java versions
 sourceCompatibility = targetCompatibility = "1.8"
 ext.mcversion = "1.12.2"
-ext.forgeversion = "14.23.2.2623"
+ext.forgeversion = "14.23.3.2655"
 String mcpversion = "snapshot_20180227"
 
 // Configuration

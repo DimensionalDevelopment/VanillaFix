@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @SuppressWarnings({"unused", "NonConstantFieldWithUpperCaseName"}) // Shadow
-@Mixin(NetHandlerPlayServer.class)
+@Mixin(value = NetHandlerPlayServer.class, priority = 500) // After sponge
 public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer {
 
     @Shadow public EntityPlayerMP player;
@@ -86,6 +86,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
         if (player.queuedEndExit) return;
 
         WorldServer world = server.getWorld(player.dimension);
+        // TODO: Sponge
 
         if (networkTickCount == 0) {
             captureCurrentPosition();
@@ -98,7 +99,8 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
             // a position change, the server will have sent it another one, repeatedly causing the player to jump
             // back until they stop moving for whatever the ping time is.
 
-            /*if (networkTickCount - lastPositionUpdate > 20) {
+            if (networkTickCount - lastPositionUpdate > 200) {
+                LOGGER.error("VanillaFix: 10 seconds passed without client confirming teleport!");
                 lastPositionUpdate = networkTickCount;
 
                 // Fix: Vanilla code was: setPlayerLocation(targetPos.x, targetPos.y, targetPos.z,
@@ -106,7 +108,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
                 // after a teleport just because the client didn't confirm it? I'm assuming that they
                 // intended to send another updated move packet:
                 setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
-            }*/
+            }
 
             // Instead, we will send another packet both here and in processConfirmTeleport if the position the client
             // was sent is no longer good (exceeds tolerance):
