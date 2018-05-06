@@ -1,0 +1,17 @@
+vanillafix.gui.getLink=Obțineți un link
+vanillafix.gui.failed=[Eșuat]
+
+vanillafix.crashscreen.title=Minecraft a crash!
+vanillafix.crashscreen.summary=Minecraft întâmpinat o problemă și a crash
+
+vanillafix.crashscreen.paragraph1.line1=Următoarele mod(uri) au fost identificate ca cauze posibile:
+
+vanillafix.crashscreen.paragraph2.line1=Faceți click pe ori care mod din această lista pentru a merge
+vanillafix.crashscreen.paragraph2.line2=pe site-ul lor pentru suport. Un raport poate fi găsit aici:
+
+vanillafix.crashscreen.reportSaveFailed=[Eroare salvând raportul, vedeți log-ul]
+
+vanillafix.crashscreen.paragraph3.line1=Faceți click pe butonul "Obțineți un link" pentru a-l deschide
+vanillafix.crashscreen.paragraph3.line2=in browser. Sunteți encurajați să-l trimiteți la autorul modului
+vanillafix.crashscreen.paragraph3.line3=pentru a-l ajuta să rezolve problema. Fiind că VanillaFix e
+vanillafix.crashscreen.paragraph3.line4=instalat, puteți continua de a juca în ciuda crash-ului.

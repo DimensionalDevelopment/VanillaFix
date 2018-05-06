@@ -1,0 +1,16 @@
+vanillafix.gui.getLink=Obtenir un lien
+vanillafix.gui.failed=[Échoué]
+
+vanillafix.crashscreen.title=Minecraft a crashé!
+vanillafix.crashscreen.summary=Minecraft a rencontré un problème et a crashé
+
+vanillafix.crashscreen.paragraph1.line1=Ces mod(s) ont été identifiés comme des causes potentielles:
+vanillafix.crashscreen.paragraph2.line1=Cliquez n'importe quel mod dans la liste pour aller a leur page
+vanillafix.crashscreen.paragraph2.line2=pour du support. Un raport a été génére et se trouve ici (cliquez):
+
+vanillafix.crashscreen.reportSaveFailed=[Erreur durant la sauvegarde, voir le log]
+
+vanillafix.crashscreen.paragraph3.line1=Cliquez le bouton « Obtenir un lien » pour l'ouvrir dans votre
+vanillafix.crashscreen.paragraph3.line2=navigateur web. Vous êtez encouragé de l'envoyer à l'auteur du
+vanillafix.crashscreen.paragraph3.line3=mod pour l'aider à résoudre le problême. Vu que VanillaFix est
+vanillafix.crashscreen.paragraph3.line4=installé, vous pouvez continuer a jouer malgré le crash.

@@ -71,7 +71,7 @@ public class GuiCrashScreen extends GuiScreen {
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) { // TODO: localize number of lines
         drawDefaultBackground();
         drawCenteredString(fontRenderer, I18n.format("vanillafix.crashscreen.title"), width / 2, height / 4 - 40, 0xFFFFFF);
 
