@@ -11,6 +11,7 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.profiler.ISnooperInfo;
+import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.MinecraftError;
 import net.minecraft.util.ReportedException;
@@ -19,9 +20,10 @@ import org.apache.logging.log4j.Logger;
 import org.dimdev.vanillafix.GuiCrashScreen;
 import org.dimdev.vanillafix.IPatchedMinecraft;
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.*;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -48,6 +50,9 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public GuiIngame ingameGUI;
     @Shadow public EntityRenderer entityRenderer;
     @Shadow @Final private Queue<FutureTask<?>> scheduledTasks;
+    @Shadow private boolean actionKeyF3;
+    @Shadow @Nullable private IntegratedServer integratedServer;
+    @Shadow private boolean integratedServerIsRunning;
 
     @Shadow private void init() throws LWJGLException, IOException {}
     @Shadow private void runGameLoop() throws IOException {}
@@ -57,8 +62,10 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public void displayCrashReport(CrashReport crashReportIn) {}
     @Shadow public abstract void loadWorld(@Nullable WorldClient worldClientIn);
     @Shadow @Nullable public abstract NetHandlerPlayClient getConnection();
+    @Shadow public static long getSystemTime() { return 0; }
 
     private CrashReport currentReport = null;
+    private boolean integratedServerCrashScheduled;
 
     /**
      * @author Runemoro
@@ -96,7 +103,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
                     }
                 } else {
                     freeMemory();
-                    displayCrashReport(crashReporter);
+                    displayCrashScreen(crashReporter);
                     hasCrashed = false;
                     crashReporter = null;
                 }
@@ -138,9 +145,10 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             Bootstrap.printToSYSOUT("Recoverable game crash! Crash report could not be saved.");
         }
 
-        // Reset hasCrashed and debugCrashKeyPressTime
+        // Reset hasCrashed, debugCrashKeyPressTime, and integratedServerCrashScheduled
         hasCrashed = false;
         debugCrashKeyPressTime = -1;
+        integratedServerCrashScheduled = false;
 
         // Display the crash screen
         displayGuiScreen(new GuiCrashScreen(reportFile, report));
@@ -200,8 +208,37 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         currentReport = null;
     }
 
-    @ModifyConstant(method = "runTickKeyboard", constant = @Constant(longValue = 6000L, ordinal = 0))
-    public long getDebugCrashKeyPressTime(long value) {
-        return 0; // TODO: config
+    @Redirect(method = "runTickKeyboard", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;debugCrashKeyPressTime:J", ordinal = 0))
+    public long checkForF3C(Minecraft mc) {
+        // Fix: Check if keys are down before checking time pressed
+        if (Keyboard.isKeyDown(46) && Keyboard.isKeyDown(61)) {
+            debugCrashKeyPressTime = getSystemTime();
+            actionKeyF3 = true;
+        } else {
+            debugCrashKeyPressTime = -1L;
+        }
+
+        if (debugCrashKeyPressTime > 0L) {
+            if (getSystemTime() - debugCrashKeyPressTime >= 0) {
+                // Add Alt+F3+C to crash the integrated server
+                // Shift+F3+C doesn't work (at least on my keyboard)... http://keyboardchecker.com/
+                if (!GuiScreen.isAltKeyDown()) {
+                    throw new ReportedException(new CrashReport("Manually triggered client-side debug crash", new Throwable()));
+                } else {
+                    if (integratedServerIsRunning) integratedServerCrashScheduled = true;
+                }
+            }
+        }
+        return -1;
+    }
+
+    @Redirect(method = "runTickKeyboard", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Keyboard;isKeyDown(I)Z", ordinal = 0))
+    public boolean getF3DownForF3C(int key) {
+        return false;
+    }
+
+    @Override
+    public boolean isIntegratedServerCrashScheduled() {
+        return integratedServerCrashScheduled;
     }
 }
