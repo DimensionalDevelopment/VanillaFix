@@ -1,2 +1,16 @@
 vanillafix.gui.getLink=Link erhalten
 vanillafix.gui.failed=[Fehlgeschlagen]
+vanillafix.crashscreen.title=Minecraft ist abgestürzt!
+vanillafix.crashscreen.summary=Minecraft ist ein Problem unterlaufen und ist abgestürzt.
+
+vanillafix.crashscreen.paragraph1.line1=Folgende Modifikation(en) wurde(n) als mögliche Ursache identifiziert:
+
+vanillafix.crashscreen.paragraph2.line1=Klicke auf einen beliebigen Mod in der Liste, um auf die Website zu gelangen.
+vanillafix.crashscreen.paragraph2.line2=Ein Bericht wurde erstellt und kann hier gefunden werden (Klick):
+
+vanillafix.crashscreen.reportSaveFailed=[FEHLER BEIM SPEICHERN, SIEHE LOG]
+
+vanillafix.crashscreen.paragraph3.line1=Klicke auf die Schaltfläche "Link erhalten", um ihn im Browser zu
+vanillafix.crashscreen.paragraph3.line2=öffnen. Du bist aufgefordert, diesen Bericht an den Modhersteller
+vanillafix.crashscreen.paragraph3.line3=zu senden, um ihm zu helfen, das Problem zu beheben. Da VanillaFix
+vanillafix.crashscreen.paragraph3.line4=installiert ist, kannst du trotz des Absturzes weiterspielen.
