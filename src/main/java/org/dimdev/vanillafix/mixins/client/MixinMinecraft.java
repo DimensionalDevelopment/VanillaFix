@@ -17,6 +17,7 @@ import net.minecraft.util.MinecraftError;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.logging.log4j.Logger;
+import org.dimdev.utils.ModIdentifier;
 import org.dimdev.vanillafix.GuiCrashScreen;
 import org.dimdev.vanillafix.IPatchedMinecraft;
 import org.lwjgl.LWJGLException;
@@ -151,7 +152,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         integratedServerCrashScheduled = false;
 
         // Display the crash screen
-        displayGuiScreen(new GuiCrashScreen(reportFile, report));
+        displayGuiScreen(new GuiCrashScreen(reportFile, report, ModIdentifier.identifyFromStacktrace(report.getCrashCause()))); // TODO: mods in report too
 
         // Vanilla does this when switching to main menu but not our custom crash screen
         // nor the out of memory screen (see https://bugs.mojang.com/browse/MC-128953)
