@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.settings.GameSettings;
@@ -13,6 +14,7 @@ import net.minecraft.profiler.ISnooperInfo;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.MinecraftError;
 import net.minecraft.util.ReportedException;
+import net.minecraft.util.text.TextComponentString;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.vanillafix.GuiCrashScreen;
 import org.dimdev.vanillafix.IPatchedMinecraft;
@@ -26,6 +28,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Queue;
+import java.util.concurrent.FutureTask;
 
 @SuppressWarnings({"unused", "NonConstantFieldWithUpperCaseName", "RedundantThrows"}) // Shadow
 @Mixin(Minecraft.class)
@@ -43,20 +47,16 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public GameSettings gameSettings;
     @Shadow public GuiIngame ingameGUI;
     @Shadow public EntityRenderer entityRenderer;
+    @Shadow @Final private Queue<FutureTask<?>> scheduledTasks;
 
     @Shadow private void init() throws LWJGLException, IOException {}
-
     @Shadow private void runGameLoop() throws IOException {}
-
     @Shadow public void displayGuiScreen(@Nullable GuiScreen guiScreenIn) {}
-
     @Shadow public CrashReport addGraphicsAndWorldToCrashReport(CrashReport theCrash) { return null; }
-
     @Shadow public void shutdownMinecraftApplet() {}
-
     @Shadow public void displayCrashReport(CrashReport crashReportIn) {}
-
     @Shadow public abstract void loadWorld(@Nullable WorldClient worldClientIn);
+    @Shadow @Nullable public abstract NetHandlerPlayClient getConnection();
 
     private CrashReport currentReport = null;
 
@@ -87,7 +87,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
                         addGraphicsAndWorldToCrashReport(e.getCrashReport());
                         freeMemory();
                         LOGGER.fatal("Reported exception thrown!", e);
-                        //displayCrashScreen(e.getCrashReport());
+                        displayCrashScreen(e.getCrashReport());
                     } catch (Throwable e) {
                         CrashReport report = addGraphicsAndWorldToCrashReport(new CrashReport("Unexpected error", e));
                         freeMemory();
@@ -95,7 +95,10 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
                         displayCrashScreen(report);
                     }
                 } else {
+                    freeMemory();
                     displayCrashReport(crashReporter);
+                    hasCrashed = false;
+                    crashReporter = null;
                 }
             }
         } catch (MinecraftError ignored) {
@@ -167,15 +170,20 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
 
         try {
             System.gc();
+
             // Fix: Close the connection to avoid receiving packets from old server
             // when playing in another world (MC-128953)
-            if (world != null) {
-                world.sendQuittingDisconnectingPacket();
+            if (getConnection() != null) {
+                getConnection().getNetworkManager().closeChannel(new TextComponentString("[VanillaFix] Client crashed."));
             }
+
             loadWorld(null);
 
-            // Probably not necessary, but do this now rathe than next tick to make
-            // it identical to a regular disconnect:
+            // TODO: Figure out why this isn't necessary for vanilla disconnect:
+            scheduledTasks.clear();
+
+            // Fix: Probably not necessary, but do this now rathe than next tick to
+            // make it identical to a regular disconnect:
             if (entityRenderer.isShaderActive()) {
                 entityRenderer.stopUseShader();
             }

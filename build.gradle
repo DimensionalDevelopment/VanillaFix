@@ -33,7 +33,7 @@ dependencies {
 }
 
 // Mod version
-version = ext.modversion = "1.0.0"
+version = ext.modversion = "1.0.1"
 group = "org.dimdev.vanillafix"
 archivesBaseName = "VanillaFix"
 

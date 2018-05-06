@@ -5,11 +5,13 @@
   "minVersion": "0.6",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinNetHandlerPlayServer"
+    "MixinNetHandlerPlayServer",
+    "MixinUtil"
   ],
   "client": [
     "client.MixinMinecraft",
     "client.MixinNetHandlerPlayClient",
-    "client.MixinEntityPlayerSP"
+    "client.MixinEntityPlayerSP",
+    "client.MixinIntegratedServer"
   ]
 }
