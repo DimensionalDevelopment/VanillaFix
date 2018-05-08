@@ -17,7 +17,6 @@ import net.minecraft.util.MinecraftError;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.text.TextComponentString;
 import org.apache.logging.log4j.Logger;
-import org.dimdev.utils.ModIdentifier;
 import org.dimdev.vanillafix.GuiCrashScreen;
 import org.dimdev.vanillafix.IPatchedMinecraft;
 import org.lwjgl.LWJGLException;
@@ -67,6 +66,8 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
 
     private CrashReport currentReport = null;
     private boolean integratedServerCrashScheduled;
+    private int clientCrashCount = 0;
+    private int serverCrashCount = 0;
 
     /**
      * @author Runemoro
@@ -92,17 +93,24 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
                     try {
                         runGameLoop();
                     } catch (ReportedException e) {
+                        clientCrashCount++;
                         addGraphicsAndWorldToCrashReport(e.getCrashReport());
+                        addInfoToCrash(e.getCrashReport());
                         freeMemory();
                         LOGGER.fatal("Reported exception thrown!", e);
                         displayCrashScreen(e.getCrashReport());
                     } catch (Throwable e) {
-                        CrashReport report = addGraphicsAndWorldToCrashReport(new CrashReport("Unexpected error", e));
+                        clientCrashCount++;
+                        CrashReport report = new CrashReport("Unexpected error", e);
+                        addGraphicsAndWorldToCrashReport(report);
+                        addInfoToCrash(report);
                         freeMemory();
                         LOGGER.fatal("Unreported exception thrown!", e);
                         displayCrashScreen(report);
                     }
                 } else {
+                    serverCrashCount++;
+                    addInfoToCrash(crashReporter);
                     freeMemory();
                     displayCrashScreen(crashReporter);
                     hasCrashed = false;
@@ -113,6 +121,11 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         } finally {
             shutdownMinecraftApplet();
         }
+    }
+
+    public void addInfoToCrash(CrashReport report) {
+        report.getCategory().addDetail("Client Crashes Since Restart", () -> String.valueOf(clientCrashCount));
+        report.getCategory().addDetail("Integrated Server Crashes Since Restart", () -> String.valueOf(serverCrashCount));
     }
 
     public void displayCrashScreen(CrashReport report) {
@@ -152,7 +165,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         integratedServerCrashScheduled = false;
 
         // Display the crash screen
-        displayGuiScreen(new GuiCrashScreen(reportFile, report, ModIdentifier.identifyFromStacktrace(report.getCrashCause()))); // TODO: mods in report too
+        displayGuiScreen(new GuiCrashScreen(reportFile, report));
 
         // Vanilla does this when switching to main menu but not our custom crash screen
         // nor the out of memory screen (see https://bugs.mojang.com/browse/MC-128953)

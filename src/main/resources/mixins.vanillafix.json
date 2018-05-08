@@ -6,7 +6,8 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinNetHandlerPlayServer",
-    "MixinUtil"
+    "MixinUtil",
+    "MixinCrashReport"
   ],
   "client": [
     "client.MixinMinecraft",

@@ -16,9 +16,7 @@ import org.dimdev.utils.SSLUtils;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 @SideOnly(Side.CLIENT)
 public class GuiCrashScreen extends GuiScreen {
@@ -29,13 +27,11 @@ public class GuiCrashScreen extends GuiScreen {
     private File reportFile;
     private final CrashReport report;
     private String hasteLink = null;
-    private Set<ModContainer> mods;
     private String modListString;
 
-    public GuiCrashScreen(File reportFile, CrashReport report, Set<ModContainer> mods) {
+    public GuiCrashScreen(File reportFile, CrashReport report) {
         this.reportFile = reportFile;
         this.report = report;
-        this.mods = mods;
     }
 
     @Override
@@ -110,7 +106,7 @@ public class GuiCrashScreen extends GuiScreen {
     public String getModListString() {
         if (modListString == null) {
             List<String> modNames = new ArrayList<>();
-            for (ModContainer mod : mods) {
+            for (ModContainer mod : ((IPatchedCrashReport) report).getSuspectedMods()) {
                 modNames.add(mod.getName());
             }
             if (modNames.isEmpty()) {
