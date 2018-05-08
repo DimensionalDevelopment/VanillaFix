@@ -172,8 +172,16 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @SuppressWarnings("CallToSystemGC")
     @Overwrite
     public void freeMemory() {
+        int originalMemoryReserveSize = -1;
         try {
-            memoryReserve = new byte[0];
+            // Separate try in case another mod actually deletes the memoryReserve field
+            if (memoryReserve != null) {
+                originalMemoryReserveSize = memoryReserve.length;
+                memoryReserve = new byte[0];
+            }
+        } catch (Throwable ignored) {}
+
+        try {
             renderGlobal.deleteAllDisplayLists();
         } catch (Throwable ignored) {}
 
@@ -201,7 +209,11 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         System.gc();
 
         // Fix: Re-create memory reserve so that future crashes work well too
-        memoryReserve = new byte[10485760];
+        if (originalMemoryReserveSize != -1) {
+            try {
+                memoryReserve = new byte[originalMemoryReserveSize];
+            } catch (Throwable ignored) {}
+        }
     }
 
     @Override
