@@ -213,6 +213,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
                     // be done using captureCurrentPosition). Otherwise, this would result in "moved wrongly" messages if
                     // the client both accepts the teleport and starts sending move packets that are correct within the same tick.
                     captureCurrentPosition();
+                    lastFallY = player.posY;
                 } else {
                     // Calculate difference from position accepted by Entity.move
                     xDiff = packetX - player.posX;

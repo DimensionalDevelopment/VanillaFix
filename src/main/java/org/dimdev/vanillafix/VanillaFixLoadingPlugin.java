@@ -14,9 +14,9 @@ import java.util.Map;
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
 @IFMLLoadingPlugin.SortingIndex(-5000)
 @IFMLLoadingPlugin.TransformerExclusions("org.dimdev.vanillafix.")
-public class VanillaFixCoreMod implements IFMLLoadingPlugin {
+public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
 
-    public VanillaFixCoreMod() {
+    public VanillaFixLoadingPlugin() {
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.vanillafix.json");
     }
@@ -26,7 +26,7 @@ public class VanillaFixCoreMod implements IFMLLoadingPlugin {
     }
 
     @Override public String getModContainerClass() {
-        return null;//"org.dimdev.vanillafix.VanillaFixCoreContainer";
+        return null;
     }
 
     @Nullable @Override public String getSetupClass() {

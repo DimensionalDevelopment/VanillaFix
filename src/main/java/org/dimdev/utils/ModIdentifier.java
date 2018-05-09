@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 public final class ModIdentifier { // TODO: non-forge mods too
-    // private static Logger log = LogManager.getLogger();
 
     public static Set<ModContainer> identifyFromStacktrace(Throwable e) {
         Map<File, Set<ModContainer>> modMap = makeModMap();
@@ -51,6 +50,9 @@ public final class ModIdentifier { // TODO: non-forge mods too
             currentMods.add(mod);
             modMap.put(mod.getSource(), currentMods);
         }
+        modMap.remove(Loader.instance().getMinecraftModContainer().getSource()); // Ignore mods in minecraft.jar (minecraft, fml, forge, etc.)
+        modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource()); // For dev environment (forge is in a separate jar)
+
         return modMap;
     }
 }

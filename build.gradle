@@ -33,7 +33,7 @@ dependencies {
 }
 
 // Mod version
-version = ext.modversion = "1.0.1"
+version = ext.modversion = "1.0.2"
 group = "org.dimdev.vanillafix"
 archivesBaseName = "VanillaFix"
 
@@ -61,7 +61,7 @@ minecraft {
     makeObfSourceJar = false
     ext.args = [
             "-Dfml.noGrab=false",
-            "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixCoreMod",
+            "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin",
             "-Dmixin.env.compatLevel=JAVA_8",
             "-Dmixin.debug=true",
             "-Dmixin.debug.verbose=true",
@@ -86,7 +86,7 @@ jar {
     manifest.attributes(
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "MixinConfigs": "mixins.vanillafix.json",
-            "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixCoreMod",
+            "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixLoadingPlugin",
     )
 }
 

@@ -165,7 +165,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         integratedServerCrashScheduled = false;
 
         // Display the crash screen
-        displayGuiScreen(new GuiCrashScreen(reportFile, report));
+        displayGuiScreen(new GuiCrashScreen(reportFile, report, false));
 
         // Vanilla does this when switching to main menu but not our custom crash screen
         // nor the out of memory screen (see https://bugs.mojang.com/browse/MC-128953)
@@ -246,12 +246,17 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
 
         if (debugCrashKeyPressTime > 0L) {
             if (getSystemTime() - debugCrashKeyPressTime >= 0) {
-                // Add Alt+F3+C to crash the integrated server
-                // Shift+F3+C doesn't work (at least on my keyboard)... http://keyboardchecker.com/
-                if (!GuiScreen.isAltKeyDown()) {
-                    throw new ReportedException(new CrashReport("Manually triggered client-side debug crash", new Throwable()));
-                } else {
+                // F3 + C - Client crash
+                // Alt + F3 + C - Integrated server crash
+                // Shift + F3 + C - Scheduled task exception (you will probably need to use
+                // the right shift for this, most keyboards don't support Left Shift + F3 + C,
+                // see http://keyboardchecker.com/)
+                if (GuiScreen.isAltKeyDown()) {
                     if (integratedServerIsRunning) integratedServerCrashScheduled = true;
+                } else if (GuiScreen.isShiftKeyDown()) {
+                    if (integratedServerIsRunning) integratedServer.addScheduledTask(() -> {throw new ReportedException(new CrashReport("Manually triggered scheduled task exception", new Throwable()));});
+                } else {
+                    throw new ReportedException(new CrashReport("Manually triggered client-side debug crash", new Throwable()));
                 }
             }
         }

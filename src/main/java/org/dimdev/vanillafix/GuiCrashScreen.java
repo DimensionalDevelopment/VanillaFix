@@ -20,24 +20,26 @@ import java.util.List;
 
 @SideOnly(Side.CLIENT)
 public class GuiCrashScreen extends GuiScreen {
-    private static final String HASTE_BASE_URL = "https://paste.dimdev.org";
+    private static final String HASTE_BASE_URL = ModConfig.crashes.hasteURL;
     private static final Logger log = LogManager.getLogger();
     private static boolean patchedSSL = false;
 
     private File reportFile;
     private final CrashReport report;
+    private final boolean isWarning;
     private String hasteLink = null;
     private String modListString;
 
-    public GuiCrashScreen(File reportFile, CrashReport report) {
+    public GuiCrashScreen(File reportFile, CrashReport report, boolean isWarning) { // TODO: split warnscreen and crashscreen, with common superclass
         this.reportFile = reportFile;
         this.report = report;
+        this.isWarning = isWarning;
     }
 
     @Override
     public void initGui() {
         buttonList.clear();
-        buttonList.add(new GuiOptionButton(0, width / 2 - 155, height / 4 + 120 + 12, I18n.format("gui.toTitle")));
+        buttonList.add(new GuiOptionButton(0, width / 2 - 155, height / 4 + 120 + 12, !isWarning ? I18n.format("gui.toTitle") : I18n.format("vanillafix.gui.keepPlaying")));
         buttonList.add(new GuiOptionButton(1, width / 2 - 155 + 160, height / 4 + 120 + 12, I18n.format("vanillafix.gui.getLink")));
     }
 
@@ -45,8 +47,12 @@ public class GuiCrashScreen extends GuiScreen {
     protected void actionPerformed(GuiButton button) {
         try {
             if (button.id == 0) {
-                mc.displayGuiScreen(new GuiMainMenu());
-                ((IPatchedMinecraft) mc).clearCurrentReport();
+                if (!isWarning) {
+                    mc.displayGuiScreen(new GuiMainMenu());
+                    ((IPatchedMinecraft) mc).clearCurrentReport();
+                } else {
+                    mc.player.closeScreen();
+                }
             } else if (button.id == 1) {
                 if (hasteLink == null) {
                     // This is just a quick fix for now. Instead, we should use a TrustManager that wraps the
@@ -84,9 +90,16 @@ public class GuiCrashScreen extends GuiScreen {
         int x = width / 2 - 155;
         int y = height / 4;
 
-        drawString(fontRenderer, I18n.format("vanillafix.crashscreen.summary"), x, y, textColor);
-        drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph1.line1"), x, y += 18, textColor);
-
+        if (!isWarning) {
+            drawString(fontRenderer, I18n.format("vanillafix.crashscreen.summary"), x, y, textColor);
+            drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph1.line1"), x, y += 18, textColor);
+        } else {
+            y -= 20;
+            drawString(fontRenderer, I18n.format("vanillafix.warnscreen.summary"), x, y, textColor);
+            drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph1.line1"), x, y += 18, textColor);
+            drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph1.line2"), x, y += 9, textColor);
+            drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph1.line3"), x, y += 9, textColor);
+        }
 
         drawCenteredString(fontRenderer, getModListString(), width / 2, y += 11, 0xE0E000);
 
@@ -95,10 +108,19 @@ public class GuiCrashScreen extends GuiScreen {
 
         drawCenteredString(fontRenderer, reportFile != null ? "\u00A7n" + reportFile.getName() : I18n.format("vanillafix.crashscreen.reportSaveFailed"), width / 2, y += 11, 0x00FF00);
 
-        drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph3.line1"), x, y += 12, textColor);
-        drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph3.line2"), x, y += 9, textColor);
-        drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph3.line3"), x, y += 9, textColor);
-        drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph3.line4"), x, y + 9, textColor);
+
+        if (!isWarning) {
+            drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph3.line1"), x, y += 12, textColor);
+            drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph3.line2"), x, y += 9, textColor);
+            drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph3.line3"), x, y += 9, textColor);
+            drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph3.line4"), x, y + 9, textColor);
+        } else {
+            drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph3.line1"), x, y += 12, textColor);
+            drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph3.line2"), x, y += 9, textColor);
+            drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph3.line3"), x, y += 9, textColor);
+            drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph3.line4"), x, y += 9, textColor);
+            drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph3.line5"), x, y + 9, textColor);
+        }
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
