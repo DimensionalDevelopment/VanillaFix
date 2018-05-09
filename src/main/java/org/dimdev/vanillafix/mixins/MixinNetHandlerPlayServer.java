@@ -43,6 +43,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
     @Shadow private int movePacketCounter;
     @Shadow private int lastMovePacketCounter;
     @Shadow private int teleportId;
+    private double lastFallY; // Necessary since we captureCurrentPosition every tick
 
     @Shadow public void disconnect(final ITextComponent textComponent) {}
 
@@ -88,8 +89,9 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
         WorldServer world = server.getWorld(player.dimension);
         // TODO: Sponge
 
-        if (networkTickCount == 0) {
+        if (networkTickCount == 0) { // TODO: what if end exit was queued?
             captureCurrentPosition();
+            lastFallY = player.posY;
         }
 
         if (targetPos != null) {
@@ -116,6 +118,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
             if (targetPos.squareDistanceTo(player.posX, player.posY, player.posZ) > 1.0D) {
                 setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
             }
+            // TODO: fall damage
 
             // Ignore the packet, the client thinks it's still at the old position
             return;
@@ -192,7 +195,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
                 // Fix: If a collision teleported the player, just sync the client without checking that the move was legal.
                 // Entity.move already made sure that the player didn't cheat, and reverting the move would be wrong because
                 // the prevX/Y/Z is no longer good in the new dimension. This fixes MC-123364.
-                if (player.isInvulnerableDimensionChange()) {
+                if (player.isInvulnerableDimensionChange()) { // TODO: get rid of this entierly...
                     // A better name for invulnerableDimensionChange would be "lastBlockCollisionCausedPlayerMove". See
                     // https://github.com/ModCoderPack/MCPBot-Issues/issues/624. This happens when the move caused a
                     // collision that teleported the player elsewhere.
@@ -210,8 +213,6 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
                     // be done using captureCurrentPosition). Otherwise, this would result in "moved wrongly" messages if
                     // the client both accepts the teleport and starts sending move packets that are correct within the same tick.
                     captureCurrentPosition();
-
-                    yDiff = 0; // Reset fall distance
                 } else {
                     // Calculate difference from position accepted by Entity.move
                     xDiff = packetX - player.posX;
@@ -240,21 +241,24 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
                         // to set invulnerableDimensionChange after a teleport (only causes a log message and some extra
                         // unnecessary checks).
                         setPlayerLocation(player.posX, player.posY, player.posZ, packetYaw, packetPitch);
-                        player.addMovementStat(player.posX - prevX, player.posY - prevY, player.posZ - prevZ);
                         return;
                     }
                     // Fix: Update movement stats to the corrected position rather than the position the client wanted.
                     // This prevents illegal, cancelled (vanilla) or corrected (with improvement above), moves from updating
                     // stats.
                     player.addMovementStat(player.posX - prevX, player.posY - prevY, player.posZ - prevZ);
-                }
 
-                floating = yDiff >= -0.03125D;
-                floating &= !server.isFlightAllowed() && !player.capabilities.allowFlying;
-                floating &= !player.isPotionActive(MobEffects.LEVITATION) && !player.isElytraFlying() && !world.checkBlockCollision(player.getEntityBoundingBox().grow(0.0625D).expand(0.0D, -0.55D, 0.0D));
-                player.onGround = packet.isOnGround();
-                server.getPlayerList().serverUpdateMovingPlayer(player);
-                player.handleFalling(player.posY - prevY, packet.isOnGround());
+                    // TODO: Fix this properly. Fall state should be updated BEFORE the block collision, as collision logic may depend on that!
+                    // Fix: Don't do this after a collision teleports the player.
+                    floating = yDiff >= -0.03125D;
+                    floating &= !server.isFlightAllowed() && !player.capabilities.allowFlying;
+                    floating &= !player.isPotionActive(MobEffects.LEVITATION) && !player.isElytraFlying() && !world.checkBlockCollision(player.getEntityBoundingBox().grow(0.0625D).expand(0.0D, -0.55D, 0.0D));
+                    player.onGround = packet.isOnGround(); // TODO: why are trust the packet?!
+                    server.getPlayerList().serverUpdateMovingPlayer(player);
+                    // TODO: possible vanilla bug: if the player doesn't send move packets, they don't receive fall damage?
+                    player.handleFalling(player.posY - lastFallY, packet.isOnGround());
+                    lastFallY = player.posY;
+                }
 
                 lastGoodX = player.posX;
                 lastGoodY = player.posY;
