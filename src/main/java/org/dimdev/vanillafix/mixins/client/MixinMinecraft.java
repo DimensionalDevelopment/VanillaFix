@@ -1,5 +1,6 @@
 package org.dimdev.vanillafix.mixins.client;
 
+import com.google.common.util.concurrent.ListenableFutureTask;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
@@ -65,7 +66,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public static long getSystemTime() { return 0; }
 
     private CrashReport currentReport = null;
-    private boolean integratedServerCrashScheduled;
+    private boolean crashIntegratedServerNextTick;
     private int clientCrashCount = 0;
     private int serverCrashCount = 0;
 
@@ -159,10 +160,10 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             Bootstrap.printToSYSOUT("Recoverable game crash! Crash report could not be saved.");
         }
 
-        // Reset hasCrashed, debugCrashKeyPressTime, and integratedServerCrashScheduled
+        // Reset hasCrashed, debugCrashKeyPressTime, and crashIntegratedServerNextTick
         hasCrashed = false;
         debugCrashKeyPressTime = -1;
-        integratedServerCrashScheduled = false;
+        crashIntegratedServerNextTick = false;
 
         // Display the crash screen
         displayGuiScreen(new GuiCrashScreen(reportFile, report, false));
@@ -248,15 +249,26 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             if (getSystemTime() - debugCrashKeyPressTime >= 0) {
                 // F3 + C - Client crash
                 // Alt + F3 + C - Integrated server crash
-                // Shift + F3 + C - Scheduled task exception (you will probably need to use
-                // the right shift for this, most keyboards don't support Left Shift + F3 + C,
-                // see http://keyboardchecker.com/)
-                if (GuiScreen.isAltKeyDown()) {
-                    if (integratedServerIsRunning) integratedServerCrashScheduled = true;
-                } else if (GuiScreen.isShiftKeyDown()) {
-                    if (integratedServerIsRunning) integratedServer.addScheduledTask(() -> {throw new ReportedException(new CrashReport("Manually triggered scheduled task exception", new Throwable()));});
+                // Shift + F3 + C - Scheduled client task exception
+                // Alt + Shift + F3 + C - Scheduled server task exception
+                // Note: Left Shift + F3 + C doesn't work on most keyboards, see http://keyboardchecker.com/
+                // Use the right shift instead.
+                if (GuiScreen.isShiftKeyDown()) {
+                    if (GuiScreen.isAltKeyDown()) {
+                        if (integratedServerIsRunning) integratedServer.addScheduledTask(() -> {
+                            throw new ReportedException(new CrashReport("Manually triggered server-side scheduled task exception", new Throwable()));
+                        });
+                    } else {
+                        scheduledTasks.add(ListenableFutureTask.create(() -> {
+                            throw new ReportedException(new CrashReport("Manually triggered client-side scheduled task exception", new Throwable()));
+                        }));
+                    }
                 } else {
-                    throw new ReportedException(new CrashReport("Manually triggered client-side debug crash", new Throwable()));
+                    if (GuiScreen.isAltKeyDown()) {
+                        if (integratedServerIsRunning) crashIntegratedServerNextTick = true;
+                    } else {
+                        throw new ReportedException(new CrashReport("Manually triggered client-side debug crash", new Throwable()));
+                    }
                 }
             }
         }
@@ -269,7 +281,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     }
 
     @Override
-    public boolean isIntegratedServerCrashScheduled() {
-        return integratedServerCrashScheduled;
+    public boolean isCrashIntegratedServerNextTick() {
+        return crashIntegratedServerNextTick;
     }
 }

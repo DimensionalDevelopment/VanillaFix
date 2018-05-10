@@ -1,5 +1,7 @@
 package org.dimdev.utils;
 
+import com.google.common.collect.ImmutableMap;
+import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 
@@ -24,19 +26,20 @@ public final class ModIdentifier { // TODO: non-forge mods too
         }
 
         Set<ModContainer> mods = new HashSet<>();
-        for (String class0 : classes) {
-            Set<ModContainer> classMods = identifyFromClass(class0, modMap);
+        for (String className : classes) {
+            Set<ModContainer> classMods = identifyFromClass(className, modMap);
             if (classMods != null) mods.addAll(classMods);
         }
         return mods;
     }
 
-    public static Set<ModContainer> identifyFromClass(String class0) {
-        return identifyFromClass(class0, makeModMap());
+    public static Set<ModContainer> identifyFromClass(String className) {
+        return identifyFromClass(className, makeModMap());
     }
 
-    private static Set<ModContainer> identifyFromClass(String class0, Map<File, Set<ModContainer>> modMap) {
-        URL url = ModIdentifier.class.getResource('/' + class0.replace('.', '/') + ".class");
+    private static Set<ModContainer> identifyFromClass(String className, Map<File, Set<ModContainer>> modMap) {
+        URL url = Launch.classLoader.getResource(className.replace('.', '/') + ".class");
+        if (url == null) throw new RuntimeException("Failed to identify " + className); // TODO: log message instead?
         String str = url.getFile();
         if (str.startsWith("file:/")) str = str.substring(str.indexOf("/") + 1); // jar:file:/
         if (str.contains("!")) str = str.substring(0, str.indexOf("!"));
@@ -50,8 +53,11 @@ public final class ModIdentifier { // TODO: non-forge mods too
             currentMods.add(mod);
             modMap.put(mod.getSource(), currentMods);
         }
-        modMap.remove(Loader.instance().getMinecraftModContainer().getSource()); // Ignore mods in minecraft.jar (minecraft, fml, forge, etc.)
-        modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource()); // For dev environment (forge is in a separate jar)
+
+        try {
+            modMap.remove(Loader.instance().getMinecraftModContainer().getSource()); // Ignore mods in minecraft.jar (minecraft, fml, forge, etc.)
+            modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource()); // For dev environment (forge is in a separate jar)
+        } catch (NullPointerException ignored) {}
 
         return modMap;
     }

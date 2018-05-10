@@ -22,7 +22,7 @@ import java.util.concurrent.FutureTask;
 public final class MixinUtil {
     @Nullable
     @Overwrite
-    public static <V> V runTask(FutureTask<V> task, Logger logger) {
+    public static <V> V runTask(FutureTask<V> task, Logger logger) { // TODO: Utils shouldn't depend on minecraft, redirect individual calls to runTask instead
         task.run();
         try {
             return task.get();
@@ -31,17 +31,21 @@ public final class MixinUtil {
                 // TODO: what if there's several exceptions in a row?
                 CrashReport report = new CrashReport("Error executing task", e);
                 File crashReportsDir = new File(Minecraft.getMinecraft().mcDataDir, "crash-reports");
-                File crashReportSaveFile = new File(crashReportsDir, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-scheduled-task.txt");
+                File crashReportSaveFile = new File(crashReportsDir, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) +
+                                                                     (Minecraft.getMinecraft().isCallingFromMinecraftThread() ? "-client" : "-server") +
+                                                                     ".txt");
 
                 // Print the report in bootstrap
                 Bootstrap.printToSYSOUT(report.getCompleteReport());
 
                 // Save the report and print file in bootstrap
-                File reportFile = null;
+                final File reportFile;
                 if (report.getFile() != null) {
                     reportFile = report.getFile();
                 } else if (report.saveToFile(crashReportSaveFile)) {
                     reportFile = crashReportSaveFile;
+                } else {
+                    reportFile = null;
                 }
 
                 if (reportFile != null) {
@@ -50,7 +54,7 @@ public final class MixinUtil {
                     Bootstrap.printToSYSOUT("Scheduled task threw an exception! Crash report could not be saved.");
                 }
 
-                Minecraft.getMinecraft().displayGuiScreen(new GuiCrashScreen(reportFile, report, true));
+                Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().displayGuiScreen(new GuiCrashScreen(reportFile, report, true)));
             } else if (ModConfig.crashes.scheduledTaskAction == ModConfig.ProblemAction.CRASH) {
                 throw new ReportedException(new CrashReport("Error executing task", e));
             } else {

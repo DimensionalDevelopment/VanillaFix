@@ -4,6 +4,7 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraftforge.fml.common.ModContainer;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.dimdev.utils.ModIdentifier;
 import org.dimdev.vanillafix.IPatchedCrashReport;
 import org.spongepowered.asm.mixin.Final;
@@ -31,18 +32,22 @@ public class MixinCrashReport implements IPatchedCrashReport {
     @Inject(method = "populateEnvironment", at = @At("TAIL"))
     public void afterPopulateEnvironment(CallbackInfo ci) {
         systemDetailsCategory.addDetail("Suspected Mods", () -> {
-            suspectedMods = ModIdentifier.identifyFromStacktrace(cause);
+            try {
+                suspectedMods = ModIdentifier.identifyFromStacktrace(cause);
 
-            String modListString = "Unknown";
-            List<String> modNames = new ArrayList<>();
-            for (ModContainer mod : suspectedMods) {
-                modNames.add(mod.getName() + " (" + mod.getModId() + ")");
-            }
+                String modListString = "Unknown";
+                List<String> modNames = new ArrayList<>();
+                for (ModContainer mod : suspectedMods) {
+                    modNames.add(mod.getName() + " (" + mod.getModId() + ")");
+                }
 
-            if (!modNames.isEmpty()) {
-                modListString = StringUtils.join(modNames, ", ");
+                if (!modNames.isEmpty()) {
+                    modListString = StringUtils.join(modNames, ", ");
+                }
+                return modListString;
+            } catch (Throwable e) {
+                return ExceptionUtils.getStackTrace(e);
             }
-            return modListString;
         });
     }
 }

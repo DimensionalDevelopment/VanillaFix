@@ -17,6 +17,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @SideOnly(Side.CLIENT)
 public class GuiCrashScreen extends GuiScreen {
@@ -38,9 +39,11 @@ public class GuiCrashScreen extends GuiScreen {
 
     @Override
     public void initGui() {
+        mc.setIngameNotInFocus();
         buttonList.clear();
         buttonList.add(new GuiOptionButton(0, width / 2 - 155, height / 4 + 120 + 12, !isWarning ? I18n.format("gui.toTitle") : I18n.format("vanillafix.gui.keepPlaying")));
         buttonList.add(new GuiOptionButton(1, width / 2 - 155 + 160, height / 4 + 120 + 12, I18n.format("vanillafix.gui.getLink")));
+        // TODO: pause sounds too (see Minecraft.displayInGameMenu)?
     }
 
     @Override
@@ -127,12 +130,16 @@ public class GuiCrashScreen extends GuiScreen {
 
     public String getModListString() {
         if (modListString == null) {
+            final Set<ModContainer> suspectedMods = ((IPatchedCrashReport) report).getSuspectedMods();
+            if (suspectedMods == null) {
+                return modListString = I18n.format("vanillafix.crashscreen.identificationErrored");
+            }
             List<String> modNames = new ArrayList<>();
-            for (ModContainer mod : ((IPatchedCrashReport) report).getSuspectedMods()) {
+            for (ModContainer mod : suspectedMods) {
                 modNames.add(mod.getName());
             }
             if (modNames.isEmpty()) {
-                modListString = "Unknown";
+                modListString = I18n.format("vanillafix.crashscreen.unknownCause");
             } else {
                 modListString = StringUtils.join(modNames, ", ");
             }
