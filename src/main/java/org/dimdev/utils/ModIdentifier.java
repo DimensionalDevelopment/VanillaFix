@@ -1,11 +1,14 @@
 package org.dimdev.utils;
 
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 public final class ModIdentifier { // TODO: non-forge mods too
+    private static final Logger log = LogManager.getLogger();
 
     public static Set<ModContainer> identifyFromStacktrace(Throwable e) {
         Map<File, Set<ModContainer>> modMap = makeModMap();
@@ -38,8 +42,13 @@ public final class ModIdentifier { // TODO: non-forge mods too
     }
 
     private static Set<ModContainer> identifyFromClass(String className, Map<File, Set<ModContainer>> modMap) {
-        URL url = Launch.classLoader.getResource(className.replace('.', '/') + ".class");
-        if (url == null) throw new RuntimeException("Failed to identify " + className); // TODO: log message instead?
+        final String untrasformedName = untransformName(Launch.classLoader, className);
+        URL url = Launch.classLoader.getResource(untrasformedName.replace('.', '/') + ".class");
+        log.debug(className + " = " + untrasformedName + " = " + url);
+        if (url == null) {
+            log.warn("Failed to identify " + className + " (untransformed name: " + untrasformedName + ")");
+            return new HashSet<>();
+        }
         String str = url.getFile();
         if (str.startsWith("file:/")) str = str.substring(str.indexOf("/") + 1); // jar:file:/
         if (str.contains("!")) str = str.substring(0, str.indexOf("!"));
@@ -55,10 +64,20 @@ public final class ModIdentifier { // TODO: non-forge mods too
         }
 
         try {
-            modMap.remove(Loader.instance().getMinecraftModContainer().getSource()); // Ignore mods in minecraft.jar (minecraft, fml, forge, etc.)
-            modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource()); // For dev environment (forge is in a separate jar)
+            modMap.remove(Loader.instance().getMinecraftModContainer().getSource()); // Ignore minecraft jar (minecraft)
+            modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource()); // Ignore forge jar (FML, forge)
         } catch (NullPointerException ignored) {}
 
         return modMap;
+    }
+
+    private static String untransformName(LaunchClassLoader launchClassLoader, String className) {
+        try {
+            Method untransformNameMethod = LaunchClassLoader.class.getDeclaredMethod("untransformName", String.class);
+            untransformNameMethod.setAccessible(true);
+            return (String) untransformNameMethod.invoke(launchClassLoader, className);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

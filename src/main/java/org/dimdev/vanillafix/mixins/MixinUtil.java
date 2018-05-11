@@ -55,7 +55,7 @@ public final class MixinUtil {
                 }
 
                 Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().displayGuiScreen(new GuiCrashScreen(reportFile, report, true)));
-            } else if (ModConfig.crashes.scheduledTaskAction == ModConfig.ProblemAction.CRASH) {
+            } else if (ModConfig.crashes.scheduledTaskAction == ModConfig.ProblemAction.LOG) {
                 throw new ReportedException(new CrashReport("Error executing task", e));
             } else {
                 logger.fatal("Error executing task", e);

@@ -87,7 +87,11 @@ public class GuiCrashScreen extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) { // TODO: localize number of lines
         drawDefaultBackground();
-        drawCenteredString(fontRenderer, I18n.format("vanillafix.crashscreen.title"), width / 2, height / 4 - 40, 0xFFFFFF);
+        if (!isWarning) {
+            drawCenteredString(fontRenderer, I18n.format("vanillafix.crashscreen.title"), width / 2, height / 4 - 40, 0xFFFFFF);
+        } else {
+            drawCenteredString(fontRenderer, I18n.format("vanillafix.warnscreen.title"), width / 2, height / 4 - 40, 0xFFFFFF);
+        }
 
         int textColor = 0xD0D0D0;
         int x = width / 2 - 155;

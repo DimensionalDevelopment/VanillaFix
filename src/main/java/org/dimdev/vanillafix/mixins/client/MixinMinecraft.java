@@ -84,7 +84,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         } catch (Throwable throwable) {
             CrashReport report = CrashReport.makeCrashReport(throwable, "Initializing game");
             report.makeCategory("Initialization");
-            displayCrashScreen(addGraphicsAndWorldToCrashReport(report)); // TODO: GUI for this too
+            displayCrashReport(addGraphicsAndWorldToCrashReport(report)); // TODO: GUI for this too
             return;
         }
 
