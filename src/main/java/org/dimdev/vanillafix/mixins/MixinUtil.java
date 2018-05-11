@@ -27,7 +27,10 @@ public final class MixinUtil {
         try {
             return task.get();
         } catch (InterruptedException | ExecutionException e) {
-            if (ModConfig.crashes.scheduledTaskAction == ModConfig.ProblemAction.WARNING_SCREEN) {
+            final ModConfig.ProblemAction action = isClient() || ModConfig.crashes.scheduledTaskAction != ModConfig.ProblemAction.WARNING_SCREEN ?
+                    ModConfig.crashes.scheduledTaskAction : ModConfig.ProblemAction.LOG;
+
+            if (action == ModConfig.ProblemAction.WARNING_SCREEN) {
                 // TODO: what if there's several exceptions in a row?
                 CrashReport report = new CrashReport("Error executing task", e);
                 File crashReportsDir = new File(Minecraft.getMinecraft().mcDataDir, "crash-reports");
@@ -55,12 +58,21 @@ public final class MixinUtil {
                 }
 
                 Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().displayGuiScreen(new GuiCrashScreen(reportFile, report, true)));
-            } else if (ModConfig.crashes.scheduledTaskAction == ModConfig.ProblemAction.LOG) {
+            } else if (action == ModConfig.ProblemAction.LOG) {
                 throw new ReportedException(new CrashReport("Error executing task", e));
             } else {
                 logger.fatal("Error executing task", e);
             }
             return null;
+        }
+    }
+
+    private static boolean isClient() {
+        try {
+            Class.forName("net.minecraft.client.Minecraft");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 }
