@@ -33,7 +33,7 @@ dependencies {
 }
 
 // Mod version
-version = ext.modversion = "1.0.2"
+version = ext.modversion = "1.0.3"
 group = "org.dimdev.vanillafix"
 archivesBaseName = "VanillaFix"
 
@@ -84,7 +84,7 @@ jar {
         exclude "LICENSE.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
     }
     manifest.attributes(
-            "FMLCorePluginContainsFMLMod": "true",
+            //"FMLCorePluginContainsFMLMod": "true", // TODO: enable on release, or fix the problem properly
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "MixinConfigs": "mixins.vanillafix.json",
             "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixLoadingPlugin",
