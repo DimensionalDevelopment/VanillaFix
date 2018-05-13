@@ -2,18 +2,17 @@ package org.dimdev.vanillafix.mixins;
 
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.MobEffects;
 import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.network.PacketThreadUtil;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketConfirmTeleport;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.GameType;
-import net.minecraft.world.WorldServer;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +20,10 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.List;
 
 @SuppressWarnings({"unused", "NonConstantFieldWithUpperCaseName"}) // Shadow
 @Mixin(value = NetHandlerPlayServer.class, priority = 500) // After sponge
@@ -30,20 +32,14 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
     @Shadow public EntityPlayerMP player;
     @Shadow @Final private MinecraftServer server;
     @Shadow private int networkTickCount;
-    @Shadow private double firstGoodX;
-    @Shadow private double firstGoodY;
-    @Shadow private double firstGoodZ;
     @Shadow private double lastGoodX;
     @Shadow private double lastGoodY;
     @Shadow private double lastGoodZ;
-    @Shadow private int lastPositionUpdate;
     @Shadow private boolean floating;
     @Shadow private Vec3d targetPos;
     @Shadow @Final private static Logger LOGGER;
-    @Shadow private int movePacketCounter;
-    @Shadow private int lastMovePacketCounter;
     @Shadow private int teleportId;
-    private double lastFallY; // Necessary since we captureCurrentPosition every tick
+    @Shadow private double firstGoodY;
 
     @Shadow public void disconnect(final ITextComponent textComponent) {}
 
@@ -54,10 +50,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
     @Shadow public void setPlayerLocation(double x, double y, double z, float yaw, float pitch) {}
 
     /**
-     * @reason Rewrite buggy vanilla method:
-     * - Player is set to correct position rather than reverting on incorrect move packet
-     * - Player's position is not reverted after a teleport, there is no guarantee that the player will ever confirm it
-     * - Players no longer invulnerable until confirming teleport
+     * @reason See https://github.com/DimensionalDevelopment/VanillaFix/wiki/Move-Logic-Rewrite
      * <p>
      * Bugs fixed:
      * - https://bugs.mojang.com/browse/MC-89928
@@ -66,11 +59,10 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
      * - Movements made by server are reverted every second until client confirms teleport
      * - Movement stats get increased with illegal moves
      * - If teleport packet is received with ping > 1s, game is unplayable until player stops moving
-     * - lastGoodX/Y/Z not captured after teleport, resulting in "moved too quickly" spam after the client
-     * accepts a teleport in the same tick.
+     * - lastGoodX/Y/Z not captured after teleport
+     * - Redundant code in processPlayer
+     * - Implement a better anticheat system (don't trust the client about anything)
      * <p>
-     * Improvements:
-     * - Correct position rather than cause jump-backs when player moves wrongly/into a block
      * @author Runemoro
      */
     @Overwrite
@@ -78,194 +70,115 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
     public void processPlayer(CPacketPlayer packet) {
         PacketThreadUtil.checkThreadAndEnqueue(packet, this, player.getServerWorld());
 
+        // Disconnect the player if packet is invalid (doubles are infinite or out of range)
         if (isMovePlayerPacketInvalid(packet)) {
             disconnect(new TextComponentTranslation("multiplayer.disconnect.invalid_player_movement"));
             return;
         }
 
-        // Optimization: Check for queuedEndExit first, get or load the world if necessary only.
-        if (player.queuedEndExit) return;
-
-        WorldServer world = server.getWorld(player.dimension);
-        // TODO: Sponge
-
-        if (networkTickCount == 0) { // TODO: what if end exit was queued?
-            captureCurrentPosition();
-            lastFallY = player.posY;
-        }
-
-        if (targetPos != null) {
-            // Fix: Vanilla did this, but why? It's impossible for a packet to get lost with TCP. If we send
-            // another update packet after just one second, a one-second ping will make the game completely
-            // unplayable after the server updates the player's position, since by the time the client confirms
-            // a position change, the server will have sent it another one, repeatedly causing the player to jump
-            // back until they stop moving for whatever the ping time is.
-
-            if (networkTickCount - lastPositionUpdate > 200) {
-                LOGGER.error("VanillaFix: 10 seconds passed without client confirming teleport!");
-                lastPositionUpdate = networkTickCount;
-
-                // Fix: Vanilla code was: setPlayerLocation(targetPos.x, targetPos.y, targetPos.z,
-                // player.rotationYaw, player.rotationPitch); Why would the server revert movements
-                // after a teleport just because the client didn't confirm it? I'm assuming that they
-                // intended to send another updated move packet:
-                setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
-            }
-
-            // Instead, we will send another packet both here and in processConfirmTeleport if the position the client
-            // was sent is no longer good (exceeds tolerance):
-
-            if (targetPos.squareDistanceTo(player.posX, player.posY, player.posZ) > 1.0D) {
-                setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
-            }
-            // TODO: fall damage
-
-            // Ignore the packet, the client thinks it's still at the old position
+        // Player hasn't confirmed a teleport or respawned after end exit
+        if (targetPos != null || player.queuedEndExit) {
             return;
         }
 
-        lastPositionUpdate = networkTickCount;
+        // In case a move packet is received before first NetHandlerPlayServer.update
+        if (networkTickCount == 0) {
+            captureCurrentPosition();
+        }
 
+        // Read the packet, defaulting to current x/y/z/yaw/pitch
+        double packetX = packet.getX(player.posX);
+        double packetY = packet.getY(player.posY);
+        double packetZ = packet.getZ(player.posZ);
+        float packetYaw = packet.getYaw(player.rotationYaw);
+        float packetPitch = packet.getPitch(player.rotationPitch);
+
+        // If the player is riding an entity, accept yaw/pitch but not position
         if (player.isRiding()) {
-            player.setPositionAndRotation(player.posX, player.posY, player.posZ, packet.getYaw(player.rotationYaw), packet.getPitch(player.rotationPitch));
+            player.setPositionAndRotation(player.posX, player.posY, player.posZ, packetYaw, packetPitch);
             server.getPlayerList().serverUpdateMovingPlayer(player);
-        } else {
-            double prevX = player.posX;
-            double prevY = player.posY;
-            double prevZ = player.posZ;
+            return;
+        }
 
-            double packetX = packet.getX(player.posX);
-            double packetY = packet.getY(player.posY);
-            double packetZ = packet.getZ(player.posZ);
-            float packetYaw = packet.getYaw(player.rotationYaw);
-            float packetPitch = packet.getPitch(player.rotationPitch);
+        double xDiff = packetX - player.posX;
+        double yDiff = packetY - player.posY;
+        double zDiff = packetZ - player.posZ;
+        double diffSq = xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
 
-            // Calculate difference from last tick
-            double xDiff = packetX - firstGoodX;
-            double yDiff = packetY - firstGoodY;
-            double zDiff = packetZ - firstGoodZ;
-            double distanceSq = xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
+        // Move packet received while sleeping, client somehow forgot it was sleeping or client missed
+        // wake up packet.
+        if (player.isPlayerSleeping()) {
+            if (diffSq > 1) return;
+            LOGGER.warn("{} tried to move while sleeping! {}, {}, {}", player.getName(), xDiff, yDiff, zDiff);
+            player.wakeUpPlayer(false, true, true);
+            return;
+        }
 
-            double motionSq = player.motionX * player.motionX + player.motionY * player.motionY + player.motionZ * player.motionZ;
+        // Noclip/spectator players can move around freely in the world
+        if (player.noClip || player.interactionManager.getGameType() == GameType.SPECTATOR) {
+            player.setPositionAndRotation(packetX, packetY, packetZ, packetYaw, packetPitch);
+            server.getPlayerList().serverUpdateMovingPlayer(player);
+            return;
+        }
 
-            if (player.isPlayerSleeping()) {
-                if (distanceSq > 1.0D) {
-                    // The player tried to move while sleeping. Send the player the correct position.
-                    setPlayerLocation(player.posX, player.posY, player.posZ, packet.getYaw(player.rotationYaw), packet.getPitch(player.rotationPitch));
-                }
-            } else {
-                movePacketCounter++;
-                int packetCount = movePacketCounter - lastMovePacketCounter;
+        // Handle jump
+        player.onGround = !player.world.getCollisionBoxes(player, player.getEntityBoundingBox().expand(0, -0.05, 0)).isEmpty();
+        if (player.onGround && !packet.isOnGround() && yDiff > 0.0D) {
+            player.jump();
+        }
 
-                if (packetCount > 5) {
-                    LOGGER.debug("{} is sending move packets too frequently ({} packets since last tick)", player.getName(), packetCount);
-                    packetCount = 1;
-                }
+        // TODO: Check that velocity, max speed, and gravity are respected
 
-                // Fix: Disable isInvulnerableDimensionChange, not necessary if we don't revert position after teleport anymore
-                if (/*!player.isInvulnerableDimensionChange() && */!(player.getServerWorld().getGameRules().getBoolean("disableElytraMovementCheck") && player.isElytraFlying())) {
-                    // Not really anti-cheat. Max speed would be 447 blocks/second with 5 packets/tick... Also, shouldn't
-                    // distance increase linearly with the packet count rather than proportional to sqrt(packetCount)?
-                    float maxDistanceSqPerPacket = player.isElytraFlying() ? 300.0F : 100.0F;
+        // Store info about the old position
+        double prevX = player.posX;
+        double prevY = player.posY;
+        double prevZ = player.posZ;
+        List<AxisAlignedBB> oldCollisonBoxes = player.world.getCollisionBoxes(player, player.getEntityBoundingBox().shrink(0.0625D));
 
-                    if (distanceSq - motionSq > maxDistanceSqPerPacket * packetCount/* && !(server.isSinglePlayer() && server.getServerOwner().equals(player.getName()))*/) { // TODO: Single-player server owner check disabled for testing
-                        LOGGER.warn("{} moved too quickly! {},{},{}", player.getName(), xDiff, yDiff, zDiff);
-                        setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
-                        return;
-                    }
-                }
+        // Move the player towards the position they want
+        player.move(MoverType.PLAYER, packetX - player.posX, packetY - player.posY, packetZ - player.posZ); // TODO: noclip, spectator
 
-                boolean wasInsideBlock = !world.getCollisionBoxes(player, player.getEntityBoundingBox().shrink(0.0625D)).isEmpty();
+        // Move caused a teleport, capture new position, and stop processing packet
+        if (targetPos != null) {
+            // TODO: Fall distance, movement stats
+            captureCurrentPosition();
+            server.getPlayerList().serverUpdateMovingPlayer(player);
+            return;
+        }
 
-                // Calculate difference from last packet
-                xDiff = packetX - lastGoodX;
-                yDiff = packetY - lastGoodY;
-                zDiff = packetZ - lastGoodZ;
+        xDiff = packetX - player.posX;
+        yDiff = packetY - player.posY;
+        zDiff = packetZ - player.posZ;
+        diffSq = xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
 
-                if (player.onGround && !packet.isOnGround() && yDiff > 0.0D) {
-                    player.jump();
-                }
-
-                // Move the player towards the desired position, but not passing through solid
-                // blocks, past block edges while sneaking, or climbing stairs that are too tall.
-                // TODO: Players could cheat to avoid collisions with non-solid blocks (end portal), fix this.
-                player.move(MoverType.PLAYER, xDiff, yDiff, zDiff);
-                player.onGround = packet.isOnGround();
-
-                // Fix: If a collision teleported the player, just sync the client without checking that the move was legal.
-                // Entity.move already made sure that the player didn't cheat, and reverting the move would be wrong because
-                // the prevX/Y/Z is no longer good in the new dimension. This fixes MC-123364.
-                if (player.isInvulnerableDimensionChange()) { // TODO: get rid of this entierly...
-                    // A better name for invulnerableDimensionChange would be "lastBlockCollisionCausedPlayerMove". See
-                    // https://github.com/ModCoderPack/MCPBot-Issues/issues/624. This happens when the move caused a
-                    // collision that teleported the player elsewhere.
-
-                    // Fix: Immediately set the correct position after a teleport and, rather than reverting it and waiting
-                    // for the player to confirm the teleport (which they might never do). This fixes MC-98153.
-                    setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
-
-                    // Fix: Disable invulnerability after teleport, this could be abused by players, allowing them to stay
-                    // invulnerable but unable to move after a teleport.
-                    player.clearInvulnerableDimensionChange();
-
-                    // Fix: In processConfirmTeleport (which we moved here, since we're doing the move immediately), only
-                    // lastGoodX/Y/Z are set to the current position, but firstGoodX/Y/Z should be updated too (this can
-                    // be done using captureCurrentPosition). Otherwise, this would result in "moved wrongly" messages if
-                    // the client both accepts the teleport and starts sending move packets that are correct within the same tick.
-                    captureCurrentPosition();
-                    lastFallY = player.posY;
-                } else {
-                    // Calculate difference from position accepted by Entity.move
-                    xDiff = packetX - player.posX;
-                    yDiff = packetY - player.posY;
-                    zDiff = packetZ - player.posZ;
-
-                    double yDiffA = yDiff > -0.5D || yDiff < 0.5D ? 0.0D : yDiff;
-                    distanceSq = xDiff * xDiff + yDiffA * yDiffA + zDiff * zDiff;
-                    boolean movedWrongly = false;
-                    // Optimization: Remove !player.isPlayerSleeping() check, that was already checked
-                    if (distanceSq > 0.0625D /*&& !player.isPlayerSleeping()*/ && !player.interactionManager.isCreative() && player.interactionManager.getGameType() != GameType.SPECTATOR) {
-                        movedWrongly = true;
-                        LOGGER.warn("{} moved wrongly!", player.getName());
-                    }
-
-                    boolean wouldMoveInsideBlock = !world.getCollisionBoxes(player, player.getEntityBoundingBox().offset(xDiff, yDiff, zDiff).shrink(0.0625D)).isEmpty();
-                    if (!movedWrongly && !wouldMoveInsideBlock || wasInsideBlock || player.noClip) {
-                        // If the position the player wanted is close enough to what Entity.move calculated
-                        // and not inside a block, or the player was noclipping (either because player.noClip
-                        // was true or they were inside a block), use the client's position instead
-                        player.setPositionAndRotation(packetX, packetY, packetZ, packetYaw, packetPitch);
-                    } else {
-                        // Improvement: Instead of reverting the move to prevX/Y/Z, accept the corrected move, since the
-                        // Entity.move method made sure that it was legal. This has the advantage of just correcting the
-                        // position rather than causing jump-backs and is safer against in case a block collision forgets
-                        // to set invulnerableDimensionChange after a teleport (only causes a log message and some extra
-                        // unnecessary checks).
-                        setPlayerLocation(player.posX, player.posY, player.posZ, packetYaw, packetPitch);
-                        return;
-                    }
-                    // Fix: Update movement stats to the corrected position rather than the position the client wanted.
-                    // This prevents illegal, cancelled (vanilla) or corrected (with improvement above), moves from updating
-                    // stats.
-                    player.addMovementStat(player.posX - prevX, player.posY - prevY, player.posZ - prevZ);
-
-                    // TODO: Fix this properly. Fall state should be updated BEFORE the block collision, as collision logic may depend on that!
-                    // Fix: Don't do this after a collision teleports the player.
-                    floating = yDiff >= -0.03125D;
-                    floating &= !server.isFlightAllowed() && !player.capabilities.allowFlying;
-                    floating &= !player.isPotionActive(MobEffects.LEVITATION) && !player.isElytraFlying() && !world.checkBlockCollision(player.getEntityBoundingBox().grow(0.0625D).expand(0.0D, -0.55D, 0.0D));
-                    player.onGround = packet.isOnGround(); // TODO: why are trust the packet?!
-                    server.getPlayerList().serverUpdateMovingPlayer(player);
-                    // TODO: possible vanilla bug: if the player doesn't send move packets, they don't receive fall damage?
-                    player.handleFalling(player.posY - lastFallY, packet.isOnGround());
-                    lastFallY = player.posY;
-                }
-
-                lastGoodX = player.posX;
-                lastGoodY = player.posY;
-                lastGoodZ = player.posZ;
+        // The player should be allowed to move out of blocks, but not into blocks other than the
+        // ones they're currently in.
+        List<AxisAlignedBB> newCollisonBoxes = player.world.getCollisionBoxes(player, player.getEntityBoundingBox().offset(xDiff, yDiff, zDiff).shrink(0.0625D));
+        boolean movedIntoBlock = false;
+        for (AxisAlignedBB collisionBox : newCollisonBoxes) {
+            if (!oldCollisonBoxes.contains(collisionBox)) {
+                movedIntoBlock = true;
+                break;
             }
         }
+
+        // Accept the packet's position if it's close enough (0.25 blocks) and not in a new block
+        if (diffSq <= 0.0625D && !movedIntoBlock) {
+            player.setPositionAndRotation(packetX, packetY, packetZ, packetYaw, packetPitch);
+        } else {
+            LOGGER.warn("{} moved wrongly!", player.getName());
+            setPlayerLocation(player.posX, player.posY, player.posZ, packetYaw, packetPitch);
+        }
+
+        // Add movement stats
+        player.addMovementStat(player.posX - prevX, player.posY - prevY, player.posZ - prevZ);
+
+        player.onGround = !player.world.getCollisionBoxes(player, player.getEntityBoundingBox().expand(0, -0.05, 0)).isEmpty();
+        server.getPlayerList().serverUpdateMovingPlayer(player);
+
+        lastGoodX = player.posX;
+        lastGoodY = player.posY;
+        lastGoodZ = player.posZ;
     }
 
     /**
@@ -281,12 +194,8 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
         PacketThreadUtil.checkThreadAndEnqueue(packet, this, player.getServerWorld());
 
         if (packet.getTeleportId() == teleportId) {
-            if (targetPos.squareDistanceTo(player.posX, player.posY, player.posZ) > 1.0D) {
-                // The client accepted the position change, but it's too late, something moved the player. Sync it again.
-                setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
-            } else {
-                targetPos = null;
-            }
+            targetPos = null;
+            player.clearInvulnerableDimensionChange(); // Allow portal timer to decrease
         }
     }
 
@@ -299,7 +208,20 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
      * - https://bugs.mojang.com/browse/MC-98153
      */
     @Inject(method = "update", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/entity/player/EntityPlayerMP;onUpdateEntity()V", ordinal = 0))
-    public void savePositionAfterUpdate(CallbackInfo ci) {
+    public void afterUpdateEntity(CallbackInfo ci) {
+        captureCurrentPosition();
+    }
+
+    /**
+     * Anti-cheat: Calculate fall damage even if not receiving move packets from the client.
+     * Otherwise, the client could disconnect without sending move packets to avoid fall damage.
+     */
+    @Redirect(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetHandlerPlayServer;captureCurrentPosition()V", ordinal = 0))
+    public void beforeUpdateEntity(NetHandlerPlayServer handler) {
+        player.onGround = !player.world.getCollisionBoxes(player, player.getEntityBoundingBox().expand(0, -0.05, 0)).isEmpty();
+        if (player.posY - firstGoodY < 0) {
+            player.handleFalling(player.posY - firstGoodY, player.onGround);
+        }
         captureCurrentPosition();
     }
 }

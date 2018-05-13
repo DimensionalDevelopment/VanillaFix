@@ -8,7 +8,8 @@
     "MixinNetHandlerPlayServer",
     "MixinUtil",
     "MixinCrashReport",
-    "MixinEnchantmentHelper"
+    "MixinEnchantmentHelper",
+    "MixinEntityPlayerMP"
   ],
   "client": [
     "client.MixinMinecraft",
