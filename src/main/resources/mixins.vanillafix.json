@@ -17,6 +17,7 @@
     "client.MixinNetHandlerPlayClient",
     "client.MixinEntityPlayerSP",
     "client.MixinIntegratedServer",
-    "client.MixinRenderGlobal"
+    "client.MixinRenderGlobal",
+    "client.MixinTextureMap"
   ]
 }
