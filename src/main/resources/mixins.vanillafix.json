@@ -9,12 +9,14 @@
     "MixinUtil",
     "MixinCrashReport",
     "MixinEnchantmentHelper",
-    "MixinEntityPlayerMP"
+    "MixinEntityPlayerMP",
+    "MixinWorld"
   ],
   "client": [
     "client.MixinMinecraft",
     "client.MixinNetHandlerPlayClient",
     "client.MixinEntityPlayerSP",
-    "client.MixinIntegratedServer"
+    "client.MixinIntegratedServer",
+    "client.MixinRenderGlobal"
   ]
 }

@@ -8,10 +8,12 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.init.Bootstrap;
 import net.minecraft.profiler.ISnooperInfo;
+import net.minecraft.profiler.Profiler;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.MinecraftError;
@@ -54,6 +56,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow private boolean actionKeyF3;
     @Shadow @Nullable private IntegratedServer integratedServer;
     @Shadow private boolean integratedServerIsRunning;
+    @Shadow @Final public Profiler mcProfiler;
 
     @Shadow private void init() throws LWJGLException, IOException {}
     @Shadow private void runGameLoop() throws IOException {}
@@ -283,5 +286,18 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Override
     public boolean isCrashIntegratedServerNextTick() {
         return crashIntegratedServerNextTick;
+    }
+
+    // Fix GUI logic being included as part of "root.tick.textures" (https://bugs.mojang.com/browse/MC-129556)
+    @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", ordinal = 0))
+    public void endStartSectionTextures(Profiler profiler, String name) {
+        profiler.endStartSection("gui");
+    }
+
+    @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureManager;tick()V", ordinal = 0))
+    public void textureManagerTick(TextureManager textureManager) {
+        mcProfiler.endStartSection("textures");
+        textureManager.tick();
+        mcProfiler.endStartSection("gui");
     }
 }
