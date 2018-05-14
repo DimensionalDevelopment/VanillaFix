@@ -4,6 +4,9 @@
   "target": "@env(DEFAULT)",
   "minVersion": "0.6",
   "compatibilityLevel": "JAVA_8",
+  "injectors": {
+    "maxShiftBy": 10
+  },
   "mixins": [
     "MixinNetHandlerPlayServer",
     "MixinUtil",
@@ -18,6 +21,9 @@
     "client.MixinEntityPlayerSP",
     "client.MixinIntegratedServer",
     "client.MixinRenderGlobal",
-    "client.MixinTextureMap"
+    "client.MixinTextureMap",
+    "client.MixinRenderChunk",
+    "client.MixinCompiledChunk",
+    "client.MixinBlockModelRenderer"
   ]
 }

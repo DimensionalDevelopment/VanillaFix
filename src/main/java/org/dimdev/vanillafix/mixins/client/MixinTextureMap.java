@@ -1,18 +1,39 @@
 package org.dimdev.vanillafix.mixins.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import org.dimdev.vanillafix.IPatchedCompiledChunk;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Shadow;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Mixin(TextureMap.class)
-public class MixinTextureMap {
-    @Redirect(method = "updateAnimations", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;updateAnimation()V"))
-    public void updateAnimations(TextureAtlasSprite textureAtlasSprite) {
-        Minecraft.getMinecraft().mcProfiler.startSection(textureAtlasSprite.getIconName());
-        textureAtlasSprite.updateAnimation();
-        Minecraft.getMinecraft().mcProfiler.endSection();
+public abstract class MixinTextureMap extends AbstractTexture {
+    @Shadow @Final private List<TextureAtlasSprite> listAnimatedSprites;
+
+    @Overwrite
+    public void updateAnimations() {
+        GlStateManager.bindTexture(getGlTextureId());
+        Set<TextureAtlasSprite> visibleTextures = new HashSet<>();
+        for (RenderGlobal.ContainerLocalRenderInformation renderInfo : Minecraft.getMinecraft().renderGlobal.renderInfos) {
+            visibleTextures.addAll(((IPatchedCompiledChunk) renderInfo.renderChunk.compiledChunk).getVisibleTextures());
+        }
+
+        for (TextureAtlasSprite texture : listAnimatedSprites) {
+            if (visibleTextures.contains(texture)) {
+                Minecraft.getMinecraft().mcProfiler.startSection(texture.getIconName());
+                texture.updateAnimation();
+                Minecraft.getMinecraft().mcProfiler.endSection();
+            }
+        }
     }
 }
