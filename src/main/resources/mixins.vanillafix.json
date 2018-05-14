@@ -24,6 +24,7 @@
     "client.MixinTextureMap",
     "client.MixinRenderChunk",
     "client.MixinCompiledChunk",
-    "client.MixinBlockModelRenderer"
+    "client.MixinBlockModelRenderer",
+    "client.MixinBlockFluidRenderer"
   ]
 }

@@ -30,37 +30,4 @@ public class MixinBlockModelRenderer {
             }
         }
     }
-
-    /*
-    @Inject(method = "renderQuadsSmooth", at = @At("HEAD"))
-    private void beforeRenderQuadsSmooth(
-            IBlockAccess blockAccess,
-            IBlockState state,
-            BlockPos pos,
-            BufferBuilder buffer,
-            List<BakedQuad> quads,
-            float[] quadBounds,
-            BitSet bitSet,
-            BlockModelRenderer.AmbientOcclusionFace aoFace,
-            CallbackInfo ci) {
-        for (BakedQuad quad : quads) {
-            ((IPatchedCompiledChunk) TemporaryStorage.currentCompiledChunk.get(Thread.currentThread().getId())).getVisibleTextures().add(quad.getSprite());
-        }
-    }
-
-    @Inject(method = "renderQuadsFlat", at = @At("HEAD"))
-    private void beforeRenderQuadsFlat(
-            IBlockAccess blockAccess,
-            IBlockState state,
-            BlockPos posIn,
-            int brightness,
-            boolean ownBrightness,
-            BufferBuilder buffer,
-            List<BakedQuad> quads,
-            BitSet bitSet,
-            CallbackInfo ci) {
-        for (BakedQuad quad : quads) {
-            ((IPatchedCompiledChunk) TemporaryStorage.currentCompiledChunk.get(Thread.currentThread().getId())).getVisibleTextures().add(quad.getSprite());
-        }
-    }*/
 }
