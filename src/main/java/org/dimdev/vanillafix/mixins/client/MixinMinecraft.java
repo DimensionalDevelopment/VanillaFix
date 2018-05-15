@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.init.Bootstrap;
 import net.minecraft.profiler.ISnooperInfo;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -19,7 +18,9 @@ import net.minecraft.util.IThreadListener;
 import net.minecraft.util.MinecraftError;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.Logger;
+import org.dimdev.vanillafix.CrashUtils;
 import org.dimdev.vanillafix.GuiCrashScreen;
 import org.dimdev.vanillafix.IPatchedMinecraft;
 import org.lwjgl.LWJGLException;
@@ -29,10 +30,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import javax.annotation.Nullable;
-import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Queue;
 import java.util.concurrent.FutureTask;
 
@@ -63,7 +61,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public void displayGuiScreen(@Nullable GuiScreen guiScreenIn) {}
     @Shadow public CrashReport addGraphicsAndWorldToCrashReport(CrashReport theCrash) { return null; }
     @Shadow public void shutdownMinecraftApplet() {}
-    @Shadow public void displayCrashReport(CrashReport crashReportIn) {}
     @Shadow public abstract void loadWorld(@Nullable WorldClient worldClientIn);
     @Shadow @Nullable public abstract NetHandlerPlayClient getConnection();
     @Shadow public static long getSystemTime() { return 0; }
@@ -140,28 +137,9 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             displayCrashReport(report);
             return;
         }
-
         currentReport = report;
 
-        File crashReportsDir = new File(Minecraft.getMinecraft().mcDataDir, "crash-reports");
-        File crashReportSaveFile = new File(crashReportsDir, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-client.txt");
-
-        // Print the report in bootstrap
-        Bootstrap.printToSYSOUT(report.getCompleteReport());
-
-        // Save the report and print file in bootstrap
-        File reportFile = null;
-        if (report.getFile() != null) {
-            reportFile = report.getFile();
-        } else if (report.saveToFile(crashReportSaveFile)) {
-            reportFile = crashReportSaveFile;
-        }
-
-        if (reportFile != null) {
-            Bootstrap.printToSYSOUT("Recoverable game crash! Crash report saved to: " + reportFile);
-        } else {
-            Bootstrap.printToSYSOUT("Recoverable game crash! Crash report could not be saved.");
-        }
+        CrashUtils.outputReport(report);
 
         // Reset hasCrashed, debugCrashKeyPressTime, and crashIntegratedServerNextTick
         hasCrashed = false;
@@ -169,12 +147,18 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         crashIntegratedServerNextTick = false;
 
         // Display the crash screen
-        displayGuiScreen(new GuiCrashScreen(reportFile, report, false));
+        displayGuiScreen(new GuiCrashScreen(report, false));
 
         // Vanilla does this when switching to main menu but not our custom crash screen
         // nor the out of memory screen (see https://bugs.mojang.com/browse/MC-128953)
         gameSettings.showDebugInfo = false;
         ingameGUI.getChatGUI().clearChatMessages(true);
+    }
+
+    @Overwrite
+    public void displayCrashReport(CrashReport report) {
+        CrashUtils.outputReport(report);
+        FMLCommonHandler.instance().handleExit(report.getFile() != null ? -1 : -2);
     }
 
     /**

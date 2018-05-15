@@ -1,0 +1,56 @@
+package org.dimdev.vanillafix;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.crash.CrashReport;
+import net.minecraft.util.ReportedException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public final class CrashUtils {
+    private static Logger log = LogManager.getLogger("VF");
+
+    public static void crash(CrashReport report) {
+        throw new ReportedException(report);
+    }
+
+    public static void warn(CrashReport report) {
+        if (isClient()) {
+            // TODO: what if there's several exceptions in a row?
+            outputReport(report);
+            Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().displayGuiScreen(new GuiCrashScreen(report, true)));
+        } else {
+            log.fatal(report.getDescription(), report.getCrashCause());
+        }
+    }
+
+    public static void outputReport(CrashReport report) {
+        try {
+            if (report.getFile() == null) {
+                File reportsDir = isClient() ? new File(Minecraft.getMinecraft().mcDataDir, "crash-reports") : new File("crash-reports");
+
+                File reportFile = new File(reportsDir, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) +
+                                                       (Minecraft.getMinecraft().isCallingFromMinecraftThread() ? "-client" : "-server") +
+                                                       ".txt");
+                report.saveToFile(reportFile);
+            }
+        } catch (Throwable e) {
+            log.fatal("Failed saving report", e);
+        }
+
+        log.fatal("Minecraft ran into a problem! " + (report.getFile() != null ? "Report saved to: " + report.getFile() : "Crash report could not be saved."));
+        log.fatal("\n\n" + report.getCompleteReport());
+    }
+
+    private static boolean isClient() {
+        try {
+            Class.forName("net.minecraft.client.Minecraft");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+}

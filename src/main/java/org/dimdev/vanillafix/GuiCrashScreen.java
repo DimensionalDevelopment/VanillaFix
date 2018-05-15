@@ -25,14 +25,12 @@ public class GuiCrashScreen extends GuiScreen {
     private static final Logger log = LogManager.getLogger();
     private static boolean patchedSSL = false;
 
-    private File reportFile;
     private final CrashReport report;
     private final boolean isWarning;
     private String hasteLink = null;
     private String modListString;
 
-    public GuiCrashScreen(File reportFile, CrashReport report, boolean isWarning) { // TODO: split warnscreen and crashscreen, with common superclass
-        this.reportFile = reportFile;
+    public GuiCrashScreen(CrashReport report, boolean isWarning) { // TODO: split warnscreen and crashscreen, with common superclass
         this.report = report;
         this.isWarning = isWarning;
     }
@@ -113,7 +111,7 @@ public class GuiCrashScreen extends GuiScreen {
         drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph2.line1"), x, y += 11, textColor);
         drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph2.line2"), x, y += 9, textColor);
 
-        drawCenteredString(fontRenderer, reportFile != null ? "\u00A7n" + reportFile.getName() : I18n.format("vanillafix.crashscreen.reportSaveFailed"), width / 2, y += 11, 0x00FF00);
+        drawCenteredString(fontRenderer, report.getFile() != null ? "\u00A7n" + report.getFile().getName() : I18n.format("vanillafix.crashscreen.reportSaveFailed"), width / 2, y += 11, 0x00FF00);
 
 
         if (!isWarning) {

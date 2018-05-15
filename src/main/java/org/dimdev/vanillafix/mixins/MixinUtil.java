@@ -2,19 +2,16 @@ package org.dimdev.vanillafix.mixins;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.init.Bootstrap;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.Logger;
+import org.dimdev.vanillafix.CrashUtils;
 import org.dimdev.vanillafix.GuiCrashScreen;
 import org.dimdev.vanillafix.ModConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
@@ -27,52 +24,20 @@ public final class MixinUtil {
         try {
             return task.get();
         } catch (InterruptedException | ExecutionException e) {
-            final ModConfig.ProblemAction action = isClient() || ModConfig.crashes.scheduledTaskAction != ModConfig.ProblemAction.WARNING_SCREEN ?
-                    ModConfig.crashes.scheduledTaskAction : ModConfig.ProblemAction.LOG;
+            ModConfig.ProblemAction action = ModConfig.crashes.scheduledTaskAction;
 
-            if (action == ModConfig.ProblemAction.WARNING_SCREEN) {
-                // TODO: what if there's several exceptions in a row?
-                CrashReport report = new CrashReport("Error executing task", e);
-                File crashReportsDir = new File(Minecraft.getMinecraft().mcDataDir, "crash-reports");
-                File crashReportSaveFile = new File(crashReportsDir, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) +
-                                                                     (Minecraft.getMinecraft().isCallingFromMinecraftThread() ? "-client" : "-server") +
-                                                                     ".txt");
-
-                // Print the report in bootstrap
-                Bootstrap.printToSYSOUT(report.getCompleteReport());
-
-                // Save the report and print file in bootstrap
-                final File reportFile;
-                if (report.getFile() != null) {
-                    reportFile = report.getFile();
-                } else if (report.saveToFile(crashReportSaveFile)) {
-                    reportFile = crashReportSaveFile;
-                } else {
-                    reportFile = null;
-                }
-
-                if (reportFile != null) {
-                    Bootstrap.printToSYSOUT("Scheduled task threw an exception! Crash report saved to: " + reportFile);
-                } else {
-                    Bootstrap.printToSYSOUT("Scheduled task threw an exception! Crash report could not be saved.");
-                }
-
-                Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().displayGuiScreen(new GuiCrashScreen(reportFile, report, true)));
-            } else if (action == ModConfig.ProblemAction.LOG) {
-                throw new ReportedException(new CrashReport("Error executing task", e));
-            } else {
-                logger.fatal("Error executing task", e);
+            switch (action) {
+                case CRASH:
+                    CrashUtils.crash(new CrashReport("Error executing task", e));
+                    break;
+                case WARNING_SCREEN:
+                    CrashUtils.warn(new CrashReport("Error executing task", e));
+                    break;
+                case LOG:
+                    logger.fatal("Error executing task", e);
+                    break;
             }
             return null;
-        }
-    }
-
-    private static boolean isClient() {
-        try {
-            Class.forName("net.minecraft.client.Minecraft");
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
         }
     }
 }
