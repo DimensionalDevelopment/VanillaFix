@@ -44,8 +44,8 @@ public final class CrashUtils {
             log.fatal("Failed saving report", e);
         }
 
-        log.fatal("Minecraft ran into a problem! " + (report.getFile() != null ? "Report saved to: " + report.getFile() : "Crash report could not be saved."));
-        log.fatal("\n\n" + report.getCompleteReport());
+        log.fatal("Minecraft ran into a problem! " + (report.getFile() != null ? "Report saved to: " + report.getFile() : "Crash report could not be saved.")
+                + "\n" + report.getCompleteReport());
     }
 
     private static boolean isClient() {

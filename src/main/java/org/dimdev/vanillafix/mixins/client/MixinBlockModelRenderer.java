@@ -28,9 +28,15 @@ public class MixinBlockModelRenderer {
     private void beforeRenderModel(IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, BufferBuilder buffer, boolean checkSides, long rand, CallbackInfoReturnable<Boolean> ci) {
         Set<TextureAtlasSprite> visibleTextures = ((IPatchedCompiledChunk) TemporaryStorage.currentCompiledChunk.get(Thread.currentThread().getId())).getVisibleTextures();
         for (EnumFacing side : EnumFacing.values()) {
-            for (BakedQuad quad : model.getQuads(state, side, rand)) {
-                visibleTextures.add(quad.getSprite());
+            if (!checkSides || state.shouldSideBeRendered(world, pos, side)) {
+                for (BakedQuad quad : model.getQuads(state, side, rand)) {
+                    visibleTextures.add(quad.getSprite());
+                }
             }
+        }
+
+        for (BakedQuad quad : model.getQuads(state, null, rand)) {
+            visibleTextures.add(quad.getSprite());
         }
     }
 }

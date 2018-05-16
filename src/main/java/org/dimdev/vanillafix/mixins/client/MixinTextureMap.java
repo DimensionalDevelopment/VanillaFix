@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import org.dimdev.vanillafix.IPatchedCompiledChunk;
+import org.dimdev.vanillafix.TemporaryStorage;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -29,12 +30,17 @@ public abstract class MixinTextureMap extends AbstractTexture {
      */
     @Overwrite
     public void updateAnimations() {
-        GlStateManager.bindTexture(getGlTextureId());
+        // TODO: this can be optimized by updating the visible texture list on each chunk update
+        Minecraft.getMinecraft().mcProfiler.startSection("determineVisibleTextures");
         Set<TextureAtlasSprite> visibleTextures = new HashSet<>();
         for (RenderGlobal.ContainerLocalRenderInformation renderInfo : Minecraft.getMinecraft().renderGlobal.renderInfos) {
             visibleTextures.addAll(((IPatchedCompiledChunk) renderInfo.renderChunk.compiledChunk).getVisibleTextures());
         }
+        visibleTextures.addAll(TemporaryStorage.texturesUsed);
+        TemporaryStorage.texturesUsed.clear();
+        Minecraft.getMinecraft().mcProfiler.endSection();
 
+        GlStateManager.bindTexture(getGlTextureId());
         for (TextureAtlasSprite texture : listAnimatedSprites) {
             // loop through list since HashSet.contains is fast (O(1)) but not ArrayList.contains
             if (visibleTextures.contains(texture)) {

@@ -22,7 +22,9 @@
     "client.MixinRenderChunk",
     "client.MixinCompiledChunk",
     "client.MixinBlockModelRenderer",
-    "client.MixinBlockFluidRenderer"
+    "client.MixinBlockFluidRenderer",
+    "client.MixinRenderItem",
+    "client.MixinItemRenderer"
   ],
   "injectors": {
     "maxShiftBy": 10
