@@ -14,13 +14,16 @@ import org.dimdev.vanillafix.TemporaryStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Set;
 
 @Mixin(BlockModelRenderer.class)
 public class MixinBlockModelRenderer {
+    /**
+     * @reason Adds the textures used to render this block to the set of textures in
+     * the CompiledChunk.
+     */
     @Inject(method = "renderModel(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;ZJ)Z", at = @At("HEAD"))
     private void beforeRenderModel(IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, BufferBuilder buffer, boolean checkSides, long rand, CallbackInfoReturnable<Boolean> ci) {
         Set<TextureAtlasSprite> visibleTextures = ((IPatchedCompiledChunk) TemporaryStorage.currentCompiledChunk.get(Thread.currentThread().getId())).getVisibleTextures();

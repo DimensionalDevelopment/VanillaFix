@@ -50,8 +50,8 @@ public final class ModIdentifier { // TODO: non-forge mods too
             return new HashSet<>();
         }
         String str = url.getFile();
-        if (str.startsWith("file:/")) str = str.substring(str.indexOf("/") + 1); // jar:file:/
-        if (str.contains("!")) str = str.substring(0, str.indexOf("!"));
+        if (str.startsWith("file:/")) str = str.substring(str.indexOf('/') + 1); // jar:file:/
+        if (str.contains("!")) str = str.substring(0, str.indexOf('!'));
         return modMap.get(new File(str));
     }
 
@@ -66,7 +66,9 @@ public final class ModIdentifier { // TODO: non-forge mods too
         try {
             modMap.remove(Loader.instance().getMinecraftModContainer().getSource()); // Ignore minecraft jar (minecraft)
             modMap.remove(Loader.instance().getIndexedModList().get("FML").getSource()); // Ignore forge jar (FML, forge)
-        } catch (NullPointerException ignored) {}
+        } catch (NullPointerException ignored) {
+            // Workaround for https://github.com/MinecraftForge/MinecraftForge/issues/4919
+        }
 
         return modMap;
     }

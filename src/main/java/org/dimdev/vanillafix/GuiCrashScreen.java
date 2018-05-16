@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import org.dimdev.utils.HasteUpload;
 import org.dimdev.utils.SSLUtils;
 
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,7 +129,7 @@ public class GuiCrashScreen extends GuiScreen {
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
-    public String getModListString() {
+    private String getModListString() {
         if (modListString == null) {
             final Set<ModContainer> suspectedMods = ((IPatchedCrashReport) report).getSuspectedMods();
             if (suspectedMods == null) {

@@ -12,8 +12,12 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(RenderChunk.class)
 public class MixinRenderChunk {
+    /**
+     * @reason Store the chunk currently being rebuild in TemporaryStorage.currentCompiledChunk
+     * by thread ID (there are multiple chunk renderer threads working at once).
+     */
     @Inject(method = "rebuildChunk", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/chunk/CompiledChunk;<init>()V", ordinal = 0, shift = At.Shift.BY, by = 2), locals = LocalCapture.CAPTURE_FAILHARD)
-    public void initCompiledChunk(float x, float y, float z, ChunkCompileTaskGenerator generator, CallbackInfo ci, CompiledChunk compiledChunk) {
+    private void initCompiledChunk(float x, float y, float z, ChunkCompileTaskGenerator generator, CallbackInfo ci, CompiledChunk compiledChunk) {
         TemporaryStorage.currentCompiledChunk.put(Thread.currentThread().getId(), compiledChunk);
     }
 }

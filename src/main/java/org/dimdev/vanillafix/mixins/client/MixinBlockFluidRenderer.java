@@ -18,9 +18,14 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(BlockFluidRenderer.class)
 public class MixinBlockFluidRenderer {
+    /**
+     * @reason Adds liquid textures to the set of visible textures in the compiled chunk. Note
+     * that this is necessary only for liquid textures, since Forge liquids are rendered by the
+     * normal block rendering code.
+     */
     @Inject(method = "renderFluid", at = @At(value = "CONSTANT", args = "floatValue=0.001", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
-    public void afterTextureDetermined(
-            IBlockAccess blockAccess, IBlockState blockStateIn, BlockPos blockPosIn, BufferBuilder bufferBuilderIn, CallbackInfoReturnable<Boolean> cir,
+    private void afterTextureDetermined( // TODO: Is there a way to capture only part of the LVT with Mixin?
+            IBlockAccess blockAccess, IBlockState blockState, BlockPos pos, BufferBuilder bufferBuilder, CallbackInfoReturnable<Boolean> cir,
             BlockLiquid blockliquid, boolean flag, TextureAtlasSprite[] atextureatlassprite, int i, float f, float f1, float f2, boolean flag1,
             boolean flag2, boolean[] aboolean, boolean flag3, float f3, float f4, float f5, float f6, Material material, float f7, float f8, float f9,
             float f10, double d0, double d1, double d2, float f11, float f12, TextureAtlasSprite texture) {

@@ -34,9 +34,8 @@ import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.FutureTask;
 
-@SuppressWarnings({"unused", "NonConstantFieldWithUpperCaseName", "RedundantThrows"}) // Shadow
 @Mixin(Minecraft.class)
-@Implements(@Interface(iface = IPatchedMinecraft.class, prefix = "minecraft$"))
+@SuppressWarnings("RedundantThrows") // Shadow
 public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, IPatchedMinecraft {
 
     @Shadow @Final private static Logger LOGGER;
@@ -61,9 +60,9 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public void displayGuiScreen(@Nullable GuiScreen guiScreenIn) {}
     @Shadow public CrashReport addGraphicsAndWorldToCrashReport(CrashReport theCrash) { return null; }
     @Shadow public void shutdownMinecraftApplet() {}
-    @Shadow public abstract void loadWorld(@Nullable WorldClient worldClientIn);
     @Shadow @Nullable public abstract NetHandlerPlayClient getConnection();
     @Shadow public static long getSystemTime() { return 0; }
+    @Shadow public abstract void loadWorld(@Nullable WorldClient worldClientIn);
 
     private CrashReport currentReport = null;
     private boolean crashIntegratedServerNextTick;
@@ -71,7 +70,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     private int serverCrashCount = 0;
 
     /**
-     * @author Runemoro
      * @reason Allows the player to choose to return to the title screen after a crash, or get
      * a pasteable link to the crash report on paste.dimdev.org.
      */
@@ -162,7 +160,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     }
 
     /**
-     * @author Runemoro
      * @reason Disconnect from the current world and free memory, using a memory reserve
      * to make sure that an OutOfMemory doesn't happen while doing this.
      * <p>
@@ -170,8 +167,8 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
      * - https://bugs.mojang.com/browse/MC-128953
      * - Memory reserve not recreated after out-of memory
      */
-    @SuppressWarnings("CallToSystemGC")
     @Overwrite
+    @SuppressWarnings("CallToSystemGC")
     public void freeMemory() {
         int originalMemoryReserveSize = -1;
         try {
@@ -192,7 +189,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             // Fix: Close the connection to avoid receiving packets from old server
             // when playing in another world (MC-128953)
             if (getConnection() != null) {
-                getConnection().getNetworkManager().closeChannel(new TextComponentString("[VanillaFix] Client crashed."));
+                getConnection().getNetworkManager().closeChannel(new TextComponentString("[VanillaFix] Client crashed"));
             }
 
             loadWorld(null);
@@ -222,8 +219,19 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         currentReport = null;
     }
 
+    /**
+     * @reason Replaces the vanilla F3 + C logic to immediately crash rather than requiring
+     * that the buttons are pressed for 6 seconds and add more crash types:
+     * F3 + C - Client crash
+     * Alt + F3 + C - Integrated server crash
+     * Shift + F3 + C - Scheduled client task exception
+     * Alt + Shift + F3 + C - Scheduled server task exception
+     * <p>
+     * Note: Left Shift + F3 + C doesn't work on most keyboards, see http://keyboardchecker.com/
+     * Use the right shift instead.
+     */
     @Redirect(method = "runTickKeyboard", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;debugCrashKeyPressTime:J", ordinal = 0))
-    public long checkForF3C(Minecraft mc) {
+    private long checkForF3C(Minecraft mc) {
         // Fix: Check if keys are down before checking time pressed
         if (Keyboard.isKeyDown(46) && Keyboard.isKeyDown(61)) {
             debugCrashKeyPressTime = getSystemTime();
@@ -234,12 +242,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
 
         if (debugCrashKeyPressTime > 0L) {
             if (getSystemTime() - debugCrashKeyPressTime >= 0) {
-                // F3 + C - Client crash
-                // Alt + F3 + C - Integrated server crash
-                // Shift + F3 + C - Scheduled client task exception
-                // Alt + Shift + F3 + C - Scheduled server task exception
-                // Note: Left Shift + F3 + C doesn't work on most keyboards, see http://keyboardchecker.com/
-                // Use the right shift instead.
                 if (GuiScreen.isShiftKeyDown()) {
                     if (GuiScreen.isAltKeyDown()) {
                         if (integratedServerIsRunning) integratedServer.addScheduledTask(() -> {
@@ -262,8 +264,11 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         return -1;
     }
 
+    /**
+     * @reason Disables the vanilla F3 + C logic.
+     */
     @Redirect(method = "runTickKeyboard", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Keyboard;isKeyDown(I)Z", ordinal = 0))
-    public boolean getF3DownForF3C(int key) {
+    private boolean getF3DownForF3C(int key) {
         return false;
     }
 
@@ -272,14 +277,16 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         return crashIntegratedServerNextTick;
     }
 
-    // Fix GUI logic being included as part of "root.tick.textures" (https://bugs.mojang.com/browse/MC-129556)
+    /**
+     * Fix GUI logic being included as part of "root.tick.textures" (https://bugs.mojang.com/browse/MC-129556)
+     */
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", ordinal = 0))
-    public void endStartSectionTextures(Profiler profiler, String name) {
+    private void endStartSectionTextures(Profiler profiler, String name) {
         profiler.endStartSection("gui");
     }
 
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureManager;tick()V", ordinal = 0))
-    public void textureManagerTick(TextureManager textureManager) {
+    private void textureManagerTick(TextureManager textureManager) {
         mcProfiler.endStartSection("textures");
         textureManager.tick();
         mcProfiler.endStartSection("gui");

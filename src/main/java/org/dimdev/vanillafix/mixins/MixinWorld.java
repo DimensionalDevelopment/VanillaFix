@@ -19,9 +19,13 @@ public abstract class MixinWorld { // TODO: prefix modid for classes too
 
     @Shadow public abstract void updateEntity(Entity ent);
 
+    /**
+     * @reason Adds subsections to the "root.tick.level.entities.regular.tick"
+     * profiler, using the entity ID, or the class name if the ID is null.
+     */
     @Redirect(method = "updateEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;onUpdate()V"))
-    public void entityOnUpdate(Entity entity) {
-        profiler.func_194340_a(() -> {
+    private void entityOnUpdate(Entity entity) {
+        profiler.func_194340_a(() -> { // func_194340_a = startSection(Supplier<String>)
             final ResourceLocation entityID = EntityList.getKey(entity);
             return entityID == null ? entity.getClass().getSimpleName() : entityID.toString();
         });
@@ -29,9 +33,13 @@ public abstract class MixinWorld { // TODO: prefix modid for classes too
         profiler.endSection();
     }
 
+    /**
+     * @reason Adds subsections to the "root.tick.level.entities.regular.tick"
+     * profiler, using the entity ID, or the class name if the ID is null.
+     */
     @Redirect(method = "updateEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;updateEntity(Lnet/minecraft/entity/Entity;)V"))
-    public void updateEntity(World world, Entity entity) {
-        profiler.func_194340_a(() -> {
+    private void updateEntity(World world, Entity entity) {
+        profiler.func_194340_a(() -> { // func_194340_a = startSection(Supplier<String>)
             final ResourceLocation entityID = EntityList.getKey(entity);
             return entityID == null ? entity.getClass().getSimpleName() : entityID.toString();
         });
@@ -39,9 +47,13 @@ public abstract class MixinWorld { // TODO: prefix modid for classes too
         profiler.endSection();
     }
 
+    /**
+     * @reason Adds subsections to the "root.tick.level.entities.blockEntities"
+     * profiler, using the entity ID, or the class name if the ID is null.
+     */
     @Redirect(method = "updateEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ITickable;update()V"))
-    public void entityOnUpdate(ITickable tileEntity) {
-        profiler.func_194340_a(() -> {
+    private void tileEntityUpdate(ITickable tileEntity) {
+        profiler.func_194340_a(() -> { // func_194340_a = startSection(Supplier<String>)
             final ResourceLocation tileEntityID = TileEntity.getKey(((TileEntity) tileEntity).getClass());
             return tileEntityID == null ? tileEntity.getClass().getSimpleName() : tileEntityID.toString();
         });

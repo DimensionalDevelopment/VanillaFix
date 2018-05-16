@@ -1,6 +1,5 @@
 package org.dimdev.vanillafix.mixins;
 
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -15,15 +14,16 @@ import org.spongepowered.asm.mixin.Shadow;
 /**
  * Fix a memory leak caused by the world object still being pointed to by the static
  * ENCHANTMENT_ fields. Instead of modifying those static fields, make a new instance
- * of IModifier every use.
+ * of IModifier every use. Overwriting these methods is necessary, it would require a
+ * redirect for every single line otherwise.
  */
 @Mixin(EnchantmentHelper.class)
 public final class MixinEnchantmentHelper {
 
     @Shadow private static void applyEnchantmentModifierArray(EnchantmentHelper.IModifier modifier, Iterable<ItemStack> stacks) {}
     @Shadow private static void applyEnchantmentModifier(EnchantmentHelper.IModifier modifier, ItemStack stack) {}
-    @Shadow public static int getMaxEnchantmentLevel(Enchantment enchantment, EntityLivingBase entity) { return 0; }
 
+    /** @reason Fix memory leak. See class comment. */
     @Overwrite
     public static int getEnchantmentModifierDamage(Iterable<ItemStack> stacks, DamageSource source) {
         EnchantmentHelper.ModifierDamage enchantmentModifierDamage = new EnchantmentHelper.ModifierDamage();
@@ -33,6 +33,7 @@ public final class MixinEnchantmentHelper {
         return enchantmentModifierDamage.damageModifier;
     }
 
+    /** @reason Fix memory leak. See mixin class comment. */
     @Overwrite
     public static float getModifierForCreature(ItemStack stack, EnumCreatureAttribute creatureAttribute) {
         EnchantmentHelper.ModifierLiving enchantmentModifierLiving = new EnchantmentHelper.ModifierLiving();
@@ -42,6 +43,7 @@ public final class MixinEnchantmentHelper {
         return enchantmentModifierLiving.livingModifier;
     }
 
+    /** @reason Fix memory leak. See mixin class comment. */
     @Overwrite
     public static void applyThornEnchantments(EntityLivingBase user, Entity attacker) {
         EnchantmentHelper.HurtIterator enchantmentIteratorHurt = new EnchantmentHelper.HurtIterator();
@@ -57,6 +59,7 @@ public final class MixinEnchantmentHelper {
         }
     }
 
+    /** @reason Fix memory leak. See mixin class comment. */
     @Overwrite
     public static void applyArthropodEnchantments(EntityLivingBase user, Entity target) {
         EnchantmentHelper.DamageIterator enchantmentIteratorDamage = new EnchantmentHelper.DamageIterator();

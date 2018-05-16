@@ -20,18 +20,22 @@ public abstract class MixinIntegratedServer {
     @Shadow @Final private Minecraft mc;
 
     /**
-     * If the everyone leaves the integrated server, and a shutdown is then
-     * initiated, there is a possibility that by the time initiateShutdown
-     * is called, the server is still running but will shut down before running
-     * scheduled tasks. Don't wait for the task to run, since that may never happen.
+     * @reason If the everyone leaves the integrated server, and a shutdown is then
+     * initiated, there is a possibility that by the time initiateShutdown is called,
+     * the server is still running but will shut down before running scheduled tasks.
+     * Don't wait for the task to run, since that may never happen.
      */
     @Redirect(method = "initiateShutdown", at = @At(value = "INVOKE", target = "Lcom/google/common/util/concurrent/Futures;getUnchecked(Ljava/util/concurrent/Future;)Ljava/lang/Object;", ordinal = 0))
-    public <V> V getUnchecked(Future<V> future) {
+    private <V> V getUnchecked(Future<V> future) {
         return null;
     }
 
+    /**
+     * @reason Checks if an integrated server crash was scheduled for this tick by the
+     * client, if Alt + F3 + C was pressed.
+     */
     @Inject(method = "tick", at = @At("HEAD"))
-    public void beforeTick(CallbackInfo ci) {
+    private void beforeTick(CallbackInfo ci) {
         if (((IPatchedMinecraft) mc).isCrashIntegratedServerNextTick()) {
             throw new ReportedException(new CrashReport("Manually triggered server-side debug crash", new Throwable()));
         }

@@ -1,23 +1,45 @@
 package org.dimdev.vanillafix.mixins;
 
+import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.util.DamageSource;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityPlayerMP.class)
-public abstract class MixinEntityPlayerMP {
+public abstract class MixinEntityPlayerMP extends EntityPlayer {
+    public MixinEntityPlayerMP(World worldIn, GameProfile gameProfileIn) {super(worldIn, gameProfileIn);}
+
     /**
-     * @reason Entities should not be invulnerable after dimension change,
-     * players could intentionally abuse this. isInvulnerableDimensionChange
-     * is now only to prevent teleporting the player again (in the other nether
-     * portal before the client had the time to confirm the teleport).
-     * @author Runemoro
+     * @reason Entities should not be invulnerable after dimension change, players could
+     * intentionally abuse this. isInvulnerableDimensionChange is now only to prevent
+     * teleporting the player again (in the other nether portal before the client had the
+     * time to confirm the teleport).
      */
     @Redirect(method = "isEntityInvulnerable", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;isEntityInvulnerable(Lnet/minecraft/util/DamageSource;)Z"))
-    public boolean isEntityInvulnerable(EntityPlayer entityPlayer, DamageSource source) {
+    private boolean isEntityInvulnerable(EntityPlayer entityPlayer, DamageSource source) {
         return false;
+    }
+
+    /**
+     * @reason This is incorrectly set to 1, but not noticable in vanilla since the move logic
+     * trusts the client about its y position after a move due to a bug: (y > -0.5 || y
+     * < 0.5) rather than &&. If this is fixed, a player standing in moving water at the
+     * edge of a block is considered to have "moved wrongly" and teleported onto the block.
+     * <p>
+     * Leaving this to 1 would also allow hacked clients to step up blocks without having
+     * to jump (not increasing hunger).
+     */
+    @Inject(method = "<init>", at = @At("RETURN"))
+    private void afterInit(MinecraftServer server, WorldServer worldIn, GameProfile profile, PlayerInteractionManager interactionManagerIn, CallbackInfo ci) {
+        stepHeight = 0.7F;
     }
 }

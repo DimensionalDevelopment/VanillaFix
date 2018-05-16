@@ -4,9 +4,6 @@
   "target": "@env(DEFAULT)",
   "minVersion": "0.6",
   "compatibilityLevel": "JAVA_8",
-  "injectors": {
-    "maxShiftBy": 10
-  },
   "mixins": [
     "MixinNetHandlerPlayServer",
     "MixinUtil",
@@ -26,5 +23,8 @@
     "client.MixinCompiledChunk",
     "client.MixinBlockModelRenderer",
     "client.MixinBlockFluidRenderer"
-  ]
+  ],
+  "injectors": {
+    "maxShiftBy": 10
+  }
 }

@@ -59,7 +59,7 @@ minecraft {
     mappings = mcpversion
     replace '${version}', fullVersion
     makeObfSourceJar = false
-    ext.args = [
+    clientJvmArgs = serverJvmArgs = [
             "-Dfml.noGrab=false",
             "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin",
             "-Dmixin.env.compatLevel=JAVA_8",
@@ -67,7 +67,14 @@ minecraft {
             "-Dmixin.debug.verbose=true",
             "-Dmixin.debug.export=true",
             "-Dmixin.checks.interfaces=true"
-    ]
+    ] // TODO this doesn't work
+}
+
+makeStart { // TODO
+    addReplacement("parseArgs(args);", "parseArgs(args);\n" +
+            "System.setProperty(\"fml.coreMods.load\"," +
+            "System.getProperty(\"fml.coreMods.load\", \"\")" +
+            " + \"org.dimdev.vanillafix.VanillaFixLoadingPlugin\");")
 }
 
 sourceSets {
@@ -84,7 +91,7 @@ jar {
         exclude "LICENSE.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
     }
     manifest.attributes(
-            //"FMLCorePluginContainsFMLMod": "true", // TODO: enable on release, or fix the problem properly
+            "FMLCorePluginContainsFMLMod": "true", // TODO: Fix runClient
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "MixinConfigs": "mixins.vanillafix.json",
             "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixLoadingPlugin",

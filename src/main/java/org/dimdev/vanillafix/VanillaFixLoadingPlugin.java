@@ -1,9 +1,6 @@
 package org.dimdev.vanillafix;
 
-import com.google.common.eventbus.EventBus;
 import net.minecraftforge.common.ForgeVersion;
-import net.minecraftforge.fml.common.DummyModContainer;
-import net.minecraftforge.fml.common.LoadController;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;

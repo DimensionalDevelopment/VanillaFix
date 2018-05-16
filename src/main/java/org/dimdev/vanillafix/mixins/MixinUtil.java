@@ -1,12 +1,9 @@
 package org.dimdev.vanillafix.mixins;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.util.ReportedException;
 import net.minecraft.util.Util;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.vanillafix.CrashUtils;
-import org.dimdev.vanillafix.GuiCrashScreen;
 import org.dimdev.vanillafix.ModConfig;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -17,9 +14,17 @@ import java.util.concurrent.FutureTask;
 
 @Mixin(Util.class)
 public final class MixinUtil {
-    @Nullable
+    /**
+     * @reason Warn the player (configurable to crash or log too) instead of only logging a
+     * message a scheduled task throws an exception. The default vanilla behaviour is dangerous
+     * as things will fail silently, making future bugs much harder to solve. In fact, it may
+     * actually be a vanilla bug that the client doesn't crash, since they are using the "fatal"
+     * log level, which is otherwise used only for problems which crash the game.ss
+     */
     @Overwrite
-    public static <V> V runTask(FutureTask<V> task, Logger logger) { // TODO: Utils shouldn't depend on minecraft, redirect individual calls to runTask instead
+    @Nullable
+    // TODO: Utils shouldn't depend on minecraft, redirect individual calls to runTask instead
+    public static <V> V runTask(FutureTask<V> task, Logger logger) {
         task.run();
         try {
             return task.get();

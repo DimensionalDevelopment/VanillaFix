@@ -1,6 +1,6 @@
 package org.dimdev.vanillafix;
 
 public interface IPatchedMinecraft {
-    public void clearCurrentReport();
+    void clearCurrentReport();
     boolean isCrashIntegratedServerNextTick();
 }

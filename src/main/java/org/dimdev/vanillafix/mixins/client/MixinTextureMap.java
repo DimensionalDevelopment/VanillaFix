@@ -20,6 +20,13 @@ import java.util.Set;
 public abstract class MixinTextureMap extends AbstractTexture {
     @Shadow @Final private List<TextureAtlasSprite> listAnimatedSprites;
 
+    /**
+     * @reason Replaces the updateAnimations method to only tick animated textures
+     * that are in one of the loaded RenderChunks. This can lead to an FPS more than
+     * three times higher on large modpacks with many textures.
+     * <p>
+     * Also breaks down the "root.tick.textures" profiler by texture name.
+     */
     @Overwrite
     public void updateAnimations() {
         GlStateManager.bindTexture(getGlTextureId());
@@ -29,6 +36,7 @@ public abstract class MixinTextureMap extends AbstractTexture {
         }
 
         for (TextureAtlasSprite texture : listAnimatedSprites) {
+            // loop through list since HashSet.contains is fast (O(1)) but not ArrayList.contains
             if (visibleTextures.contains(texture)) {
                 Minecraft.getMinecraft().mcProfiler.startSection(texture.getIconName());
                 texture.updateAnimation();

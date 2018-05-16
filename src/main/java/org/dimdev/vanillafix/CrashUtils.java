@@ -30,11 +30,14 @@ public final class CrashUtils {
     public static void outputReport(CrashReport report) {
         try {
             if (report.getFile() == null) {
-                File reportsDir = isClient() ? new File(Minecraft.getMinecraft().mcDataDir, "crash-reports") : new File("crash-reports");
+                String reportName = "crash-";
+                reportName += new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date());
+                reportName += Minecraft.getMinecraft().isCallingFromMinecraftThread() ? "-client" : "-server";
+                reportName += ".txt";
 
-                File reportFile = new File(reportsDir, "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) +
-                                                       (Minecraft.getMinecraft().isCallingFromMinecraftThread() ? "-client" : "-server") +
-                                                       ".txt");
+                File reportsDir = isClient() ? new File(Minecraft.getMinecraft().mcDataDir, "crash-reports") : new File("crash-reports");
+                File reportFile = new File(reportsDir, reportName);
+
                 report.saveToFile(reportFile);
             }
         } catch (Throwable e) {

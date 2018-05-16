@@ -31,7 +31,7 @@ public final class HasteUpload {
 
             try (InputStream is = connection.getInputStream()) {
                 JsonObject json = new Gson().fromJson(new InputStreamReader(is), JsonObject.class);
-                return baseUrl + "/" + json.get("key").getAsString() + (extension == null || extension.equals("") ? "" : "." + extension);
+                return baseUrl + "/" + json.get("key").getAsString() + (extension == null || extension.isEmpty() ? "" : "." + extension);
             }
         } finally {
             connection.disconnect();

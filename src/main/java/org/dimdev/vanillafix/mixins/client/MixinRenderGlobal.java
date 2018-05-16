@@ -17,21 +17,29 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class MixinRenderGlobal { // TODO: prefix modid for classes too
     @Shadow private WorldClient world;
 
+    /**
+     * @reason Adds subsections to the "root.gameRenderer.level.entities.entities"
+     * profiler, using the entity ID, or the class name if the ID is null.
+     */
     @Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderManager;renderEntityStatic(Lnet/minecraft/entity/Entity;FZ)V"))
-    public void renderEntityStatic(RenderManager renderManager, Entity entity, float partialTicks, boolean disableDebugBoundingBox) {
-        world.profiler.func_194340_a(() -> {
-            final ResourceLocation entityID = EntityList.getKey(entity);
-            return entityID == null ? entity.getClass().getSimpleName() : entityID.toString();
+    private void renderEntityStatic(RenderManager renderManager, Entity entity, float partialTicks, boolean disableDebugBoundingBox) {
+        world.profiler.func_194340_a(() -> { // func_194340_a = startSection(Supplier<String>)
+            final ResourceLocation entityId = EntityList.getKey(entity);
+            return entityId == null ? entity.getClass().getSimpleName() : entityId.toString();
         });
         renderManager.renderEntityStatic(entity, partialTicks, disableDebugBoundingBox);
         world.profiler.endSection();
     }
 
+    /**
+     * @reason Adds subsections to the "root.gameRenderer.level.entities.blockentities"
+     * profiler, using the tile entity ID, or the class name if the id is null.
+     */
     @Redirect(method = "renderEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/tileentity/TileEntityRendererDispatcher;render(Lnet/minecraft/tileentity/TileEntity;FI)V"))
-    public void renderEntityStatic(TileEntityRendererDispatcher renderDispatcher, TileEntity tileEntity, float partialTicks, int destroyStage) {
-        world.profiler.func_194340_a(() -> {
-            final ResourceLocation tileEntityID = TileEntity.getKey(((TileEntity) tileEntity).getClass());
-            return tileEntityID == null ? tileEntity.getClass().getSimpleName() : tileEntityID.toString();
+    private void tileEntityRender(TileEntityRendererDispatcher renderDispatcher, TileEntity tileEntity, float partialTicks, int destroyStage) {
+        world.profiler.func_194340_a(() -> { // func_194340_a = startSection(Supplier<String>)
+            final ResourceLocation tileEntityId = TileEntity.getKey(((TileEntity) tileEntity).getClass());
+            return tileEntityId == null ? tileEntity.getClass().getSimpleName() : tileEntityId.toString();
         });
         renderDispatcher.render(tileEntity, partialTicks, destroyStage);
         world.profiler.endSection();

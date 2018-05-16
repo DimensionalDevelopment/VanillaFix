@@ -29,8 +29,12 @@ public class MixinCrashReport implements IPatchedCrashReport {
         return suspectedMods;
     }
 
+    /**
+     * @reason Adds a list of mods which may have caused the crash to
+     * the crash report.
+     */
     @Inject(method = "populateEnvironment", at = @At("TAIL"))
-    public void afterPopulateEnvironment(CallbackInfo ci) {
+    private void afterPopulateEnvironment(CallbackInfo ci) {
         systemDetailsCategory.addDetail("Suspected Mods", () -> {
             try {
                 suspectedMods = ModIdentifier.identifyFromStacktrace(cause);
