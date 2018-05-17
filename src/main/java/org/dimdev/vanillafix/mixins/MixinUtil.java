@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 @Mixin(Util.class)
-public final class MixinUtil {
+public abstract class MixinUtil {
     /**
      * @reason Warn the player (configurable to crash or log too) instead of only logging a
      * message a scheduled task throws an exception. The default vanilla behaviour is dangerous
@@ -31,16 +31,12 @@ public final class MixinUtil {
         } catch (InterruptedException | ExecutionException e) {
             ModConfig.ProblemAction action = ModConfig.crashes.scheduledTaskAction;
 
-            switch (action) {
-                case CRASH:
-                    CrashUtils.crash(new CrashReport("Error executing task", e));
-                    break;
-                case WARNING_SCREEN:
-                    CrashUtils.warn(new CrashReport("Error executing task", e));
-                    break;
-                case LOG:
-                    logger.fatal("Error executing task", e);
-                    break;
+            if (action == ModConfig.ProblemAction.CRASH) {
+                CrashUtils.crash(new CrashReport("Error executing task", e));
+            } else if (action == ModConfig.ProblemAction.WARNING_SCREEN) {
+                CrashUtils.warn(new CrashReport("Error executing task", e));
+            } else if (action == ModConfig.ProblemAction.LOG) {
+                logger.fatal("Error executing task", e);
             }
             return null;
         }
