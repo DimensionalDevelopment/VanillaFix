@@ -100,7 +100,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
         // Move packet received while sleeping, client somehow forgot it was sleeping or server missed,
         // wake up packet.
         if (player.isPlayerSleeping()) {
-            if (diffSq > 1) return;
+            if (diffSq < 1) return;
             LOGGER.warn("{} tried to move while sleeping! {}, {}, {}", player.getName(), xDiff, yDiff, zDiff);
             player.wakeUpPlayer(false, true, true);
         }
