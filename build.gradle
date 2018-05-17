@@ -33,7 +33,7 @@ dependencies {
 }
 
 // Mod version
-version = ext.modversion = "1.0.3"
+version = ext.modversion = "1.0.4"
 group = "org.dimdev.vanillafix"
 archivesBaseName = "VanillaFix"
 
@@ -59,22 +59,22 @@ minecraft {
     mappings = mcpversion
     replace '${version}', fullVersion
     makeObfSourceJar = false
-    clientJvmArgs = serverJvmArgs = [
-            "-Dfml.noGrab=false",
-            "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin",
-            "-Dmixin.env.compatLevel=JAVA_8",
-            "-Dmixin.debug=true",
-            "-Dmixin.debug.verbose=true",
-            "-Dmixin.debug.export=true",
-            "-Dmixin.checks.interfaces=true"
-    ] // TODO this doesn't work
 }
 
-makeStart { // TODO
-    addReplacement("parseArgs(args);", "parseArgs(args);\n" +
-            "System.setProperty(\"fml.coreMods.load\"," +
-            "System.getProperty(\"fml.coreMods.load\", \"\")" +
-            " + \"org.dimdev.vanillafix.VanillaFixLoadingPlugin\");")
+makeStart {
+    String[][] systemProperties = [["fml.noGrab", "false"],
+            ["fml.coreMods.load", "org.dimdev.vanillafix.VanillaFixLoadingPlugin;org.spongepowered.mod.SpongeCoremod"],
+            //["mixin.debug", "true"],
+            //["mixin.debug.verbose", "true"],
+            //["mixin.debug.export", "true"],
+            //["mixin.checks.interfaces", "true"]
+    ]
+
+    String replacement = "parseArgs(args);\n\n        // set system properties in build.gradle"
+    for (String[] arg : systemProperties) {
+        replacement += "\n        System.setProperty(\"" + arg[0] + "\", \"" + arg[1] + "\");"
+    }
+    addReplacement("parseArgs(args);", replacement)
 }
 
 sourceSets {
