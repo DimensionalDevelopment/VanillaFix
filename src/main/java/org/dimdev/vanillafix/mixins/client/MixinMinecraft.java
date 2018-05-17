@@ -27,7 +27,10 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -278,17 +281,28 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     }
 
     /**
-     * Fix GUI logic being included as part of "root.tick.textures" (https://bugs.mojang.com/browse/MC-129556)
+     * @reason Fix GUI logic being included as part of "root.tick.textures" (https://bugs.mojang.com/browse/MC-129556)
      */
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", ordinal = 0))
     private void endStartSectionTextures(Profiler profiler, String name) {
         profiler.endStartSection("gui");
     }
 
+    /**
+     * @reason Part 2 of GUI logic fix.
+     */
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureManager;tick()V", ordinal = 0))
     private void textureManagerTick(TextureManager textureManager) {
         mcProfiler.endStartSection("textures");
         textureManager.tick();
         mcProfiler.endStartSection("gui");
+    }
+
+    /**
+     * @reason Implement using Ctrl + 0-9 to select profiler sections 10-19.
+     */
+    @ModifyVariable(method = "updateDebugProfilerName", at = @At("HEAD"), ordinal = 0)
+    private int getKeyCountForProfilerNameUpdate(int keyCount) {
+        return GuiScreen.isCtrlKeyDown() ? keyCount + 10 : keyCount;
     }
 }
