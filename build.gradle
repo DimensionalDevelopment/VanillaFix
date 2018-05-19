@@ -33,7 +33,7 @@ dependencies {
 }
 
 // Mod version
-version = ext.modversion = "1.0.4"
+version = ext.modversion = "1.0.5"
 group = "org.dimdev.vanillafix"
 archivesBaseName = "VanillaFix"
 
@@ -63,7 +63,7 @@ minecraft {
 
 makeStart {
     String[][] systemProperties = [["fml.noGrab", "false"],
-            ["fml.coreMods.load", "org.dimdev.vanillafix.VanillaFixLoadingPlugin;org.spongepowered.mod.SpongeCoremod"],
+            ["fml.coreMods.load", "org.dimdev.vanillafix.VanillaFixLoadingPlugin"],
             //["mixin.debug", "true"],
             //["mixin.debug.verbose", "true"],
             //["mixin.debug.export", "true"],

@@ -7,6 +7,7 @@ import net.minecraft.network.PacketThreadUtil;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.client.CPacketConfirmTeleport;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.server.SPacketPlayerPosLook;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
@@ -21,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.EnumSet;
 import java.util.List;
 
 @Mixin(value = NetHandlerPlayServer.class, priority = 500) // After sponge
@@ -41,8 +43,6 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
     @Shadow private void captureCurrentPosition() {}
     @Shadow public void setPlayerLocation(double x, double y, double z, float yaw, float pitch) {}
 
-    private double lastFallY;
-
     /**
      * @reason See https://github.com/DimensionalDevelopment/VanillaFix/wiki/Move-Logic-Rewrite
      * <p>
@@ -60,6 +60,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
     @Overwrite
     @Override
     public void processPlayer(CPacketPlayer packet) {
+        //if (true) return;
         PacketThreadUtil.checkThreadAndEnqueue(packet, this, player.getServerWorld());
 
         // Disconnect the player if packet is invalid (doubles are infinite or out of range)
@@ -97,7 +98,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
         double zDiff = packetZ - player.posZ;
         double diffSq = xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
 
-        // Move packet received while sleeping, client somehow forgot it was sleeping or server missed,
+        // Move packet received while sleeping, client somehow forgot it was sleeping or server missed
         // wake up packet.
         if (player.isPlayerSleeping()) {
             if (diffSq < 1) return;
@@ -126,12 +127,10 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
         List<AxisAlignedBB> oldCollisonBoxes = player.world.getCollisionBoxes(player, player.getEntityBoundingBox().shrink(0.0625D));
 
         // Move the player towards the position they want
-        player.move(MoverType.PLAYER, packetX - player.posX, packetY - player.posY, packetZ - player.posZ); // TODO: noclip, spectator
+        player.move(MoverType.PLAYER, packetX - player.posX, packetY - player.posY, packetZ - player.posZ);
 
         // Move caused a teleport, capture new position, and stop processing packet
         if (targetPos != null) {
-            // TODO: Fall distance, movement stats
-            lastFallY = player.posY;
             captureCurrentPosition();
             server.getPlayerList().serverUpdateMovingPlayer(player);
             return;
@@ -156,9 +155,12 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
         // Accept the packet's position if it's close enough (0.25 blocks) and not in a new block
         if (diffSq > 0.0625D) {
             LOGGER.warn("{} moved wrongly!", player.getName());
-            setPlayerLocation(player.posX, player.posY, player.posZ, packetYaw, packetPitch);
+            player.setPositionAndRotation(player.posX, player.posY, player.posZ, packetYaw, packetPitch);
+            syncClientPosition();
         } else if (movedIntoBlock) {
             LOGGER.warn("{} moved into a block!", player.getName());
+            player.setPositionAndRotation(player.posX, player.posY, player.posZ, packetYaw, packetPitch);
+            syncClientPosition();
         } else {
             player.setPositionAndRotation(packetX, packetY, packetZ, packetYaw, packetPitch);
         }
@@ -166,16 +168,23 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
         // Add movement stats
         player.addMovementStat(player.posX - prevX, player.posY - prevY, player.posZ - prevZ);
 
-        // Fix: Call this twice since vanilla doesn't add fall distance when onGround = true (so last part of the fall isn't included)
-        player.handleFalling(player.posY - lastFallY, false);
-        if (player.onGround) player.handleFalling(player.posY - lastFallY, player.onGround);
-        lastFallY = player.posY;
-
         server.getPlayerList().serverUpdateMovingPlayer(player);
 
         lastGoodX = player.posX;
         lastGoodY = player.posY;
         lastGoodZ = player.posZ;
+    }
+
+    private void syncClientPosition() {
+        targetPos = new Vec3d(player.posX, player.posY, player.posZ);
+        player.connection.sendPacket(new SPacketPlayerPosLook(
+                player.posX,
+                player.posY,
+                player.posZ,
+                0,
+                0,
+                EnumSet.of(SPacketPlayerPosLook.EnumFlags.X_ROT, SPacketPlayerPosLook.EnumFlags.Y_ROT),
+                ++teleportId == Integer.MAX_VALUE ? 0 : teleportId));
     }
 
     /**
@@ -205,23 +214,5 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
     @Inject(method = "update", at = @At(value = "INVOKE", shift = At.Shift.AFTER, target = "Lnet/minecraft/entity/player/EntityPlayerMP;onUpdateEntity()V", ordinal = 0))
     private void afterUpdateEntity(CallbackInfo ci) {
         captureCurrentPosition();
-    }
-
-    /**
-     * @reason Anti-cheat: Calculate fall damage even if not receiving move packets from the client.
-     * Otherwise, the client could disconnect without sending move packets to avoid fall damage.
-     */
-    @Inject(method = "update", at = @At("HEAD"))
-    private void beforeUpdateEntity(CallbackInfo ci) {
-        player.onGround = !player.world.getCollisionBoxes(player, player.getEntityBoundingBox().expand(0, -0.05, 0)).isEmpty();
-        // Fix: Call this twice since vanilla doesn't add fall distance when onGround = true (so last part of the fall isn't included)
-        player.handleFalling(player.posY - lastFallY, false);
-        if (player.onGround) player.handleFalling(player.posY - lastFallY, player.onGround);
-        lastFallY = player.posY;
-    }
-
-    @Inject(method = "captureCurrentPosition", at = @At("HEAD"))
-    private void beforeCaptureCurrentPosition(CallbackInfo ci) { // TODO
-        //lastFallY = player.posY;
     }
 }
