@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix.mixins.client;
+package org.dimdev.vanillafix.mixins.core.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(NetHandlerPlayClient.class)
 public abstract class MixinNetHandlerPlayClient implements INetHandlerPlayClient {
     @Shadow private boolean doneLoadingTerrain;
-    @Shadow private WorldClient world;
-    @Shadow private Minecraft client;
+    @Shadow(aliases = "clientWorldController") private WorldClient world;
+    @Shadow(aliases = "gameController") private Minecraft client;
 
     /**
      * @reason Makes interdimensional teleportation nearly as fast as same-dimension

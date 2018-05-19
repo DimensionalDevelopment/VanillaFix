@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix.mixins.client;
+package org.dimdev.vanillafix.mixins.core.client;
 
 import com.google.common.util.concurrent.ListenableFutureTask;
 import net.minecraft.client.Minecraft;

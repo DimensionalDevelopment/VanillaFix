@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix.mixins.client;
+package org.dimdev.vanillafix.mixins.core.client;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderItem;

@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix.mixins;
+package org.dimdev.vanillafix.mixins.core;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.state.IBlockState;

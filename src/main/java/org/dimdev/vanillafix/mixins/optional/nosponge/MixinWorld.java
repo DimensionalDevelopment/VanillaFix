@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix.mixins;
+package org.dimdev.vanillafix.mixins.optional.nosponge;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
@@ -13,6 +13,11 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+/**
+ * Since Sponge effectively disables the Minecraft profiler, there's no
+ * point in trying to make this mixin compatible with Sponge. Therefore,
+ * we only apply this mixin when Sponge is not installed
+ */
 @Mixin(World.class)
 public abstract class MixinWorld { // TODO: prefix modid for classes too
     @Shadow @Final public Profiler profiler;
