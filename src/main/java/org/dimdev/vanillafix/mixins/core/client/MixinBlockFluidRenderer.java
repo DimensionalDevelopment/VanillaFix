@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix.mixins.client;
+package org.dimdev.vanillafix.mixins.core.client;
 
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;

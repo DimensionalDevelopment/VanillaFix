@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix.mixins;
+package org.dimdev.vanillafix.mixins.core;
 
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -29,7 +29,7 @@ import java.util.List;
 public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer {
 
     @Shadow public EntityPlayerMP player;
-    @Shadow @Final private MinecraftServer server;
+    @Shadow(aliases = "serverController") @Final private MinecraftServer server;
     @Shadow private int networkTickCount;
     @Shadow private double lastGoodX;
     @Shadow private double lastGoodY;

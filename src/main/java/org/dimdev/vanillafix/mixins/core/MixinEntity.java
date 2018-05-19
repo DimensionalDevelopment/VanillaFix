@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix.mixins;
+package org.dimdev.vanillafix.mixins.core;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
