@@ -41,3 +41,7 @@ vanillafix.crashes.scheduledTaskExceptionAction=Scheduled task exception action
 vanillafix.crashes.scheduledTaskExceptionAction.tooltip=What should happen when a scheduled task throws an exception?
 vanillafix.crashes.hasteURL=Haste URL
 vanillafix.crashes.hasteURL.tooltip=The URL to the root of the haste instance to upload crash reports to, without a trailing slash.
+
+vanillafix.debug.switch_profiler.help=F3 + S = Cycle client <-> integrated server profiler
+vanillafix.debug.switch_profiler.server=Using server profiler
+vanillafix.debug.switch_profiler.client=Using client profiler
