@@ -15,8 +15,10 @@ public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
 
     public VanillaFixLoadingPlugin() {
         MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.vanillafix.core.json");
-        Mixins.addConfiguration("mixins.vanillafix.optional.json");
+        Mixins.addConfiguration("mixins.vanillafix.bugs.json");
+        Mixins.addConfiguration("mixins.vanillafix.crashes.json");
+        Mixins.addConfiguration("mixins.vanillafix.profiler.json");
+        Mixins.addConfiguration("mixins.vanillafix.textures.json");
     }
 
     @Override public String[] getASMTransformerClass() {

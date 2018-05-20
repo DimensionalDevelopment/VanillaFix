@@ -1,0 +1,25 @@
+{
+  "package": "org.dimdev.vanillafix.bugs.mixins",
+  "required": true,
+  "refmap": "mixins.vanillafix.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.6",
+  "plugin": "org.dimdev.vanillafix.ModCompatibilityMixinPlugin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinNetHandlerPlayServer",
+    "MixinEnchantmentHelper",
+    "MixinEntityPlayerMP",
+    "MixinEntity",
+    "MixinInventoryPlayer"
+  ],
+  "client": [
+    "client.MixinMinecraft",
+    "client.MixinNetHandlerPlayClient",
+    "client.MixinEntityPlayerSP",
+    "client.MixinIntegratedServer"
+  ],
+  "injectors": {
+    "maxShiftBy": 10
+  }
+}

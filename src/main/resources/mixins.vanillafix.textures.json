@@ -1,0 +1,22 @@
+{
+  "package": "org.dimdev.vanillafix.textures.mixins",
+  "required": true,
+  "refmap": "mixins.vanillafix.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.6",
+  "plugin": "org.dimdev.vanillafix.ModCompatibilityMixinPlugin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [],
+  "client": [
+    "client.MixinBlockFluidRenderer",
+    "client.MixinBlockModelRenderer",
+    "client.MixinCompiledChunk",
+    "client.MixinItemRenderer",
+    "client.MixinRenderChunk",
+    "client.MixinRenderItem",
+    "client.MixinTextureMap"
+  ],
+  "injectors": {
+    "maxShiftBy": 10
+  }
+}

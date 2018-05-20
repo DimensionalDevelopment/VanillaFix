@@ -83,7 +83,10 @@ jar {
     manifest.attributes(
             "FMLCorePluginContainsFMLMod": "true", // TODO: Fix runClient
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-            "MixinConfigs": "mixins.vanillafix.core.json,mixins.vanillafix.optional.json",
+            "MixinConfigs": "mixins.vanillafix.bugs.json," +
+                    "mixins.vanillafix.crashes.json," +
+                    "mixins.vanillafix.profiler.json," +
+                    "mixins.vanillafix.textures.json",
             "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixLoadingPlugin",
             "ForceLoadAsMod": "true",
             "FMLAT": "vanillafix_at.cfg"

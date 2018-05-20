@@ -1,0 +1,19 @@
+{
+  "package": "org.dimdev.vanillafix.profiler.mixins",
+  "required": true,
+  "refmap": "mixins.vanillafix.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.6",
+  "plugin": "org.dimdev.vanillafix.ModCompatibilityMixinPlugin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinWorld"
+  ],
+  "client": [
+    "client.MixinMinecraft",
+    "client.MixinRenderGlobal"
+  ],
+  "injectors": {
+    "maxShiftBy": 10
+  }
+}

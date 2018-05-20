@@ -1,0 +1,20 @@
+{
+  "package": "org.dimdev.vanillafix.crashes.mixins",
+  "required": true,
+  "refmap": "mixins.vanillafix.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.6",
+  "plugin": "org.dimdev.vanillafix.ModCompatibilityMixinPlugin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinCrashReport",
+    "MixinIntegratedServer",
+    "MixinUtil"
+  ],
+  "client": [
+    "client.MixinMinecraft"
+  ],
+  "injectors": {
+    "maxShiftBy": 10
+  }
+}
