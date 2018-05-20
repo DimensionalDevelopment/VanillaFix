@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.dimdev.utils.ModIdentifier;
 import org.dimdev.vanillafix.crashes.IPatchedCrashReport;
+import org.dimdev.vanillafix.crashes.StacktraceDeobfuscator;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -53,5 +54,13 @@ public class MixinCrashReport implements IPatchedCrashReport {
                 return ExceptionUtils.getStackTrace(e);
             }
         });
+    }
+
+    /**
+     * @reason Deobfuscates the stacktrace using MCP mappings
+     */
+    @Inject(method = "populateEnvironment", at = @At("HEAD"))
+    private void beforePopulateEnvironment(CallbackInfo ci) {
+        StacktraceDeobfuscator.deobfuscateStacktrace(cause);
     }
 }
