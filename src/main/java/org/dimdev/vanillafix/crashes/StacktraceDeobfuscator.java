@@ -1,6 +1,5 @@
 package org.dimdev.vanillafix.crashes;
 
-import net.minecraft.launchwrapper.Launch;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,7 +17,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public final class StacktraceDeobfuscator {
-    private static final boolean DEBUG_IN_DEV = false; // Makes this MCP -> SRG for testing in dev. Don't forget to unset when done!
+    private static final boolean DEBUG_IN_DEV = false; // Makes this MCP -> SRG for testing in dev. Don't forget to set to false when done!
     private static final Logger logger = LogManager.getLogger();
     private static HashMap<String, String> srgMcpMethodMap = null;
 

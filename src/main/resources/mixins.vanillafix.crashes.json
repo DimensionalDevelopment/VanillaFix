@@ -9,7 +9,8 @@
   "mixins": [
     "MixinCrashReport",
     "MixinIntegratedServer",
-    "MixinUtil"
+    "MixinUtil",
+    "MixinCrashReportCategory"
   ],
   "client": [
     "client.MixinMinecraft"
