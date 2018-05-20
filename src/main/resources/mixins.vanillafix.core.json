@@ -11,7 +11,8 @@
     "MixinCrashReport",
     "MixinEnchantmentHelper",
     "MixinEntityPlayerMP",
-    "MixinEntity"
+    "MixinEntity",
+    "MixinInventoryPlayer"
   ],
   "client": [
     "client.MixinMinecraft",

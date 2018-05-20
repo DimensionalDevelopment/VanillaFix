@@ -59,22 +59,12 @@ minecraft {
     mappings = mcpversion
     replace '${version}', fullVersion
     makeObfSourceJar = false
-}
 
-makeStart {
-    String[][] systemProperties = [["fml.noGrab", "false"],
-            ["fml.coreMods.load", "org.dimdev.vanillafix.VanillaFixLoadingPlugin"],
-            //["mixin.debug", "true"],
-            //["mixin.debug.verbose", "true"],
-            //["mixin.debug.export", "true"],
-            //["mixin.checks.interfaces", "true"]
+    def args = [
+            "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin"
     ]
-
-    String replacement = "parseArgs(args);\n\n        // set system properties in build.gradle"
-    for (String[] arg : systemProperties) {
-        replacement += "\n        System.setProperty(\"" + arg[0] + "\", \"" + arg[1] + "\");"
-    }
-    addReplacement("parseArgs(args);", replacement)
+    clientJvmArgs.addAll(args)
+    serverJvmArgs.addAll(args)
 }
 
 sourceSets {
