@@ -7,7 +7,11 @@ import org.dimdev.vanillafix.crashes.StacktraceDeobfuscator;
 
 import java.io.File;
 
-@Mod(modid = "vanillafix", name = "VanillaFix", version = "${version}", acceptableRemoteVersions = "*")
+@Mod(modid = "vanillafix",
+     name = "VanillaFix",
+     version = "${version}",
+     acceptableRemoteVersions = "*",
+     updateJSON = "https://gist.githubusercontent.com/Runemoro/28e8cf4c24a5f17f508a5d34f66d229f/raw/vanillafix_update.json")
 public class VanillaFix {
     String MCP_VERSION = "20180519-1.12";
 
