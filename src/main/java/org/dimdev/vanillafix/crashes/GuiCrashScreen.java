@@ -52,7 +52,7 @@ public class GuiCrashScreen extends GuiScreen {
                     mc.displayGuiScreen(new GuiMainMenu());
                     ((IPatchedMinecraft) mc).clearCurrentReport();
                 } else {
-                    mc.player.closeScreen();
+                    mc.displayGuiScreen(null);
                 }
             } else if (button.id == 1) {
                 if (hasteLink == null) {
