@@ -33,14 +33,27 @@ vanillafix.warnscreen.paragraph3.line3=them fix the issue. You can keep playing,
 vanillafix.warnscreen.paragraph3.line4=you will likely encounter some problems later on. This warning
 vanillafix.warnscreen.paragraph3.line5=can be disabled in Mods > VanillaFix > Config > Crashes.
 
+vanillafix.notification.title.unknown=An unknown problem occured!
+vanillafix.notification.title.mod=%s ran into a problem!
+vanillafix.notification.description=Press Ctrl + I for more info
+
 vanillafix.fixes=Enable/Disable Fixes
 vanillafix.fixes.tooltip=Control which fixes are enabled and disabled.
 vanillafix.crashes=Crash Options
 vanillafix.crashes.tooltip=Options on how crashes are handled
-vanillafix.crashes.scheduledTaskExceptionAction=Scheduled task exception action
-vanillafix.crashes.scheduledTaskExceptionAction.tooltip=What should happen when a scheduled task throws an exception?
+vanillafix.crashes.problemAction.log=Log
+vanillafix.crashes.problemAction.notification=Notification
+vanillafix.crashes.problemAction.warningScreen=Warning Screen
+vanillafix.crashes.problemAction.crash=Crash
+vanillafix.crashes.scheduledTaskproblemAction=Scheduled task exception action
+vanillafix.crashes.scheduledTaskproblemAction.tooltip=What should happen when a scheduled task throws an exception
+vanillafix.crashes.errorNotificationDuration=Error Notification Duration
+vanillafix.crashes.errorNotificationDuration.tooltip=The time in milliseconds to display error notifications for
+vanillafix.crashes.replaceErrorNotifications=Replace Error Notifications
+vanillafix.crashes.replaceErrorNotifications.tooltip=When several errors occur in a row, replace the notification rather than queuing more notifications
 vanillafix.crashes.hasteURL=Haste URL
 vanillafix.crashes.hasteURL.tooltip=The URL to the root of the haste instance to upload crash reports to, without a trailing slash.
+
 
 vanillafix.debug.switch_profiler.help=F3 + S = Cycle client <-> integrated server profiler
 vanillafix.debug.switch_profiler.server=Using server profiler

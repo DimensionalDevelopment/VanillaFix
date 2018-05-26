@@ -1,0 +1,71 @@
+package org.dimdev.vanillafix;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiOptionButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.crash.CrashReport;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+@SideOnly(Side.CLIENT)
+public class GuiWarningScreen extends GuiProblemScreen {
+    private static final String HASTE_BASE_URL = ModConfig.crashes.hasteURL;
+    private static final Logger log = LogManager.getLogger();
+    private static boolean patchedSSL = false;
+
+    private final GuiScreen nextScreen;
+
+    public GuiWarningScreen(CrashReport report, GuiScreen nextScreen) {
+        super(report);
+        this.nextScreen = nextScreen;
+    }
+
+    @Override
+    public void initGui() {
+        super.initGui();
+        buttonList.add(new GuiOptionButton(0, width / 2 - 155, height / 4 + 120 + 12, I18n.format("vanillafix.gui.keepPlaying")));
+        // TODO: Pause sounds too (see Minecraft.displayInGameMenu)
+    }
+
+    @Override
+    protected void actionPerformed(GuiButton button) {
+        super.actionPerformed(button);
+        if (button.id == 0) {
+            mc.displayGuiScreen(null);
+        }
+    }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) { // TODO: localize number of lines
+        drawDefaultBackground();
+        drawCenteredString(fontRenderer, I18n.format("vanillafix.warnscreen.title"), width / 2, height / 4 - 40, 0xFFFFFF);
+
+        int textColor = 0xD0D0D0;
+        int x = width / 2 - 155;
+        int y = height / 4;
+
+        y -= 20;
+        drawString(fontRenderer, I18n.format("vanillafix.warnscreen.summary"), x, y, textColor);
+        drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph1.line1"), x, y += 18, textColor);
+        drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph1.line2"), x, y += 9, textColor);
+        drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph1.line3"), x, y += 9, textColor);
+
+        drawCenteredString(fontRenderer, getModListString(), width / 2, y += 11, 0xE0E000);
+
+        drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph2.line1"), x, y += 11, textColor);
+        drawString(fontRenderer, I18n.format("vanillafix.crashscreen.paragraph2.line2"), x, y += 9, textColor);
+
+        drawCenteredString(fontRenderer, report.getFile() != null ? "\u00A7n" + report.getFile().getName() : I18n.format("vanillafix.crashscreen.reportSaveFailed"), width / 2, y += 11, 0x00FF00);
+
+        drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph3.line1"), x, y += 12, textColor);
+        drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph3.line2"), x, y += 9, textColor);
+        drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph3.line3"), x, y += 9, textColor);
+        drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph3.line4"), x, y += 9, textColor);
+        drawString(fontRenderer, I18n.format("vanillafix.warnscreen.paragraph3.line5"), x, y + 9, textColor);
+
+        super.drawScreen(mouseX, mouseY, partialTicks);
+    }
+}

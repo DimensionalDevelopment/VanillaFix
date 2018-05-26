@@ -9,29 +9,37 @@ import static net.minecraftforge.common.config.Config.*;
 
 @Config(modid = "vanillafix", name = "vanillafix", category = "")
 public final class ModConfig {
+
     public enum ProblemAction {
-        LOG,
-        WARNING_SCREEN,
-        CRASH
+        @LangKey("vanillafix.crashes.problemAction.log") LOG,
+        @LangKey("vanillafix.crashes.problemAction.notification") NOTIFICATION,
+        @LangKey("vanillafix.crashes.problemAction.warningScreen") WARNING_SCREEN,
+        @LangKey("vanillafix.crashes.problemAction.crash") CRASH
     }
 
     public static Fixes fixes = new Fixes();
     public static Crashes crashes = new Crashes();
-
-    public int configVersion = 0;
 
     public static class Fixes {
         // TODO
     }
 
     public static class Crashes {
-        @Name("scheduledTaskExceptionAction")
-        @LangKey("vanillafix.crashes.scheduledTaskExceptionAction")
-        public ProblemAction scheduledTaskAction = ProblemAction.WARNING_SCREEN;
+        @Name("scheduledTaskproblemAction")
+        @LangKey("vanillafix.crashes.scheduledTaskproblemAction")
+        public ProblemAction scheduledTaskAction = ProblemAction.NOTIFICATION;
 
         @Name("hasteURL")
         @LangKey("vanillafix.crashes.hasteURL")
         public String hasteURL = "https://paste.dimdev.org";
+
+        @Name("replaceErrorNotifications")
+        @LangKey("vanillafix.crashes.replaceErrorNotifications")
+        public boolean replaceErrorNotifications = false;
+
+        @Name("errorNotificationDuration")
+        @LangKey("vanillafix.crashes.errorNotificationDuration")
+        public int errorNotificationDuration = 30000;
     }
 
     @SubscribeEvent

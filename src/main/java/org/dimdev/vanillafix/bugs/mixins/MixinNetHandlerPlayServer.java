@@ -136,6 +136,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
             double prevZ = player.posZ;
             player.move(MoverType.PLAYER, xDiff, yDiff, zDiff);
             player.setPositionAndRotation(packetX, packetY, packetZ, packetYaw, packetPitch);
+            player.onGround = packet.isOnGround();
             player.addMovementStat(player.posX - prevX, player.posY - prevY, player.posZ - prevZ);
             server.getPlayerList().serverUpdateMovingPlayer(player);
             return;

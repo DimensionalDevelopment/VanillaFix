@@ -4,6 +4,8 @@ import com.google.common.util.concurrent.ListenableFutureTask;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.toasts.GuiToast;
+import net.minecraft.client.gui.toasts.IToast;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.renderer.EntityRenderer;
@@ -18,7 +20,10 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.Logger;
+import org.dimdev.vanillafix.GuiWarningScreen;
+import org.dimdev.vanillafix.ModConfig;
 import org.dimdev.vanillafix.crashes.CrashUtils;
+import org.dimdev.vanillafix.crashes.ProblemToast;
 import org.dimdev.vanillafix.crashes.GuiCrashScreen;
 import org.dimdev.vanillafix.crashes.IPatchedMinecraft;
 import org.lwjgl.LWJGLException;
@@ -28,7 +33,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -62,6 +69,9 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public static long getSystemTime() { return 0; }
     @Shadow public abstract void loadWorld(@Nullable WorldClient worldClientIn);
 
+    @Shadow public abstract GuiToast getToastGui();
+
+    @Shadow @Nullable public GuiScreen currentScreen;
     private CrashReport currentReport = null;
     private boolean crashIntegratedServerNextTick;
     private int clientCrashCount = 0;
@@ -143,7 +153,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         crashIntegratedServerNextTick = false;
 
         // Display the crash screen
-        displayGuiScreen(new GuiCrashScreen(report, false));
+        displayGuiScreen(new GuiCrashScreen(report));
 
         // Vanilla does this when switching to main menu but not our custom crash screen
         // nor the out of memory screen (see https://bugs.mojang.com/browse/MC-128953)
@@ -227,11 +237,13 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
      * <p>
      * Note: Left Shift + F3 + C doesn't work on most keyboards, see http://keyboardchecker.com/
      * Use the right shift instead.
+     * <p>
+     * TODO: Make this work outside the game too (for example on the main menu).
      */
     @Redirect(method = "runTickKeyboard", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;debugCrashKeyPressTime:J", ordinal = 0))
     private long checkForF3C(Minecraft mc) {
         // Fix: Check if keys are down before checking time pressed
-        if (Keyboard.isKeyDown(46) && Keyboard.isKeyDown(61)) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_F3) && Keyboard.isKeyDown(Keyboard.KEY_C)) {
             debugCrashKeyPressTime = getSystemTime();
             actionKeyF3 = true;
         } else {
@@ -273,5 +285,30 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Override
     public boolean isCrashIntegratedServerNextTick() {
         return crashIntegratedServerNextTick;
+    }
+
+    @Override
+    public void makeErrorNotification(CrashReport report) {
+        if (ModConfig.crashes.replaceErrorNotifications) {
+            ProblemToast lastToast = getToastGui().getToast(ProblemToast.class, IToast.NO_TOKEN);
+            if (lastToast != null) lastToast.hide = true;
+        }
+
+        getToastGui().add(new ProblemToast(report));
+    }
+
+    /**
+     * @reason Checks if Ctrl + I is pressed and opens a warning screen if there is a visible or
+     * queued error notification. TODO: Main menu too
+     */
+    @Inject(method = "runTickKeyboard", at = @At("HEAD"))
+    private void checkForCtrlI(CallbackInfo ci) {
+        if (GuiScreen.isCtrlKeyDown() && !GuiScreen.isShiftKeyDown() && !GuiScreen.isAltKeyDown() && Keyboard.isKeyDown(Keyboard.KEY_I)) {
+            ProblemToast lastToast = getToastGui().getToast(ProblemToast.class, IToast.NO_TOKEN);
+            if (lastToast != null) {
+                lastToast.hide = true;
+                displayGuiScreen(new GuiWarningScreen(lastToast.report, Minecraft.getMinecraft().currentScreen));
+            }
+        }
     }
 }

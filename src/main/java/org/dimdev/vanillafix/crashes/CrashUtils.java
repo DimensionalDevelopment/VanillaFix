@@ -5,6 +5,7 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ReportedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dimdev.vanillafix.GuiWarningScreen;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -21,7 +22,17 @@ public final class CrashUtils {
         if (isClient()) {
             // TODO: what if there's several exceptions in a row?
             outputReport(report);
-            Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().displayGuiScreen(new GuiCrashScreen(report, true)));
+            Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().displayGuiScreen(new GuiWarningScreen(report, Minecraft.getMinecraft().currentScreen)));
+        } else {
+            log.fatal(report.getDescription(), report.getCrashCause());
+        }
+    }
+
+    public static void notify(CrashReport report) {
+        if (isClient()) {
+            outputReport(report);
+
+            ((IPatchedMinecraft) Minecraft.getMinecraft()).makeErrorNotification(report);
         } else {
             log.fatal(report.getDescription(), report.getCrashCause());
         }

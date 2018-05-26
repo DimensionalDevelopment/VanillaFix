@@ -19,7 +19,7 @@ public abstract class MixinUtil {
      * message a scheduled task throws an exception. The default vanilla behaviour is dangerous
      * as things will fail silently, making future bugs much harder to solve. In fact, it may
      * actually be a vanilla bug that the client doesn't crash, since they are using the "fatal"
-     * log level, which is otherwise used only for problems which crash the game.ss
+     * log level, which is otherwise used only for problems which crash the game.
      */
     @Overwrite
     @Nullable
@@ -35,6 +35,8 @@ public abstract class MixinUtil {
                 CrashUtils.crash(new CrashReport("Error executing task", e));
             } else if (action == ModConfig.ProblemAction.WARNING_SCREEN) {
                 CrashUtils.warn(new CrashReport("Error executing task", e));
+            } else if (action == ModConfig.ProblemAction.NOTIFICATION) {
+                CrashUtils.notify(new CrashReport("Error executing task", e));
             } else if (action == ModConfig.ProblemAction.LOG) {
                 logger.fatal("Error executing task", e);
             }
