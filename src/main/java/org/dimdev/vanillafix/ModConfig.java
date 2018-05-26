@@ -21,7 +21,21 @@ public final class ModConfig {
     public static Crashes crashes = new Crashes();
 
     public static class Fixes {
-        // TODO
+        @Name("bugFixes")
+        @LangKey("")
+        public boolean bugFixes = true;
+
+        @Name("crashFixes")
+        @LangKey("")
+        public boolean crashFixes = true;
+
+        @Name("profilerFixes")
+        @LangKey("")
+        public boolean profilerFixes = true;
+
+        @Name("textureFixes")
+        @LangKey("")
+        public boolean textureFixes = true;
     }
 
     public static class Crashes {
