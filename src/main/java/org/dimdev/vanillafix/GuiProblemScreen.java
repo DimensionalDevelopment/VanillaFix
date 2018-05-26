@@ -14,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.utils.HasteUpload;
-import org.dimdev.utils.SSLUtils;
 import org.dimdev.vanillafix.crashes.IPatchedCrashReport;
 
 import java.net.URI;
@@ -25,7 +24,6 @@ import java.util.Set;
 @SideOnly(Side.CLIENT)
 public abstract class GuiProblemScreen extends GuiScreen {
     private static final Logger log = LogManager.getLogger();
-    private static boolean patchedSSL = false;
 
     protected final CrashReport report;
     private String hasteLink = null;
@@ -47,16 +45,6 @@ public abstract class GuiProblemScreen extends GuiScreen {
         if (button.id == 1) {
             try {
                 if (hasteLink == null) {
-                    // This is just a quick fix for now. Instead, we should use a TrustManager that wraps the
-                    // default one and trusts IdenTrust, and eventually removed when Minecraft updates to a
-                    // version of Java that trusts IdenTrust (root certificate for Let's Encrypt).
-                    // See: https://stackoverflow.com/questions/34110426/does-java-support-lets-encrypt-certificates
-                    if (!patchedSSL) {
-                        // TODO: Remove this as soon as possible, or at least restore old TrustManager after upload
-                        SSLUtils.trustAllCertificates();
-                        patchedSSL = true;
-                    }
-
                     hasteLink = HasteUpload.uploadToHaste(ModConfig.crashes.hasteURL, "txt", report.getCompleteReport());
                 }
                 ReflectionHelper.findField(GuiScreen.class, "clickedLinkURI", "field_175286_t").set(this, new URI(hasteLink));
