@@ -7,12 +7,15 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import org.dimdev.vanillafix.textures.IPatchedCompiledChunk;
+import org.dimdev.vanillafix.textures.ModCompatibility;
 import org.dimdev.vanillafix.textures.TemporaryStorage;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import team.chisel.client.TextureStitcher;
 
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,7 +33,7 @@ public abstract class MixinTextureMap extends AbstractTexture {
      */
     @Overwrite
     public void updateAnimations() {
-        // TODO: this can be optimized by updating the visible texture list on each chunk update
+        // TODO: Recalculate list after chunk update instead!
         Minecraft.getMinecraft().mcProfiler.startSection("determineVisibleTextures");
         Set<TextureAtlasSprite> visibleTextures = new HashSet<>();
         for (RenderGlobal.ContainerLocalRenderInformation renderInfo : Minecraft.getMinecraft().renderGlobal.renderInfos) {
@@ -38,6 +41,7 @@ public abstract class MixinTextureMap extends AbstractTexture {
         }
         visibleTextures.addAll(TemporaryStorage.texturesUsed);
         TemporaryStorage.texturesUsed.clear();
+        ModCompatibility.addDependentTextures(visibleTextures);
         Minecraft.getMinecraft().mcProfiler.endSection();
 
         GlStateManager.bindTexture(getGlTextureId());

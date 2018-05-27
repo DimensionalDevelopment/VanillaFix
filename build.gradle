@@ -21,6 +21,7 @@ apply plugin: 'org.spongepowered.mixin'
 
 repositories {
     maven { url = "http://repo.spongepowered.org/maven" }
+    maven { url = "https://jitpack.io" }
 }
 
 configurations {
@@ -30,6 +31,8 @@ configurations {
 
 dependencies {
     embed("org.spongepowered:mixin:0.7.8-SNAPSHOT") { transitive = false }
+    compileOnly 'com.github.Chisel-Team:ConnectedTexturesMod:1.12~dev-SNAPSHOT'
+    compileOnly 'com.github.Chisel-Team:Chisel:1.12~dev-SNAPSHOT'
 }
 
 // Mod version
@@ -49,7 +52,7 @@ String jarVersion = fullVersion.replace("+", "-") // Github/Travis doesn't seem 
 // Minecraft, MCP, Forge, and Java versions
 sourceCompatibility = targetCompatibility = "1.8"
 ext.mcversion = "1.12.2"
-ext.forgeversion = "14.23.3.2655"
+ext.forgeversion = "14.23.4.2703"
 String mcpversion = "snapshot_20180227"
 
 // Configuration
