@@ -45,7 +45,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
         if (button.id == 1) {
             try {
                 if (hasteLink == null) {
-                    hasteLink = HasteUpload.uploadToHaste(ModConfig.crashes.hasteURL, "txt", report.getCompleteReport());
+                    hasteLink = HasteUpload.uploadToHaste(ModConfig.crashes.hasteURL, "mccrash", report.getCompleteReport());
                 }
                 ReflectionHelper.findField(GuiScreen.class, "clickedLinkURI", "field_175286_t").set(this, new URI(hasteLink));
                 mc.displayGuiScreen(new GuiConfirmOpenLink(this, hasteLink, 31102009, false));
