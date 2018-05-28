@@ -16,10 +16,12 @@ import org.spongepowered.asm.mixin.Shadow;
  * ENCHANTMENT_ fields. Instead of modifying those static fields, make a new instance
  * of IModifier every use. Overwriting these methods is necessary, it would require a
  * redirect for every single line otherwise.
+ * <p>
+ * Bugs fixed:
+ * - https://bugs.mojang.com/browse/MC-128547
  */
 @Mixin(EnchantmentHelper.class)
 public final class MixinEnchantmentHelper {
-
     @Shadow private static void applyEnchantmentModifierArray(EnchantmentHelper.IModifier modifier, Iterable<ItemStack> stacks) {}
     @Shadow private static void applyEnchantmentModifier(EnchantmentHelper.IModifier modifier, ItemStack stack) {}
 

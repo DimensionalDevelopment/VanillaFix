@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix;
+package org.dimdev.vanillafix.crashes;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiConfirmOpenLink;
@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.utils.HasteUpload;
-import org.dimdev.vanillafix.crashes.IPatchedCrashReport;
+import org.dimdev.vanillafix.ModConfig;
 
 import java.net.URI;
 import java.util.ArrayList;

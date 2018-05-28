@@ -7,7 +7,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.crash.CrashReport;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.dimdev.vanillafix.GuiProblemScreen;
 
 @SideOnly(Side.CLIENT)
 public class GuiCrashScreen extends GuiProblemScreen {

@@ -20,7 +20,7 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.Logger;
-import org.dimdev.vanillafix.GuiWarningScreen;
+import org.dimdev.vanillafix.crashes.GuiWarningScreen;
 import org.dimdev.vanillafix.ModConfig;
 import org.dimdev.vanillafix.crashes.CrashUtils;
 import org.dimdev.vanillafix.crashes.ProblemToast;
@@ -59,6 +59,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow private boolean actionKeyF3;
     @Shadow @Nullable private IntegratedServer integratedServer;
     @Shadow private boolean integratedServerIsRunning;
+    @Shadow @Nullable public GuiScreen currentScreen;
 
     @Shadow @SuppressWarnings("RedundantThrows") private void init() throws LWJGLException, IOException {}
     @Shadow @SuppressWarnings("RedundantThrows") private void runGameLoop() throws IOException {}
@@ -68,10 +69,8 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow @Nullable public abstract NetHandlerPlayClient getConnection();
     @Shadow public static long getSystemTime() { return 0; }
     @Shadow public abstract void loadWorld(@Nullable WorldClient worldClientIn);
-
     @Shadow public abstract GuiToast getToastGui();
 
-    @Shadow @Nullable public GuiScreen currentScreen;
     private CrashReport currentReport = null;
     private boolean crashIntegratedServerNextTick;
     private int clientCrashCount = 0;
@@ -274,16 +273,14 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         return -1;
     }
 
-    /**
-     * @reason Disables the vanilla F3 + C logic.
-     */
+    /** @reason Disables the vanilla F3 + C logic. */
     @Redirect(method = "runTickKeyboard", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Keyboard;isKeyDown(I)Z", ordinal = 0))
-    private boolean getF3DownForF3C(int key) {
+    private boolean isKeyDownF3(int key) {
         return false;
     }
 
     @Override
-    public boolean isCrashIntegratedServerNextTick() {
+    public boolean shouldCrashIntegratedServerNextTick() {
         return crashIntegratedServerNextTick;
     }
 

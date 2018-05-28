@@ -19,7 +19,8 @@ public class ProblemToast implements IToast {
         this.report = report;
     }
 
-    @Override public IToast.Visibility draw(GuiToast toastGui, long delta) {
+    @Override
+    public IToast.Visibility draw(GuiToast toastGui, long delta) {
         if (hide) return Visibility.HIDE;
         
         toastGui.getMinecraft().getTextureManager().bindTexture(TEXTURE_TOASTS);

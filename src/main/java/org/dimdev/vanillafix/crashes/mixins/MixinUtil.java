@@ -14,6 +14,7 @@ import java.util.concurrent.FutureTask;
 
 @Mixin(Util.class)
 public abstract class MixinUtil {
+
     /**
      * @reason Warn the player (configurable to crash or log too) instead of only logging a
      * message a scheduled task throws an exception. The default vanilla behaviour is dangerous

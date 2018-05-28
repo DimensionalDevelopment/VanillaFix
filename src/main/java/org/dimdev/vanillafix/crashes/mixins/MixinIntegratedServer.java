@@ -22,7 +22,7 @@ public abstract class MixinIntegratedServer {
      */
     @Inject(method = "tick", at = @At("HEAD"))
     private void beforeTick(CallbackInfo ci) {
-        if (((IPatchedMinecraft) mc).isCrashIntegratedServerNextTick()) {
+        if (((IPatchedMinecraft) mc).shouldCrashIntegratedServerNextTick()) {
             throw new ReportedException(new CrashReport("Manually triggered server-side debug crash", new Throwable()));
         }
     }

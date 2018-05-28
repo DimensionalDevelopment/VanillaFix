@@ -39,9 +39,8 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
     @Shadow public void disconnect(final ITextComponent textComponent) {}
     @Shadow private static boolean isMovePlayerPacketInvalid(CPacketPlayer packetIn) { return false; }
     @Shadow private void captureCurrentPosition() {}
-    @Shadow public void setPlayerLocation(double x, double y, double z, float yaw, float pitch) {}
 
-    private static final boolean SKIP_ANTICHEAT = true; // TODO
+    private static final boolean SKIP_ANTICHEAT = true;
     private static final boolean DEBUG_SPEED_BUFFER = false;
     private static final double EXCESS_SPEED_BUFFER = 3; // blocks (balance between resync packets and client desyncs)
     private static final double SPEED_MULTIPLIER = 0.11785905161311232 / 0.1;
@@ -248,9 +247,6 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
             LOGGER.warn("{} out of sync, resyncing! error = {}", player.getName(), Math.sqrt(errorSq));
             player.setPositionAndRotation(player.posX, player.posY, player.posZ, packetYaw, packetPitch);
             syncClientPosition();
-//        } else if (errorSq > 0.0625D) {
-//            LOGGER.warn("{} moved wrongly! error = {}", player.getName(), Math.sqrt(errorSq));
-//            player.setPositionAndRotation(player.posX, player.posY, player.posZ, packetYaw, packetPitch);
         } else if (movedIntoBlock) {
             LOGGER.warn("{} tried to move into a block!", player.getName());
             player.setPositionAndRotation(player.posX, player.posY, player.posZ, packetYaw, packetPitch);

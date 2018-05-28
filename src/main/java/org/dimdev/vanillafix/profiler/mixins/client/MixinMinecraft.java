@@ -38,17 +38,13 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo {
     @Shadow private String debugProfilerName;
     private boolean useIntegratedServerProfiler = false;
 
-    /**
-     * @reason Implement using Ctrl + 0-9 to select profiler sections 10-19.
-     */
+    /** @reason Implement using Ctrl + 0-9 to select profiler sections 10-19. */
     @ModifyVariable(method = "updateDebugProfilerName", at = @At("HEAD"), ordinal = 0)
     private int getKeyCountForProfilerNameUpdate(int keyCount) {
         return GuiScreen.isCtrlKeyDown() ? keyCount + 10 : keyCount;
     }
 
-    /**
-     * @reason Implement F3 + S to toggle between client and integrated server profilers.
-     */
+    /** @reason Implement F3 + S to toggle between client and integrated server profilers. */
     @Inject(method = "processKeyF3", at = @At("HEAD"), cancellable = true)
     private void checkF3S(int auxKey, CallbackInfoReturnable<Boolean> cir) {
         if (auxKey == Keyboard.KEY_S) {
@@ -65,17 +61,13 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo {
         }
     }
 
-    /**
-     * @reason Add the F3 + S help message to the F3 + Q debug help menu.
-     */
+    /** @reason Add the F3 + S help message to the F3 + Q debug help menu. */
     @Inject(method = "processKeyF3", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiNewChat;printChatMessage(Lnet/minecraft/util/text/ITextComponent;)V", ordinal = 9), locals = LocalCapture.CAPTURE_FAILHARD)
     private void addF3SHelpMessage(int auxKey, CallbackInfoReturnable<Boolean> cir, GuiNewChat chatGui) {
         chatGui.printChatMessage(new TextComponentTranslation("vanillafix.debug.switch_profiler.help"));
     }
 
-    /**
-     * @reason Use the integrated server profiler rather than client profiler after F3 + S was pressed.
-     */
+    /** @reason Use the integrated server profiler rather than client profiler after F3 + S was pressed. */
     @SuppressWarnings("InvalidMemberReference") // https://github.com/minecraft-dev/MinecraftDev/issues/387
     @Redirect(method = {"displayDebugInfo", "updateDebugProfilerName"}, at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;mcProfiler:Lnet/minecraft/profiler/Profiler;"))
     private Profiler getCurrentProfiler(Minecraft minecraft) {
@@ -98,9 +90,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo {
         }
     }
 
-    /**
-     * @reason Get the correct debug profiler name
-     */
+    /** @reason Get the correct debug profiler name */
     @Redirect(method = "updateDebugProfilerName", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;debugProfilerName:Ljava/lang/String;", opcode = Opcodes.GETFIELD))
     private String getDebugProfilerName(Minecraft mc) {
         if (useIntegratedServerProfiler && integratedServer != null) {
@@ -110,9 +100,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo {
         }
     }
 
-    /**
-     * @reason Set the correct debug profiler name
-     */
+    /** @reason Set the correct debug profiler name */
     @Redirect(method = "updateDebugProfilerName", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;debugProfilerName:Ljava/lang/String;", opcode = Opcodes.PUTFIELD))
     private void setDebugProfilerName(Minecraft mc, String debugProfilerName) {
         if (useIntegratedServerProfiler && integratedServer != null) {
@@ -143,9 +131,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo {
         }
     }
 
-    /**
-     * @reason Disable client profiling when profiling the integrated server.
-     */
+    /** @reason Disable client profiling when profiling the integrated server. */
     @Redirect(method = "runGameLoop", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;showDebugProfilerChart:Z"))
     private boolean disableClientProfilingIfUnnecessary(GameSettings gameSettings) {
         return gameSettings.showDebugProfilerChart && !useIntegratedServerProfiler;

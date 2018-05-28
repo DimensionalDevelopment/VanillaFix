@@ -44,7 +44,7 @@ public class VanillaFix {
         log.info("Done initializing StacktraceDeobfuscator");
 
         // Check if config is outdated and needs to be deleted
-        boolean configOutdated = false;
+        boolean configOutdated;
         File configVersionFile = new File(modDir, "config_version");
         if (configVersionFile.exists()) {
             try (FileReader reader = new FileReader(configVersionFile); Scanner scanner = new Scanner(reader)) {

@@ -2,7 +2,6 @@ package org.dimdev.vanillafix.bugs.mixins;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -57,7 +56,6 @@ public abstract class MixinEntityPlayerMP extends EntityPlayer {
      */
     @Inject(method = "updateFallState", at = @At("HEAD"))
     public void updateFallState(double y, boolean onGround, IBlockState state, BlockPos pos, CallbackInfo ci) {
-        this.onGround = !world.getCollisionBoxes(this, getEntityBoundingBox().expand(0, -0.05, 0)).isEmpty();
         handleFalling(y, this.onGround);
     }
 }

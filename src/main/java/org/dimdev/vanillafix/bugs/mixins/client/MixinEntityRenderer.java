@@ -10,14 +10,9 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(EntityRenderer.class)
 public class MixinEntityRenderer {
-
-    /**
-     * @author ZombieHDGaming
-     * @Description Fixes issues with F3 and how it acts on non-solid blocks
-     */
+    /** @reason Makes the third-person view camera pass through non-solid blocks (fixes https://bugs.mojang.com/browse/MC-30845) */
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;rayTraceBlocks(Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;)Lnet/minecraft/util/math/RayTraceResult;"))
     private RayTraceResult rayTraceBlocks(WorldClient world, Vec3d from, Vec3d to) {
         return world.rayTraceBlocks(from, to, false, true, true);
     }
-
 }

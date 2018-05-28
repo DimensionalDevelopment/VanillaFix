@@ -4,6 +4,6 @@ import net.minecraft.crash.CrashReport;
 
 public interface IPatchedMinecraft {
     void clearCurrentReport();
-    boolean isCrashIntegratedServerNextTick();
+    boolean shouldCrashIntegratedServerNextTick();
     void makeErrorNotification(CrashReport report);
 }

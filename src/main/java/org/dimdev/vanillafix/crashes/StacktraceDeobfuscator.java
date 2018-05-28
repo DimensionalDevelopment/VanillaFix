@@ -29,7 +29,6 @@ public final class StacktraceDeobfuscator {
         if (!mappings.exists()) {
             HttpURLConnection connection = null;
             try {
-                // TODO: Make this get the latest snapshot for that version
                 URL mappingsURL = new URL("http://export.mcpbot.bspk.rs/mcp_snapshot_nodoc/" + version + "/mcp_snapshot_nodoc-" + version + ".zip");
                 connection = (HttpURLConnection) mappingsURL.openConnection();
                 connection.setDoInput(true);

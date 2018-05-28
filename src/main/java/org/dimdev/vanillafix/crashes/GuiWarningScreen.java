@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix;
+package org.dimdev.vanillafix.crashes;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiOptionButton;
@@ -7,20 +7,12 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.crash.CrashReport;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @SideOnly(Side.CLIENT)
 public class GuiWarningScreen extends GuiProblemScreen {
-    private static final String HASTE_BASE_URL = ModConfig.crashes.hasteURL;
-    private static final Logger log = LogManager.getLogger();
-    private static boolean patchedSSL = false;
-
-    private final GuiScreen nextScreen;
 
     public GuiWarningScreen(CrashReport report, GuiScreen nextScreen) {
         super(report);
-        this.nextScreen = nextScreen;
     }
 
     @Override

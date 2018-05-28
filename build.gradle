@@ -84,7 +84,7 @@ jar {
         exclude "LICENSE.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
     }
     manifest.attributes(
-            "FMLCorePluginContainsFMLMod": "true", // TODO: Fix runClient
+            "FMLCorePluginContainsFMLMod": "true",
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "MixinConfigs": "mixins.vanillafix.bugs.json," +
                     "mixins.vanillafix.crashes.json," +

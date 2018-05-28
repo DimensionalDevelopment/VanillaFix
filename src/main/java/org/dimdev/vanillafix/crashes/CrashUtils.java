@@ -5,14 +5,13 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.util.ReportedException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dimdev.vanillafix.GuiWarningScreen;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public final class CrashUtils {
-    private static Logger log = LogManager.getLogger("VF");
+    private static final Logger log = LogManager.getLogger("VF");
 
     public static void crash(CrashReport report) {
         throw new ReportedException(report);
