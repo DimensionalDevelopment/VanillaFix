@@ -9,10 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -88,12 +85,22 @@ public final class StacktraceDeobfuscator {
         StacktraceDeobfuscator.srgMcpMethodMap = srgMcpMethodMap;
     }
 
-    public static void deobfuscateStacktrace(Throwable t) {
-        t.setStackTrace(
-                Arrays.stream(t.getStackTrace())
-                      .map(el -> new StackTraceElement(el.getClassName(), deobfuscateMethodName(el.getMethodName()), el.getFileName(), el.getLineNumber()))
-                      .toArray(StackTraceElement[]::new)
-        );
+    public static void deobfuscateThrowable(Throwable t) {
+        Deque<Throwable> queue = new ArrayDeque<>();
+        queue.add(t);
+        while (!queue.isEmpty()) {
+            t = queue.remove();
+            deobfuscateStacktrace(t.getStackTrace());
+            if (t.getCause() != null) queue.add(t.getCause());
+            Collections.addAll(queue, t.getSuppressed());
+        }
+    }
+
+    public static void deobfuscateStacktrace(StackTraceElement[] stackTrace) {
+        int index = 0;
+        for (StackTraceElement el : stackTrace) {
+            stackTrace[index++] = new StackTraceElement(el.getClassName(), deobfuscateMethodName(el.getMethodName()), el.getFileName(), el.getLineNumber());
+        }
     }
 
     public static String deobfuscateMethodName(String srgName) {

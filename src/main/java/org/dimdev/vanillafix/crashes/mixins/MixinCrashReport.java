@@ -16,6 +16,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,7 +32,6 @@ public abstract class MixinCrashReport implements IPatchedCrashReport {
 
     @Shadow private static String getWittyComment() { return null; }
     @Shadow @Final private String description;
-    @Shadow public abstract String getCauseStackTraceOrString();
 
     private Set<ModContainer> suspectedMods;
 
@@ -64,7 +65,7 @@ public abstract class MixinCrashReport implements IPatchedCrashReport {
     /** @reason Deobfuscates the stacktrace using MCP mappings */
     @Inject(method = "populateEnvironment", at = @At("HEAD"))
     private void beforePopulateEnvironment(CallbackInfo ci) {
-        StacktraceDeobfuscator.deobfuscateStacktrace(cause);
+        StacktraceDeobfuscator.deobfuscateThrowable(cause);
     }
 
     /** @reason Improve report formatting */
@@ -73,12 +74,12 @@ public abstract class MixinCrashReport implements IPatchedCrashReport {
         StringBuilder builder = new StringBuilder();
 
         builder.append("---- Minecraft Crash Report ----\n")
-               .append("// ").append(getWittyComment())
+               .append("// ").append(getVanillaFixComment())
                .append("\n\n")
                .append("Time: ").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(new Date())).append("\n")
                .append("Description: ").append(description)
                .append("\n\n")
-               .append(getCauseStackTraceOrString())
+               .append(stacktraceToString(cause).replace("\t", "    ")) // Vanilla's getCauseStackTraceOrString doesn't print causes and suppressed exceptions
                .append("\n\nA detailed walkthrough of the error, its code path and all known details is as follows:\n");
 
         for (int i = 0; i < 87; i++) {
@@ -87,7 +88,13 @@ public abstract class MixinCrashReport implements IPatchedCrashReport {
 
         builder.append("\n\n");
         getSectionsInStringBuilder(builder);
-        return builder.toString().replace("\t", "      ");
+        return builder.toString().replace("\t", "    ");
+    }
+
+    private static String stacktraceToString(Throwable cause) {
+        StringWriter writer = new StringWriter();
+        cause.printStackTrace(new PrintWriter(writer));
+        return writer.toString();
     }
 
     /** @reason Improve report formatting, add VanillaFix comment */
@@ -99,5 +106,17 @@ public abstract class MixinCrashReport implements IPatchedCrashReport {
         }
 
         systemDetailsCategory.appendToStringBuilder(builder);
+    }
+
+    private String getVanillaFixComment() {
+        try {
+            if (Math.random() < 0.5 && !suspectedMods.isEmpty()) {
+                ModContainer mod = suspectedMods.iterator().next();
+                String author = mod.getMetadata().authorList.get((int) (Math.random() * mod.getMetadata().authorList.size()));
+                return "I blame " + author + ", author of " + mod.getName() + ".";
+            }
+        } catch (Throwable ignored) {}
+
+        return getWittyComment();
     }
 }

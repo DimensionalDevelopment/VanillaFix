@@ -17,23 +17,19 @@ import java.util.List;
 public class MixinCrashReportCategory {
     @Shadow @Final private String name;
     @Shadow @Final private List<CrashReportCategory.Entry> children;
+
     /** @reason Deobfuscate stacktrace for crash report categories. */
     @Inject(method = "getPrunedStackTrace", at = @At(value = "INVOKE", target = "Ljava/lang/Thread;getStackTrace()[Ljava/lang/StackTraceElement;", shift = At.Shift.BY, by = 2, ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD)
     private void afterGetStacktrace(int size, CallbackInfoReturnable<Integer> cir, StackTraceElement[] stackTrace) {
-        int index = 0;
-        for (StackTraceElement el : stackTrace) {
-            stackTrace[index++] = new StackTraceElement(el.getClassName(), StacktraceDeobfuscator.deobfuscateMethodName(el.getMethodName()), el.getFileName(), el.getLineNumber());
-        }
+        StacktraceDeobfuscator.deobfuscateStacktrace(stackTrace);
     }
 
     /** @reason Improve crash report formatting **/
     @Overwrite
     public void appendToStringBuilder(StringBuilder builder) {
         builder.append("-- ").append(name).append(" --\n");
-        //builder.append("Details:");
-
         for (CrashReportCategory.Entry entry : children) {
-            String sectionIndent = "      ";
+            String sectionIndent = "  ";
 
             builder.append(sectionIndent)
                    .append(entry.getKey())
@@ -48,6 +44,7 @@ public class MixinCrashReportCategory {
             for (String line : entry.getValue().trim().split("\n")) {
                 if (!first) builder.append("\n").append(indent);
                 first = false;
+                if (line.startsWith("\t")) line = line.substring(1);
                 builder.append(line.replace("\t", ""));
             }
 

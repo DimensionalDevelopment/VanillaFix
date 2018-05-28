@@ -3,6 +3,7 @@ package org.dimdev.vanillafix;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.dimdev.utils.SSLUtils;
+import org.dimdev.vanillafix.crashes.DeobfuscatingRewritePolicy;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 
@@ -30,6 +31,9 @@ public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
         } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
             throw new RuntimeException();
         }
+
+        // Install the log exception deobfuscation rewrite policy
+        DeobfuscatingRewritePolicy.install();
 
         MixinBootstrap.init();
         Mixins.addConfiguration("mixins.vanillafix.bugs.json");
