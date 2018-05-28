@@ -1,13 +1,20 @@
 package org.dimdev.vanillafix;
 
+import net.minecraft.launchwrapper.Launch;
+import net.minecraft.launchwrapper.LogWrapper;
 import net.minecraftforge.common.ForgeVersion;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dimdev.utils.SSLUtils;
 import org.dimdev.vanillafix.crashes.DeobfuscatingRewritePolicy;
+import org.dimdev.vanillafix.crashes.StacktraceDeobfuscator;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -20,6 +27,8 @@ import java.util.Map;
 @IFMLLoadingPlugin.SortingIndex(-5000)
 @IFMLLoadingPlugin.TransformerExclusions("org.dimdev.vanillafix.")
 public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
+    private static final Logger log = LogManager.getLogger();
+    private static final String MCP_VERSION = "20180519-1.12"; // TODO: Use version for current Minecraft version!
 
     public VanillaFixLoadingPlugin() {
         // Trust the "IdenTrust DST Root CA X3" certificate (used by Let's Encrypt, which is used by paste.dimdev.org)
@@ -31,6 +40,25 @@ public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
         } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
             throw new RuntimeException();
         }
+
+        // Initialize StacktraceDeobfuscator
+        File modDir = new File(Launch.minecraftHome, "config/vanillafix");
+        modDir.mkdirs();
+
+        // Initialize StacktraceDeobfuscator
+        log.info("Initializing StacktraceDeobfuscator");
+        try {
+            File mappings = new File(modDir, "methods-" + MCP_VERSION + ".csv");
+            if (mappings.exists()) {
+                log.info("Found MCP method mappings: " + mappings.getName());
+            } else {
+                log.info("Downloading MCP method mappings to: " + mappings.getName());
+            }
+            StacktraceDeobfuscator.init(mappings, MCP_VERSION);
+        } catch (Exception e) {
+            log.error("Failed to get MCP data!", e);
+        }
+        log.info("Done initializing StacktraceDeobfuscator");
 
         // Install the log exception deobfuscation rewrite policy
         DeobfuscatingRewritePolicy.install();

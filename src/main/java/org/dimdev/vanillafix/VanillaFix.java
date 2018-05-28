@@ -6,9 +6,11 @@ import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
-import org.dimdev.vanillafix.crashes.StacktraceDeobfuscator;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 @Mod(modid = "vanillafix",
@@ -18,7 +20,6 @@ import java.util.Scanner;
      updateJSON = "https://gist.githubusercontent.com/Runemoro/28e8cf4c24a5f17f508a5d34f66d229f/raw/vanillafix_update.json")
 public class VanillaFix {
     private static final int CONFIG_VERSION = 1;
-    String MCP_VERSION = "20180519-1.12";
     public File modDir;
 
     @Mod.EventHandler
@@ -26,22 +27,6 @@ public class VanillaFix {
         Logger log = event.getModLog();
         modDir = new File(event.getModConfigurationDirectory(), "vanillafix");
         modDir.mkdirs();
-
-        // Initialize StacktraceDeobfuscator
-        // TODO: Use version for current Minecraft version!
-        log.info("Initializing StacktraceDeobfuscator");
-        try {
-            File mappings = new File(modDir, "methods-" + MCP_VERSION + ".csv");
-            if (mappings.exists()) {
-                log.info("Found MCP method mappings: " + mappings.getName());
-            } else {
-                log.info("Downloading MCP method mappings to: " + mappings.getName());
-            }
-            StacktraceDeobfuscator.init(mappings, MCP_VERSION);
-        } catch (Exception e) {
-            log.error("Failed to get MCP data!", e);
-        }
-        log.info("Done initializing StacktraceDeobfuscator");
 
         // Check if config is outdated and needs to be deleted
         boolean configOutdated;
