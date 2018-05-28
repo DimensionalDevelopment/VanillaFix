@@ -123,9 +123,13 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
         }
 
         // Handle jump
-        player.onGround = !player.world.getCollisionBoxes(player, player.getEntityBoundingBox().expand(0, -0.05, 0)).isEmpty();
         if (player.onGround && !packet.isOnGround() && yDiff > 0.0D) {
             player.jump();
+        }
+
+        if (!player.capabilities.isFlying && !packet.isOnGround()) {
+            yDiff = 0;
+            packetY = player.posY;
         }
 
         boolean trustPlayer = SKIP_ANTICHEAT || server.isSinglePlayer() && server.getServerOwner().equals(player.getName());
