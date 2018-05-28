@@ -1,9 +1,7 @@
 package org.dimdev.vanillafix;
 
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.launchwrapper.LogWrapper;
 import net.minecraftforge.common.ForgeVersion;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,6 +66,7 @@ public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
         Mixins.addConfiguration("mixins.vanillafix.crashes.json");
         Mixins.addConfiguration("mixins.vanillafix.profiler.json");
         Mixins.addConfiguration("mixins.vanillafix.textures.json");
+        Mixins.addConfiguration("mixins.vanillafix.idlimit.json");
     }
 
     @Override public String[] getASMTransformerClass() {
