@@ -18,7 +18,7 @@ public class GuiWarningScreen extends GuiProblemScreen {
     @Override
     public void initGui() {
         super.initGui();
-        buttonList.add(new GuiOptionButton(0, width / 2 - 155, height / 4 + 120 + 12, I18n.format("vanillafix.gui.keepPlaying")));
+        buttonList.add(new GuiButton(0, width / 2 - 155,  height / 4 + 120 + 12, 150, 20, I18n.format("vanillafix.gui.keepPlaying")));
         // TODO: Pause sounds too (see Minecraft.displayInGameMenu)
     }
 

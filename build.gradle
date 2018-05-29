@@ -77,6 +77,9 @@ sourceSets {
 }
 
 // Tasks
+compileJava {
+    options.compilerArgs += ['-Xlint:none']
+}
 
 jar {
     archiveName = archivesBaseName + "-" + jarVersion + ".jar"

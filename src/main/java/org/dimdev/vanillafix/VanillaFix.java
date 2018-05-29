@@ -2,9 +2,11 @@ package org.dimdev.vanillafix;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
@@ -30,6 +32,7 @@ public class VanillaFix {
     private static final int CONFIG_VERSION = 1;
     private static final boolean DEBUG_BLOCK_IDS = false;
     private static final boolean DEBUG_ITEM_IDS = false;
+    private static final boolean DEBUG_INIT_ERROR = false; // For testing the init error screen outside of dev. Don't forget to unset!
 
     @Mod.EventHandler
     public void onPreInit(FMLPreInitializationEvent event) {
@@ -96,5 +99,7 @@ public class VanillaFix {
                 itemRegistry.register(item);
             }
         }
+
+        if (DEBUG_INIT_ERROR) throw new ReportedException(new CrashReport("Debug init crash", new Throwable()));
     }
 }

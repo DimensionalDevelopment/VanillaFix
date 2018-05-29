@@ -37,7 +37,7 @@ public abstract class GuiProblemScreen extends GuiScreen {
     public void initGui() {
         mc.setIngameNotInFocus();
         buttonList.clear();
-        buttonList.add(new GuiOptionButton(1, width / 2 - 155 + 160, height / 4 + 120 + 12, I18n.format("vanillafix.gui.getLink")));
+        buttonList.add(new GuiButton(1, width / 2 - 155 + 160, height / 4 + 120 + 12, 150, 20, I18n.format("vanillafix.gui.getLink")));
     }
 
     @Override

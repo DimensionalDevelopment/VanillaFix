@@ -13,13 +13,13 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(GameData.class)
 public abstract class MixinGameData {
     /** @reason Removes the block ID limit. */
-    @ModifyConstant(method = "init", constant = @Constant(intValue = 4095, ordinal = 0))
+    @ModifyConstant(method = "init", constant = @Constant(intValue = 4095, ordinal = 0), remap = false)
     private static int getBlockIDLimit(int value) {
         return Integer.MAX_VALUE - 1;
     }
 
     /** @reason Removes the item ID limit. */
-    @ModifyConstant(method = "init", constant = @Constant(intValue = 31999, ordinal = 0))
+    @ModifyConstant(method = "init", constant = @Constant(intValue = 31999, ordinal = 0), remap = false)
     private static int getItemIDLimit(int value) {
         return Integer.MAX_VALUE - 1;
     }

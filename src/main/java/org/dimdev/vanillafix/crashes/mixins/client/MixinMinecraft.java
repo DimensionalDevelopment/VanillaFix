@@ -2,32 +2,40 @@ package org.dimdev.vanillafix.crashes.mixins.client;
 
 import com.google.common.util.concurrent.ListenableFutureTask;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SoundHandler;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.toasts.GuiToast;
 import net.minecraft.client.gui.toasts.IToast;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.resources.*;
+import net.minecraft.client.resources.data.MetadataSerializer;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.profiler.ISnooperInfo;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.MinecraftError;
 import net.minecraft.util.ReportedException;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.Logger;
-import org.dimdev.vanillafix.crashes.GuiWarningScreen;
 import org.dimdev.vanillafix.ModConfig;
-import org.dimdev.vanillafix.crashes.CrashUtils;
-import org.dimdev.vanillafix.crashes.ProblemToast;
-import org.dimdev.vanillafix.crashes.GuiCrashScreen;
-import org.dimdev.vanillafix.crashes.IPatchedMinecraft;
+import org.dimdev.vanillafix.VanillaFix;
+import org.dimdev.vanillafix.crashes.*;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -38,13 +46,14 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.FutureTask;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, IPatchedMinecraft {
-
     @Shadow @Final private static Logger LOGGER;
     @Shadow volatile boolean running;
     @Shadow private boolean hasCrashed;
@@ -60,6 +69,17 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow @Nullable private IntegratedServer integratedServer;
     @Shadow private boolean integratedServerIsRunning;
     @Shadow @Nullable public GuiScreen currentScreen;
+    @Shadow public int displayWidth;
+    @Shadow public int displayHeight;
+    @Shadow public TextureManager renderEngine;
+    @Shadow public FontRenderer fontRenderer;
+    @Shadow private int leftClickCounter;
+    @Shadow private Framebuffer framebufferMc;
+    @Shadow private IReloadableResourceManager mcResourceManager;
+    @Shadow private SoundHandler mcSoundHandler;
+    @Shadow @Final private List<IResourcePack> defaultResourcePacks;
+    @Shadow private LanguageManager mcLanguageManager;
+    @Shadow @Final private MetadataSerializer metadataSerializer_;
 
     @Shadow @SuppressWarnings("RedundantThrows") private void init() throws LWJGLException, IOException {}
     @Shadow @SuppressWarnings("RedundantThrows") private void runGameLoop() throws IOException {}
@@ -70,6 +90,11 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public static long getSystemTime() { return 0; }
     @Shadow public abstract void loadWorld(@Nullable WorldClient worldClientIn);
     @Shadow public abstract GuiToast getToastGui();
+    @Shadow protected abstract void createDisplay() throws LWJGLException;
+    @Shadow public abstract void refreshResources();
+    @Shadow public abstract TextureManager getTextureManager();
+    @Shadow public abstract void updateDisplay();
+    @Shadow protected abstract void checkGLError(String message);
 
     private CrashReport currentReport = null;
     private boolean crashIntegratedServerNextTick;
@@ -89,7 +114,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         } catch (Throwable throwable) {
             CrashReport report = CrashReport.makeCrashReport(throwable, "Initializing game");
             report.makeCategory("Initialization");
-            displayCrashReport(addGraphicsAndWorldToCrashReport(report)); // TODO: GUI for this too
+            displayInitErrorScreen(addGraphicsAndWorldToCrashReport(report));
             return;
         }
 
@@ -134,12 +159,88 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         report.getCategory().addDetail("Integrated Server Crashes Since Restart", () -> String.valueOf(serverCrashCount));
     }
 
-    public void displayCrashScreen(CrashReport report) {
+    public void displayInitErrorScreen(CrashReport report) {
+        CrashUtils.outputReport(report);
+        try {
+            try {
+                File modFile = new File(VanillaFix.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                defaultResourcePacks.add(modFile.isDirectory() ? new FolderResourcePack(modFile) : new FileResourcePack(modFile));
+            } catch (Throwable t) {
+                LOGGER.error("Failed to load VanillaFix resource pack", t);
+            }
+
+            mcResourceManager = new SimpleReloadableResourceManager(metadataSerializer_);
+            renderEngine = new TextureManager(mcResourceManager);
+            mcResourceManager.registerReloadListener(renderEngine);
+
+            mcLanguageManager = new LanguageManager(metadataSerializer_, gameSettings.language);
+            mcResourceManager.registerReloadListener(mcLanguageManager);
+
+            refreshResources(); // TODO: Why is this necessary?
+            fontRenderer = new FontRenderer(gameSettings, new ResourceLocation("textures/font/ascii.png"), renderEngine, false);
+            mcResourceManager.registerReloadListener(fontRenderer);
+
+            mcSoundHandler = new SoundHandler(mcResourceManager, gameSettings);
+            mcResourceManager.registerReloadListener(mcSoundHandler);
+
+            displayGuiScreen(new GuiInitErrorScreen(report));
+            running = true;
+            while (running) {
+                if (Display.isCreated() && Display.isCloseRequested()) running = false;
+                leftClickCounter = 10000;
+                currentScreen.handleInput();
+                currentScreen.updateScreen();
+
+                GlStateManager.pushMatrix();
+                GlStateManager.clear(16640);
+                framebufferMc.bindFramebuffer(true);
+                GlStateManager.enableTexture2D();
+
+                GlStateManager.viewport(0, 0, displayWidth, displayHeight);
+
+                // EntityRenderer.setupOverlayRendering
+                ScaledResolution scaledResolution = new ScaledResolution((Minecraft) (Object) this);
+                GlStateManager.clear(256);
+                GlStateManager.matrixMode(5889);
+                GlStateManager.loadIdentity();
+                GlStateManager.ortho(0.0D, scaledResolution.getScaledWidth_double(), scaledResolution.getScaledHeight_double(), 0, 1000, 3000);
+                GlStateManager.matrixMode(5888);
+                GlStateManager.loadIdentity();
+                GlStateManager.translate(0, 0, -2000);
+                GlStateManager.clear(256);
+
+                int width = scaledResolution.getScaledWidth();
+                int height = scaledResolution.getScaledHeight();
+                int mouseX = Mouse.getX() * width / displayWidth;
+                int mouseY = height - Mouse.getY() * height / displayHeight - 1;
+                currentScreen.drawScreen(mouseX, mouseY, 0);
+
+                framebufferMc.unbindFramebuffer();
+                GlStateManager.popMatrix();
+
+                GlStateManager.pushMatrix();
+                framebufferMc.framebufferRender(displayWidth, displayHeight);
+                GlStateManager.popMatrix();
+
+                updateDisplay();
+                Thread.yield();
+                Display.sync(60);
+                checkGLError("Init Error Screen");
+            }
+        } catch (Throwable t) {
+            LOGGER.error("An uncaught exception occured while displaying the crash screen, making normal report instead", t);
+            displayCrashReport(report);
+            FMLCommonHandler.instance().handleExit(report.getFile() != null ? -1 : -2);
+        }
+    }
+
+    public void displayCrashScreen(CrashReport report) { // TODO: Shouldn't the GL state be reset here and on displayInitErrorScreen?
         if (currentReport != null) {
             // There was already a crash being reported, the crash screen might have
             // crashed. Report it normally instead.
             LOGGER.error("An uncaught exception occured while displaying the crash screen, making normal report instead", report.getCrashCause());
             displayCrashReport(report);
+            FMLCommonHandler.instance().handleExit(report.getFile() != null ? -1 : -2);
             return;
         }
         currentReport = report;
@@ -163,7 +264,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Overwrite
     public void displayCrashReport(CrashReport report) {
         CrashUtils.outputReport(report);
-        FMLCommonHandler.instance().handleExit(report.getFile() != null ? -1 : -2);
     }
 
     /**
