@@ -1,0 +1,69 @@
+vanillafix.gui.getLink=Obter link
+vanillafix.gui.failed=[Falha]
+vanillafix.gui.keepPlaying=Continuar jogando
+vanillafix.gui.restart=Reiniciar o Minecraft
+
+vanillafix.crashscreen.title=Houve um crash no Minecraft!
+vanillafix.crashscreen.summary=Minecraft teve um problema e houve um crash.
+
+vanillafix.crashscreen.paragraph1.line1=O(s) seguinte(s) mod(s) foram identificados como possíveis causas:
+
+vanillafix.crashscreen.unknownCause=Causa desconhecida
+vanillafix.crashscreen.identificationErrored=[Erro ao identificar, reporte ao VanillaFix]
+
+vanillafix.crashscreen.paragraph2.line1=Clique em um mod na lista para ir ao website desse para obter suporte.
+vanillafix.crashscreen.paragraph2.line2=Um relatório foi gerado, e pode ser encontrado aqui (clique):
+
+vanillafix.crashscreen.reportSaveFailed=[Erro ao salvar o relatório, veja os logs]
+
+vanillafix.crashscreen.paragraph3.line1=Clique no botão "Obter link" para abrir em seu navegador. Você é
+vanillafix.crashscreen.paragraph3.line2=incentivado(a) a mandar este relatório ao/à autor(a) do mod para ajudá-lo(a)
+vanillafix.crashscreen.paragraph3.line3=a corrigir este problema. Já que o VanillaFix está instalado, você pode
+vanillafix.crashscreen.paragraph3.line4=continuar jogando apesar desse crash.
+
+vanillafix.initerrorscreen.title=Minecraft falhou ao iniciar!
+vanillafix.initerrorscreen.summary=Um erro durante a inicialização impediu o Minecraft de iniciar
+
+vanillafix.initerrorscreen.paragraph3.line1=Clique no botão "Obter link" para abrir em seu navegador. Você é
+vanillafix.initerrorscreen.paragraph3.line2=incentivado(a) a mandar este relatório ao/à autor(a) do mod para ajudá-lo(a)
+vanillafix.initerrorscreen.paragraph3.line3=a corrigir este problema. Infelizmente não é possível continuar
+vanillafix.initerrorscreen.paragraph3.line4=a carregar o Minecraft após este erro.
+
+vanillafix.warnscreen.title=Possível problema encontrado!
+vanillafix.warnscreen.summary=O Minecraft teve um problema.
+
+vanillafix.warnscreen.paragraph1.line1=Isto não causou um crash, mas provavelmente haverá
+vanillafix.warnscreen.paragraph1.line2=consequências como corrupção do mundo, ou funcionalidades quebradas.
+vanillafix.warnscreen.paragraph1.line3=O(s) seguinte(s) mod(s) foram identificados como possíveis causas:
+
+vanillafix.warnscreen.paragraph3.line1=Clique no botão "Obter link" para abrir em seu navegador. Você é
+vanillafix.warnscreen.paragraph3.line2=incentivado(a) a mandar este relatório ao/à autor(a) do mod para ajudá-lo(a)
+vanillafix.warnscreen.paragraph3.line3=a corrigir este problema. Já que o VanillaFix está instalado, você pode
+vanillafix.warnscreen.paragraph3.line4=continuar jogando, mas saiba que provavelmente você encontrará problemas no futuro.
+vanillafix.warnscreen.paragraph3.line5=Este aviso pode ser desativado em Mods > VanillaFix > Config > Crashes.
+
+vanillafix.notification.title.unknown=Ocorreu um problema desconhecido!
+vanillafix.notification.title.mod=%s teve um problema!
+vanillafix.notification.description=Pressione Ctrl + I para mais informações
+
+vanillafix.fixes=Habilitar/desabilitar correções
+vanillafix.fixes.tooltip=Control which fixes are enabled and disabled.
+vanillafix.crashes=Opções de crash
+vanillafix.crashes.tooltip=Opções de como os crashes são controlados
+vanillafix.crashes.problemAction.log=Log
+vanillafix.crashes.problemAction.notification=Notificação
+vanillafix.crashes.problemAction.warningScreen=Tela de aviso
+vanillafix.crashes.problemAction.crash=Crash
+vanillafix.crashes.scheduledTaskproblemAction=Ações para exceção de tarefas agendadas
+vanillafix.crashes.scheduledTaskproblemAction.tooltip=O que deve acontecer quando uma tarefa agendada lança uma exceção
+vanillafix.crashes.errorNotificationDuration=Duração da notificação de erro
+vanillafix.crashes.errorNotificationDuration.tooltip=O tempo em milissegundos para mostrar notificações de erro.
+vanillafix.crashes.replaceErrorNotifications=Substituir notificações de erro
+vanillafix.crashes.replaceErrorNotifications.tooltip=Quando ocorrer erros em sequência, substituir a notificação ao invés de enfileirar mais notificações
+vanillafix.crashes.hasteURL=URL do Haste
+vanillafix.crashes.hasteURL.tooltip=A URL da instância do haste para enviar relatórios de crashes, sem barra final.
+
+
+vanillafix.debug.switch_profiler.help=F3 + S = Alternar profiler cliente <-> servidor interno
+vanillafix.debug.switch_profiler.server=Usando profiler do servidor
+vanillafix.debug.switch_profiler.client=Usando profiler do cliente
