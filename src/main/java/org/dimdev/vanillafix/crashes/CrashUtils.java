@@ -60,9 +60,8 @@ public final class CrashUtils {
 
     private static boolean isClient() {
         try {
-            Class.forName("net.minecraft.client.Minecraft");
-            return true;
-        } catch (ClassNotFoundException e) {
+            return Minecraft.getMinecraft() != null;
+        } catch (NoClassDefFoundError e) {
             return false;
         }
     }
