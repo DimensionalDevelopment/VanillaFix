@@ -27,7 +27,6 @@ import net.minecraft.util.MinecraftError;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.vanillafix.ModConfig;
 import org.dimdev.vanillafix.VanillaFix;
@@ -96,7 +95,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public abstract void updateDisplay();
     @Shadow protected abstract void checkGLError(String message);
 
-    private CrashReport currentReport = null;
     private boolean crashIntegratedServerNextTick;
     private int clientCrashCount = 0;
     private int serverCrashCount = 0;
@@ -183,82 +181,83 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             mcSoundHandler = new SoundHandler(mcResourceManager, gameSettings);
             mcResourceManager.registerReloadListener(mcSoundHandler);
 
-            displayGuiScreen(new GuiInitErrorScreen(report));
             running = true;
-            while (running) {
-                if (Display.isCreated() && Display.isCloseRequested()) running = false;
-                leftClickCounter = 10000;
-                currentScreen.handleInput();
-                currentScreen.updateScreen();
-
-                GlStateManager.pushMatrix();
-                GlStateManager.clear(16640);
-                framebufferMc.bindFramebuffer(true);
-                GlStateManager.enableTexture2D();
-
-                GlStateManager.viewport(0, 0, displayWidth, displayHeight);
-
-                // EntityRenderer.setupOverlayRendering
-                ScaledResolution scaledResolution = new ScaledResolution((Minecraft) (Object) this);
-                GlStateManager.clear(256);
-                GlStateManager.matrixMode(5889);
-                GlStateManager.loadIdentity();
-                GlStateManager.ortho(0.0D, scaledResolution.getScaledWidth_double(), scaledResolution.getScaledHeight_double(), 0, 1000, 3000);
-                GlStateManager.matrixMode(5888);
-                GlStateManager.loadIdentity();
-                GlStateManager.translate(0, 0, -2000);
-                GlStateManager.clear(256);
-
-                int width = scaledResolution.getScaledWidth();
-                int height = scaledResolution.getScaledHeight();
-                int mouseX = Mouse.getX() * width / displayWidth;
-                int mouseY = height - Mouse.getY() * height / displayHeight - 1;
-                currentScreen.drawScreen(mouseX, mouseY, 0);
-
-                framebufferMc.unbindFramebuffer();
-                GlStateManager.popMatrix();
-
-                GlStateManager.pushMatrix();
-                framebufferMc.framebufferRender(displayWidth, displayHeight);
-                GlStateManager.popMatrix();
-
-                updateDisplay();
-                Thread.yield();
-                Display.sync(60);
-                checkGLError("Init Error Screen");
-            }
+            runGUILoop(new GuiInitErrorScreen(report));
         } catch (Throwable t) {
-            LOGGER.error("An uncaught exception occured while displaying the crash screen, making normal report instead", t);
+            LOGGER.error("An uncaught exception occured while displaying the init error screen, making normal report instead", t);
             displayCrashReport(report);
-            FMLCommonHandler.instance().handleExit(report.getFile() != null ? -1 : -2);
+            System.exit(report.getFile() != null ? -1 : -2);
+        }
+    }
+
+    private void runGUILoop(GuiScreen screen) throws IOException {
+        displayGuiScreen(screen);
+        while (running && currentScreen == screen) {
+            if (Display.isCreated() && Display.isCloseRequested()) running = false;
+            leftClickCounter = 10000;
+            currentScreen.handleInput();
+            currentScreen.updateScreen();
+
+            GlStateManager.pushMatrix();
+            GlStateManager.clear(16640);
+            framebufferMc.bindFramebuffer(true);
+            GlStateManager.enableTexture2D();
+
+            GlStateManager.viewport(0, 0, displayWidth, displayHeight);
+
+            // EntityRenderer.setupOverlayRendering
+            ScaledResolution scaledResolution = new ScaledResolution((Minecraft) (Object) this);
+            GlStateManager.clear(256);
+            GlStateManager.matrixMode(5889);
+            GlStateManager.loadIdentity();
+            GlStateManager.ortho(0.0D, scaledResolution.getScaledWidth_double(), scaledResolution.getScaledHeight_double(), 0, 1000, 3000);
+            GlStateManager.matrixMode(5888);
+            GlStateManager.loadIdentity();
+            GlStateManager.translate(0, 0, -2000);
+            GlStateManager.clear(256);
+
+            int width = scaledResolution.getScaledWidth();
+            int height = scaledResolution.getScaledHeight();
+            int mouseX = Mouse.getX() * width / displayWidth;
+            int mouseY = height - Mouse.getY() * height / displayHeight - 1;
+            currentScreen.drawScreen(mouseX, mouseY, 0);
+
+            framebufferMc.unbindFramebuffer();
+            GlStateManager.popMatrix();
+
+            GlStateManager.pushMatrix();
+            framebufferMc.framebufferRender(displayWidth, displayHeight);
+            GlStateManager.popMatrix();
+
+            updateDisplay();
+            Thread.yield();
+            Display.sync(60);
+            checkGLError("GUI Loop");
         }
     }
 
     public void displayCrashScreen(CrashReport report) { // TODO: Shouldn't the GL state be reset here and on displayInitErrorScreen?
-        if (currentReport != null) {
-            // There was already a crash being reported, the crash screen might have
-            // crashed. Report it normally instead.
-            LOGGER.error("An uncaught exception occured while displaying the crash screen, making normal report instead", report.getCrashCause());
+        try {
+            CrashUtils.outputReport(report);
+
+            // Reset hasCrashed, debugCrashKeyPressTime, and crashIntegratedServerNextTick
+            hasCrashed = false;
+            debugCrashKeyPressTime = -1;
+            crashIntegratedServerNextTick = false;
+
+            // Vanilla does this when switching to main menu but not our custom crash screen
+            // nor the out of memory screen (see https://bugs.mojang.com/browse/MC-128953)
+            gameSettings.showDebugInfo = false;
+            ingameGUI.getChatGUI().clearChatMessages(true);
+
+            // Display the crash screen
+            runGUILoop(new GuiCrashScreen(report));
+        } catch (Throwable t) {
+            // The crash screen has crashed. Report it normally instead.
+            LOGGER.error("An uncaught exception occured while displaying the crash screen, making normal report instead", t);
             displayCrashReport(report);
-            FMLCommonHandler.instance().handleExit(report.getFile() != null ? -1 : -2);
-            return;
+            System.exit(report.getFile() != null ? -1 : -2);
         }
-        currentReport = report;
-
-        CrashUtils.outputReport(report);
-
-        // Reset hasCrashed, debugCrashKeyPressTime, and crashIntegratedServerNextTick
-        hasCrashed = false;
-        debugCrashKeyPressTime = -1;
-        crashIntegratedServerNextTick = false;
-
-        // Display the crash screen
-        displayGuiScreen(new GuiCrashScreen(report));
-
-        // Vanilla does this when switching to main menu but not our custom crash screen
-        // nor the out of memory screen (see https://bugs.mojang.com/browse/MC-128953)
-        gameSettings.showDebugInfo = false;
-        ingameGUI.getChatGUI().clearChatMessages(true);
     }
 
     @Overwrite
@@ -323,7 +322,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
 
     @Override
     public void clearCurrentReport() {
-        currentReport = null;
     }
 
     /**

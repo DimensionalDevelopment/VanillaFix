@@ -1,8 +1,5 @@
 package org.dimdev.vanillafix.crashes;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,7 +12,6 @@ import java.util.zip.ZipInputStream;
 
 public final class StacktraceDeobfuscator {
     private static final boolean DEBUG_IN_DEV = false; // Makes this MCP -> SRG for testing in dev. Don't forget to set to false when done!
-    private static final Logger logger = LogManager.getLogger();
     private static HashMap<String, String> srgMcpMethodMap = null;
 
     /**
@@ -108,7 +104,7 @@ public final class StacktraceDeobfuscator {
         }
 
         String mcpName = srgMcpMethodMap.get(srgName);
-        logger.debug(srgName + " <=> " + mcpName != null ? mcpName : "?");
+        // log.debug(srgName + " <=> " + mcpName != null ? mcpName : "?"); // Can't do this, it would be a recursive call to log appender
         return mcpName != null ? mcpName : srgName;
     }
 

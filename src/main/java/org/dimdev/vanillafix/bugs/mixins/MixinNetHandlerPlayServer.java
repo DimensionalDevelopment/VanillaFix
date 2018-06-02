@@ -157,7 +157,7 @@ public abstract class MixinNetHandlerPlayServer implements INetHandlerPlayServer
         }
 
         // Accept the packet's position if it's close enough (0.25 blocks) and not in a new block
-        if (errorSq > 0.0625D || yError > 5 || yError < -5) {
+        if (errorSq > 0.0625D /*|| yError > 5 || yError < -5*/) {
             LOGGER.warn("{} out of sync, resyncing! error = {}", player.getName(), Math.sqrt(errorSq));
             player.setPositionAndRotation(player.posX, player.posY, player.posZ, packetYaw, packetPitch);
             syncClientPosition();
