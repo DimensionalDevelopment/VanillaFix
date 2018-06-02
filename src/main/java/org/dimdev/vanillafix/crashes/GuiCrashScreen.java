@@ -26,7 +26,6 @@ public class GuiCrashScreen extends GuiProblemScreen {
         super.actionPerformed(button);
         if (button.id == 0) {
             mc.displayGuiScreen(new GuiMainMenu());
-            ((IPatchedMinecraft) mc).clearCurrentReport();
         }
     }
 

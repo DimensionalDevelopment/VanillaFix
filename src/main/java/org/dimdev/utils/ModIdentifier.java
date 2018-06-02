@@ -8,10 +8,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -51,15 +51,12 @@ public final class ModIdentifier { // TODO: non-forge mods too
             log.warn("Failed to identify " + className + " (untransformed name: " + untrasformedName + ")");
             return new HashSet<>();
         }
-        String str = url.getFile();
-        if (str.startsWith("file:/")) str = str.substring(str.indexOf('/') + 1); // jar:file:/
-        if (str.contains("!")) str = str.substring(0, str.indexOf('!'));
         try {
-            str = URLDecoder.decode(str, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+            if (url.getProtocol().equals("jar")) url = new URL(url.getFile().substring(0, url.getFile().indexOf('!')));
+            return modMap.get(new File(url.toURI()));
+        } catch (MalformedURLException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
-        return modMap.get(new File(str));
     }
 
     private static Map<File, Set<ModContainer>> makeModMap() {

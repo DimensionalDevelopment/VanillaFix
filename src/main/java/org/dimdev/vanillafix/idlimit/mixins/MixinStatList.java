@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Rewrite most of the class to support an unlimited number of IDs (map rather than array). **/
-@Mixin(StatList.class)
+@Mixin(value = StatList.class, priority = 500)
 public final class MixinStatList {
     @Shadow @Final protected static Map<String, StatBase> ID_TO_STAT_MAP;
     @Shadow @Final public static List<StatBase> BASIC_STATS;

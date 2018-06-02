@@ -3,10 +3,7 @@ package org.dimdev.vanillafix.crashes.mixins.client;
 import com.google.common.util.concurrent.ListenableFutureTask;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.toasts.GuiToast;
 import net.minecraft.client.gui.toasts.IToast;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -31,6 +28,7 @@ import net.minecraftforge.fml.client.SplashProgress;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.vanillafix.ModConfig;
 import org.dimdev.vanillafix.VanillaFix;
+import org.dimdev.vanillafix.VanillaFixLoadingPlugin;
 import org.dimdev.vanillafix.crashes.*;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -48,12 +46,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.FutureTask;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, IPatchedMinecraft {
+    // @formatter:off
     @Shadow @Final private static Logger LOGGER;
     @Shadow volatile boolean running;
     @Shadow private boolean hasCrashed;
@@ -95,6 +95,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public abstract TextureManager getTextureManager();
     @Shadow public abstract void updateDisplay();
     @Shadow protected abstract void checkGLError(String message);
+    // @formatter:on
 
     private boolean crashIntegratedServerNextTick;
     private int clientCrashCount = 0;
@@ -112,7 +113,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             init();
         } catch (Throwable throwable) {
             CrashReport report = CrashReport.makeCrashReport(throwable, "Initializing game");
-            report.makeCategory("Initialization");
             displayInitErrorScreen(addGraphicsAndWorldToCrashReport(report));
             return;
         }
@@ -158,11 +158,16 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         report.getCategory().addDetail("Integrated Server Crashes Since Restart", () -> String.valueOf(serverCrashCount));
     }
 
+
     public void displayInitErrorScreen(CrashReport report) {
         CrashUtils.outputReport(report);
         try {
+            VanillaFixLoadingPlugin.initialize();
+
             try {
-                File modFile = new File(VanillaFix.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                URL url = VanillaFix.class.getProtectionDomain().getCodeSource().getLocation();
+                if (url.getProtocol().equals("jar")) url = new URL(url.getFile().substring(0, url.getFile().indexOf('!')));
+                File modFile = new File(url.toURI());
                 defaultResourcePacks.add(modFile.isDirectory() ? new FolderResourcePack(modFile) : new FileResourcePack(modFile));
             } catch (Throwable t) {
                 LOGGER.error("Failed to load VanillaFix resource pack", t);
@@ -195,7 +200,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
 
     private void runGUILoop(GuiScreen screen) throws IOException {
         displayGuiScreen(screen);
-        while (running && currentScreen == screen) {
+        while (running && currentScreen != null && !(currentScreen instanceof GuiMainMenu)) {
             if (Display.isCreated() && Display.isCloseRequested()) running = false;
             leftClickCounter = 10000;
             currentScreen.handleInput();
@@ -321,10 +326,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
                 memoryReserve = new byte[originalMemoryReserveSize];
             } catch (Throwable ignored) {}
         }
-    }
-
-    @Override
-    public void clearCurrentReport() {
     }
 
     /**

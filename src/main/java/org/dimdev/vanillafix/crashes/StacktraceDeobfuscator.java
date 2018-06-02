@@ -85,17 +85,18 @@ public final class StacktraceDeobfuscator {
         queue.add(t);
         while (!queue.isEmpty()) {
             t = queue.remove();
-            deobfuscateStacktrace(t.getStackTrace());
+            t.setStackTrace(deobfuscateStacktrace(t.getStackTrace()));
             if (t.getCause() != null) queue.add(t.getCause());
             Collections.addAll(queue, t.getSuppressed());
         }
     }
 
-    public static void deobfuscateStacktrace(StackTraceElement[] stackTrace) {
+    public static StackTraceElement[] deobfuscateStacktrace(StackTraceElement[] stackTrace) {
         int index = 0;
         for (StackTraceElement el : stackTrace) {
             stackTrace[index++] = new StackTraceElement(el.getClassName(), deobfuscateMethodName(el.getMethodName()), el.getFileName(), el.getLineNumber());
         }
+        return stackTrace;
     }
 
     public static String deobfuscateMethodName(String srgName) {

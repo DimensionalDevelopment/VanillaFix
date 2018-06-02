@@ -57,7 +57,7 @@ public abstract class MixinCrashReport implements IPatchedCrashReport {
                 }
                 return modListString;
             } catch (Throwable e) {
-                return ExceptionUtils.getStackTrace(e);
+                return ExceptionUtils.getStackTrace(e).replace("\t", "    ");
             }
         });
     }
@@ -79,7 +79,7 @@ public abstract class MixinCrashReport implements IPatchedCrashReport {
                .append("Time: ").append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(new Date())).append("\n")
                .append("Description: ").append(description)
                .append("\n\n")
-               .append(stacktraceToString(cause).replace("\t", "      ")) // Vanilla's getCauseStackTraceOrString doesn't print causes and suppressed exceptions
+               .append(stacktraceToString(cause).replace("\t", "    ")) // Vanilla's getCauseStackTraceOrString doesn't print causes and suppressed exceptions
                .append("\n\nA detailed walkthrough of the error, its code path and all known details is as follows:\n");
 
         for (int i = 0; i < 87; i++) {

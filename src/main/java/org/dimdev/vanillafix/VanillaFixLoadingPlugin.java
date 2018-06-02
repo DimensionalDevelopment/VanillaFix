@@ -22,13 +22,28 @@ import java.security.cert.CertificateException;
 import java.util.Map;
 
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
-@IFMLLoadingPlugin.SortingIndex(-5000)
+@IFMLLoadingPlugin.SortingIndex(-10000)
 @IFMLLoadingPlugin.TransformerExclusions("org.dimdev.vanillafix.")
 public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
     private static final Logger log = LogManager.getLogger();
-    private static final String MCP_VERSION = "20180519-1.12"; // TODO: Use version for current Minecraft version!
+    private static final String MCP_VERSION = "20180601-1.12"; // TODO: Use version for current Minecraft version!
+    private static boolean initialized = false;
 
     public VanillaFixLoadingPlugin() {
+        initialize();
+
+        MixinBootstrap.init();
+        Mixins.addConfiguration("mixins.vanillafix.bugs.json");
+        Mixins.addConfiguration("mixins.vanillafix.crashes.json");
+        Mixins.addConfiguration("mixins.vanillafix.profiler.json");
+        Mixins.addConfiguration("mixins.vanillafix.textures.json");
+        Mixins.addConfiguration("mixins.vanillafix.idlimit.json");
+    }
+
+    public static void initialize() {
+        if (initialized) return;
+        initialized = true;
+
         // Trust the "IdenTrust DST Root CA X3" certificate (used by Let's Encrypt, which is used by paste.dimdev.org)
         // TODO: Trust two other certificates, use same alias: https://bugs.openjdk.java.net/browse/JDK-8161008
         try (InputStream keyStoreInputStream = VanillaFixLoadingPlugin.class.getResourceAsStream("/dst_root_ca_x3.jks")) {
@@ -60,13 +75,6 @@ public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
 
         // Install the log exception deobfuscation rewrite policy
         DeobfuscatingRewritePolicy.install();
-
-        MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.vanillafix.bugs.json");
-        Mixins.addConfiguration("mixins.vanillafix.crashes.json");
-        Mixins.addConfiguration("mixins.vanillafix.profiler.json");
-        Mixins.addConfiguration("mixins.vanillafix.textures.json");
-        Mixins.addConfiguration("mixins.vanillafix.idlimit.json");
     }
 
     @Override public String[] getASMTransformerClass() {
