@@ -2,6 +2,7 @@ package org.dimdev.vanillafix.textures;
 
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.LoaderState;
 import team.chisel.client.TextureStitcher;
 
 import java.lang.reflect.Field;
@@ -15,7 +16,7 @@ public final class ModCompatibility { // Needs to be in a separate class to avoi
     private static boolean chiselLoaded;
 
     static {
-        if (Loader.isModLoaded("chisel")) {
+        if (Loader.isModLoaded("chisel") && Loader.instance().getModState(Loader.instance().getIndexedModList().get("chisel")) != LoaderState.ModState.UNLOADED) {
             chiselLoaded = true;
             try {
                 magicStitchingSpriteParent = TextureStitcher.MagicStitchingSprite.class.getDeclaredField("parent");
