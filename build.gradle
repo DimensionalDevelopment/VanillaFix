@@ -29,13 +29,20 @@ configurations {
 }
 
 dependencies {
-    embed("org.spongepowered:mixin:0.7.8-SNAPSHOT") { transitive = false }
-    compileOnly 'com.github.Chisel-Team:ConnectedTexturesMod:1.12~dev-SNAPSHOT'
+    embed("org.spongepowered:mixin:0.7.8-SNAPSHOT") {
+        exclude module: 'asm-commons'
+        exclude module: 'asm-tree'
+        exclude module: 'launchwrapper'
+        exclude module: 'guava'
+        exclude module: 'log4j-core'
+        exclude module: 'gson'
+        exclude module: 'commons-io'
+    }
     compileOnly 'com.github.Chisel-Team:Chisel:1.12~dev-SNAPSHOT'
 }
 
 // Mod version
-version = ext.modversion = "1.0.7"
+version = ext.modversion = "1.0.8"
 group = "org.dimdev.vanillafix"
 archivesBaseName = "VanillaFix"
 
@@ -48,17 +55,15 @@ if (System.getenv("TRAVIS_BUILD_NUMBER") != null) {
 }
 String jarVersion = fullVersion.replace("+", "-") // Github/Travis doesn't seem to support + in filenames
 
-// Minecraft, MCP, Forge, and Java versions
-sourceCompatibility = targetCompatibility = "1.8"
-ext.mcversion = "1.12.2"
-ext.forgeversion = "14.23.4.2703"
-String mcpversion = "snapshot_20180227"
+// Java version
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 // Configuration
 minecraft {
-    version = "$mcversion-$forgeversion"
+    version = "1.12.2-14.23.4.2703"
     runDir = "run"
-    mappings = mcpversion
+    mappings = "snapshot_20180227"
     replace '${version}', fullVersion
     makeObfSourceJar = false
 
@@ -75,6 +80,7 @@ sourceSets {
     }
 }
 
+// Tasks
 jar {
     archiveName = archivesBaseName + "-" + jarVersion + ".jar"
     from(configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }) {
@@ -83,10 +89,6 @@ jar {
     manifest.attributes(
             "FMLCorePluginContainsFMLMod": "true",
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-            "MixinConfigs": "mixins.vanillafix.bugs.json," +
-                    "mixins.vanillafix.crashes.json," +
-                    "mixins.vanillafix.profiler.json," +
-                    "mixins.vanillafix.textures.json",
             "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixLoadingPlugin",
             "ForceLoadAsMod": "true",
             "FMLAT": "vanillafix_at.cfg"
@@ -100,6 +102,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 }
 
 artifacts {
+    archives jar
     archives sourcesJar
 }
 
@@ -115,7 +118,9 @@ processResources {
     }
 
     // Copy everything else except mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
+    from(sourceSets.main.resources.srcDirs)
 }
+
+// These are broken
+runClient.group = "other"
+runServer.group = "other"
