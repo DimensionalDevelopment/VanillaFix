@@ -10,7 +10,9 @@
     "MixinCrashReport",
     "MixinIntegratedServer",
     "MixinUtil",
-    "MixinCrashReportCategory"
+    "MixinCrashReportCategory",
+    "MixinEntity",
+    "MixinTileEntity"
   ],
   "client": [
     "client.MixinMinecraft"

@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
  * automatically inlines all static final fields that are constant expressions
  * (https://docs.oracle.com/javase/specs/jls/se7/html/jls-15.html#jls-15.28)
  */
-@Mixin(GameData.class)
+@Mixin(value = GameData.class, priority = 500)
 public abstract class MixinGameData {
     /** @reason Removes the block ID limit. */
     @ModifyConstant(method = "init", constant = @Constant(intValue = 4095, ordinal = 0), remap = false)
