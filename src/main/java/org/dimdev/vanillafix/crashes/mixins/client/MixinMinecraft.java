@@ -27,6 +27,7 @@ import net.minecraft.util.MinecraftError;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.fml.client.SplashProgress;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.vanillafix.ModConfig;
 import org.dimdev.vanillafix.VanillaFix;
@@ -182,6 +183,8 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             mcResourceManager.registerReloadListener(mcSoundHandler);
 
             running = true;
+            //noinspection deprecation
+            SplashProgress.pause();// Disable the forge splash progress screen
             runGUILoop(new GuiInitErrorScreen(report));
         } catch (Throwable t) {
             LOGGER.error("An uncaught exception occured while displaying the init error screen, making normal report instead", t);
@@ -232,7 +235,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             updateDisplay();
             Thread.yield();
             Display.sync(60);
-            checkGLError("GUI Loop");
+            checkGLError("VanillaFix GUI Loop");
         }
     }
 
