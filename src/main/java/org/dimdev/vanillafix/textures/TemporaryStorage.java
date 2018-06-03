@@ -14,5 +14,4 @@ import java.util.Set;
  */
 public final class TemporaryStorage {
     public static Map<Long, CompiledChunk> currentCompiledChunk = new HashMap<>(); // Thread ID -> Compiled Chunk being rebuilt
-    public static Set<TextureAtlasSprite> texturesUsed = new HashSet<>(); // TODO: this can probably be stored in the texture map
 }

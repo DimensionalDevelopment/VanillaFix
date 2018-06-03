@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -53,8 +54,8 @@ public final class ModIdentifier { // TODO: non-forge mods too
         }
         try {
             if (url.getProtocol().equals("jar")) url = new URL(url.getFile().substring(0, url.getFile().indexOf('!')));
-            return modMap.get(new File(url.toURI()));
-        } catch (MalformedURLException | URISyntaxException e) {
+            return modMap.get((new File(url.toURI())).getCanonicalFile());
+        } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -64,7 +65,11 @@ public final class ModIdentifier { // TODO: non-forge mods too
         for (ModContainer mod : Loader.instance().getModList()) {
             Set<ModContainer> currentMods = modMap.getOrDefault(mod.getSource(), new HashSet<>());
             currentMods.add(mod);
-            modMap.put(mod.getSource(), currentMods);
+            try {
+                modMap.put(mod.getSource().getCanonicalFile(), currentMods);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         try {

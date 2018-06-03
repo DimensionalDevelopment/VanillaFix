@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
+import org.dimdev.vanillafix.textures.IPatchedTextureAtlasSprite;
 import org.dimdev.vanillafix.textures.TemporaryStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +20,7 @@ public class MixinRender {
     @Inject(method = "renderEntityOnFire", at = @At("HEAD"))
     private void addFireTextureOnRenderEntityOnFire(Entity entity, double x, double y, double z, float partialTicks, CallbackInfo ci) {
         TextureMap textureMapBlocks = Minecraft.getMinecraft().getTextureMapBlocks();
-        TemporaryStorage.texturesUsed.add(textureMapBlocks.getAtlasSprite("minecraft:blocks/fire_layer_0"));
-        TemporaryStorage.texturesUsed.add(textureMapBlocks.getAtlasSprite("minecraft:blocks/fire_layer_1"));
+        ((IPatchedTextureAtlasSprite) textureMapBlocks.getAtlasSprite("minecraft:blocks/fire_layer_0")).markNeedsAnimationUpdate();
+        ((IPatchedTextureAtlasSprite) textureMapBlocks.getAtlasSprite("minecraft:blocks/fire_layer_1")).markNeedsAnimationUpdate();
     }
 }

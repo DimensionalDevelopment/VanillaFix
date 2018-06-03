@@ -11,12 +11,14 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import org.dimdev.vanillafix.textures.IPatchedCompiledChunk;
+import org.dimdev.vanillafix.textures.IPatchedTextureAtlasSprite;
 import org.dimdev.vanillafix.textures.TemporaryStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Mixin(BlockModelRenderer.class)
@@ -34,7 +36,7 @@ public class MixinBlockModelRenderer {
         } else {
             // Called from non-chunk render thread. Unfortunately, the best we can do
             // is assume it's only going to be used once:
-            visibleTextures = TemporaryStorage.texturesUsed;
+            visibleTextures = new HashSet<>();
         }
 
         for (EnumFacing side : EnumFacing.values()) {
@@ -47,6 +49,12 @@ public class MixinBlockModelRenderer {
 
         for (BakedQuad quad : model.getQuads(state, null, rand)) {
             visibleTextures.add(quad.getSprite());
+        }
+
+        if (compiledChunk == null) {
+            for (TextureAtlasSprite texture : visibleTextures) {
+                ((IPatchedTextureAtlasSprite) texture).markNeedsAnimationUpdate();
+            }
         }
     }
 }

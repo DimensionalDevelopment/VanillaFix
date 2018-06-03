@@ -7,18 +7,14 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import org.dimdev.vanillafix.textures.IPatchedCompiledChunk;
+import org.dimdev.vanillafix.textures.IPatchedTextureAtlasSprite;
 import org.dimdev.vanillafix.textures.ModCompatibility;
-import org.dimdev.vanillafix.textures.TemporaryStorage;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import team.chisel.client.TextureStitcher;
 
-import java.lang.reflect.Field;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Mixin(TextureMap.class)
 public abstract class MixinTextureMap extends AbstractTexture {
@@ -35,19 +31,21 @@ public abstract class MixinTextureMap extends AbstractTexture {
     public void updateAnimations() {
         // TODO: Recalculate list after chunk update instead!
         Minecraft.getMinecraft().mcProfiler.startSection("determineVisibleTextures");
-        Set<TextureAtlasSprite> visibleTextures = new HashSet<>();
         for (RenderGlobal.ContainerLocalRenderInformation renderInfo : Minecraft.getMinecraft().renderGlobal.renderInfos) {
-            visibleTextures.addAll(((IPatchedCompiledChunk) renderInfo.renderChunk.compiledChunk).getVisibleTextures());
+            for (TextureAtlasSprite texture : ((IPatchedCompiledChunk) renderInfo.renderChunk.compiledChunk).getVisibleTextures()) {
+                ((IPatchedTextureAtlasSprite) texture).markNeedsAnimationUpdate();
+            }
         }
-        visibleTextures.addAll(TemporaryStorage.texturesUsed);
-        TemporaryStorage.texturesUsed.clear();
-        ModCompatibility.addDependentTextures(visibleTextures);
+        for (TextureAtlasSprite texture : listAnimatedSprites) {
+            if (((IPatchedTextureAtlasSprite) texture).needsAnimationUpdate()) {
+                ModCompatibility.markDependentTextures(texture);
+            }
+        }
         Minecraft.getMinecraft().mcProfiler.endSection();
 
         GlStateManager.bindTexture(getGlTextureId());
         for (TextureAtlasSprite texture : listAnimatedSprites) {
-            // loop through list since HashSet.contains is fast (O(1)) but not ArrayList.contains
-            if (visibleTextures.contains(texture)) {
+            if (((IPatchedTextureAtlasSprite) texture).needsAnimationUpdate()) {
                 Minecraft.getMinecraft().mcProfiler.startSection(texture.getIconName());
                 texture.updateAnimation();
                 Minecraft.getMinecraft().mcProfiler.endSection();

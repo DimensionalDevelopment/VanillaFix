@@ -15,7 +15,8 @@
     "client.MixinRenderChunk",
     "client.MixinRenderItem",
     "client.MixinTextureMap",
-    "client.MixinRender"
+    "client.MixinRender",
+    "client.MixinTextureAtlasSprite"
   ],
   "injectors": {
     "maxShiftBy": 10

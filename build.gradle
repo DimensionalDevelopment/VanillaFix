@@ -39,6 +39,7 @@ dependencies {
         exclude module: 'commons-io'
     }
     compileOnly 'com.github.Chisel-Team:Chisel:1.12~dev-SNAPSHOT'
+    compileOnly 'com.github.OpenMods:Chisel:1.12~dev-SNAPSHOT'
 }
 
 // Mod version

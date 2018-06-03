@@ -4,6 +4,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.item.ItemStack;
+import org.dimdev.vanillafix.textures.IPatchedTextureAtlasSprite;
 import org.dimdev.vanillafix.textures.TemporaryStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +22,7 @@ public class MixinRenderItem {
     @Inject(method = "renderQuads", at = @At("HEAD"))
     public void beforeRenderItem(BufferBuilder renderer, List<BakedQuad> quads, int color, ItemStack stack, CallbackInfo ci) {
         for (BakedQuad quad : quads) {
-            TemporaryStorage.texturesUsed.add(quad.getSprite());
+            ((IPatchedTextureAtlasSprite) quad.getSprite()).markNeedsAnimationUpdate();
         }
     }
 }
