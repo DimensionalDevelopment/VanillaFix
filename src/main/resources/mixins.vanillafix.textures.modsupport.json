@@ -1,0 +1,17 @@
+{
+  "package": "org.dimdev.vanillafix.textures.modsupport.mixins",
+  "required": true,
+  "refmap": "mixins.vanillafix.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.6",
+  "plugin": "org.dimdev.vanillafix.ModCompatibilityMixinPlugin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [],
+  "client": [
+    "client.MixinMagicStitchingSprite",
+    "client.MixinTileEntityTankRenderer"
+  ],
+  "injectors": {
+    "maxShiftBy": 10
+  }
+}

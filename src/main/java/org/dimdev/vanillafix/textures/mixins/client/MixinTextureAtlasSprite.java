@@ -11,11 +11,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinTextureAtlasSprite implements IPatchedTextureAtlasSprite {
     private boolean needsAnimationUpdate = false;
 
-    @Override public void markNeedsAnimationUpdate() {
+    @Override
+    public void markNeedsAnimationUpdate() {
         needsAnimationUpdate = true;
     }
 
-    @Override public boolean needsAnimationUpdate() {
+    @Override
+    public boolean needsAnimationUpdate() {
         return needsAnimationUpdate;
     }
 

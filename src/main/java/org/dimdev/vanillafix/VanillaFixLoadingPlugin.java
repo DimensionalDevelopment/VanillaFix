@@ -38,6 +38,7 @@ public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
         Mixins.addConfiguration("mixins.vanillafix.profiler.json");
         Mixins.addConfiguration("mixins.vanillafix.textures.json");
         Mixins.addConfiguration("mixins.vanillafix.idlimit.json");
+        Mixins.addConfiguration("mixins.vanillafix.modsupport.json");
     }
 
     public static void initialize() {

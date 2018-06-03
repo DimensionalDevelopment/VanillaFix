@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import org.dimdev.vanillafix.textures.IPatchedCompiledChunk;
 import org.dimdev.vanillafix.textures.IPatchedTextureAtlasSprite;
-import org.dimdev.vanillafix.textures.ModCompatibility;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -34,11 +33,6 @@ public abstract class MixinTextureMap extends AbstractTexture {
         for (RenderGlobal.ContainerLocalRenderInformation renderInfo : Minecraft.getMinecraft().renderGlobal.renderInfos) {
             for (TextureAtlasSprite texture : ((IPatchedCompiledChunk) renderInfo.renderChunk.compiledChunk).getVisibleTextures()) {
                 ((IPatchedTextureAtlasSprite) texture).markNeedsAnimationUpdate();
-            }
-        }
-        for (TextureAtlasSprite texture : listAnimatedSprites) {
-            if (((IPatchedTextureAtlasSprite) texture).needsAnimationUpdate()) {
-                ModCompatibility.markDependentTextures(texture);
             }
         }
         Minecraft.getMinecraft().mcProfiler.endSection();

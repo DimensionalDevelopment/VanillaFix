@@ -10,10 +10,6 @@ buildscript {
     }
 }
 
-plugins {
-    id 'java'
-}
-
 apply plugin: 'java'
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
@@ -21,6 +17,11 @@ apply plugin: 'org.spongepowered.mixin'
 repositories {
     maven { url = "http://repo.spongepowered.org/maven" }
     maven { url = "https://jitpack.io" }
+    ivy {
+        url 'https://google.com/404'
+        ivyPattern('https://google.com/404') // Workaround for https://github.com/gradle/gradle/issues/4107
+        artifactPattern('https://media.forgecdn.net/files/[organisation]/[module]/[revision].[ext]')
+    }
 }
 
 configurations {
@@ -38,8 +39,9 @@ dependencies {
         exclude module: 'gson'
         exclude module: 'commons-io'
     }
-    compileOnly 'com.github.Chisel-Team:Chisel:1.12~dev-SNAPSHOT'
-    compileOnly 'com.github.OpenMods:Chisel:1.12~dev-SNAPSHOT'
+    compileOnly '2535:884:Chisel-MC1.12.2-0.2.0.31@jar'
+    compileOnly '2530:225:OpenBlocks-1.12.2-1.7.6@jar'
+    compileOnly '2525:230:OpenModsLib-1.12.2-0.11.5@jar'
 }
 
 // Mod version
@@ -69,7 +71,9 @@ minecraft {
     makeObfSourceJar = false
 
     def args = [
-            "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin"
+            "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin",
+            "-Dmixin.hotSwap=true",
+            "-Dmixin.checks.interfaces=true"
     ]
     clientJvmArgs.addAll(args)
     serverJvmArgs.addAll(args)

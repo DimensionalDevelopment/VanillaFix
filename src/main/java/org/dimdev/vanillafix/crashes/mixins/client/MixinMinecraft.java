@@ -188,8 +188,10 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             mcResourceManager.registerReloadListener(mcSoundHandler);
 
             running = true;
-            //noinspection deprecation
-            SplashProgress.pause();// Disable the forge splash progress screen
+            try {
+                //noinspection deprecation
+                SplashProgress.pause();// Disable the forge splash progress screen
+            } catch (Throwable ignored) {}
             runGUILoop(new GuiInitErrorScreen(report));
         } catch (Throwable t) {
             LOGGER.error("An uncaught exception occured while displaying the init error screen, making normal report instead", t);
@@ -201,7 +203,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     private void runGUILoop(GuiScreen screen) throws IOException {
         displayGuiScreen(screen);
         while (running && currentScreen != null && !(currentScreen instanceof GuiMainMenu)) {
-            if (Display.isCreated() && Display.isCloseRequested()) running = false;
+            if (Display.isCreated() && Display.isCloseRequested()) System.exit(0);
             leftClickCounter = 10000;
             currentScreen.handleInput();
             currentScreen.updateScreen();
