@@ -48,14 +48,14 @@ public abstract class MixinEntityPlayerMP extends EntityPlayer {
         stepHeight = 0.7F;
     }
 
-    /**
-     * @reason Anti-cheat: Calculate fall damage even if not receiving move packets from the client.
-     * Otherwise, the client could disconnect without sending move packets to avoid fall damage.
-     *
-     * Also simplifies fall logic a lot.
-     */
-    @Inject(method = "updateFallState", at = @At("HEAD"))
-    public void updateFallState(double y, boolean onGround, IBlockState state, BlockPos pos, CallbackInfo ci) {
-        handleFalling(y, this.onGround);
-    }
+//    /**
+//     * @reason Anti-cheat: Calculate fall damage even if not receiving move packets from the client.
+//     * Otherwise, the client could disconnect without sending move packets to avoid fall damage.
+//     *
+//     * Also simplifies fall logic a lot.
+//     */
+//    @Inject(method = "updateFallState", at = @At("HEAD"))
+//    public void updateFallState(double y, boolean onGround, IBlockState state, BlockPos pos, CallbackInfo ci) {
+//        handleFalling(y, this.onGround);
+//    }
 }

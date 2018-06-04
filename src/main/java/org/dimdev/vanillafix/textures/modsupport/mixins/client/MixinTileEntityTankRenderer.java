@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Pseudo
 @Mixin(TileEntityTankRenderer.class)
 public class MixinTileEntityTankRenderer {
-    @Inject(method = "renderFluid", at = @At("HEAD"))
+    @Inject(method = "renderFluid", at = @At("HEAD"), remap = false)
     private static void onRenderFluid(BufferBuilder wr, ITankRenderFluidData data, float time, int combinedLights, CallbackInfo ci) {
         ((IPatchedTextureAtlasSprite) TextureUtils.getFluidTexture(data.getFluid())).markNeedsAnimationUpdate();
     }

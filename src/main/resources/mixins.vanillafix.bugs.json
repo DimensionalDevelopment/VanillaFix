@@ -7,7 +7,6 @@
   "plugin": "org.dimdev.vanillafix.ModCompatibilityMixinPlugin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinNetHandlerPlayServer",
     "MixinEnchantmentHelper",
     "MixinEntityPlayerMP",
     "MixinEntity",

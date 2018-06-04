@@ -28,7 +28,7 @@ public class MixinLoader {
      * @reason Load all mods now and load mod support mixin configs. This can't be done later
      * since constructing mods loads classes from them.
      */
-    @Inject(method = "loadMods", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/common/LoadController;transition(Lnet/minecraftforge/fml/common/LoaderState;Z)V", ordinal = 1))
+    @Inject(method = "loadMods", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/common/LoadController;transition(Lnet/minecraftforge/fml/common/LoaderState;Z)V", ordinal = 1), remap = false)
     private void beforeConstructingMods(List<String> injectedModContainers, CallbackInfo ci) {
         // Add all mods to class loader
         for (ModContainer mod : mods) {
