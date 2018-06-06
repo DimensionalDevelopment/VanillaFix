@@ -8,7 +8,9 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinGameData",
-    "MixinStatList"
+    "MixinStatList",
+    "MixinBlockStateContainer",
+    "MixinAnvilChunkLoader"
   ],
   "client": [],
   "injectors": {

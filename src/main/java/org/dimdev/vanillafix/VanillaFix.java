@@ -90,7 +90,7 @@ public class VanillaFix {
         }
 
         if (DEBUG_ITEM_IDS) {
-            for (int i = 0; i < 5000; i++) {
+            for (int i = 0; i < 40000; i++) {
                 Item item = new Item()
                         .setCreativeTab(CreativeTabs.FOOD)
                         .setUnlocalizedName("item_" + i)
