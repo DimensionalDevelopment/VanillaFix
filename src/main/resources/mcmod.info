@@ -4,10 +4,9 @@
     {
       "modid": "vanillafix",
       "name": "VanillaFix",
-      "description": "Bug fixes, optimizations, no more crashes, and better crash reports for Minecraft.",
+      "description": "Bug fixes, optimizations, no more crashes, and better crash reports for Minecraft",
       "version": "${version}",
-      "credits": "The Dimensional Development team",
-      "mcversion": "1.12.2",
+      "mcversion": "${mcversion}",
       "url": "https://minecraft.curseforge.com/projects/vanillafix",
       "authorList": [
         "Runemoro"

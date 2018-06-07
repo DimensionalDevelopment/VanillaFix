@@ -1,75 +1,61 @@
 buildscript {
     repositories {
         jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
-        maven { url = "http://repo.spongepowered.org/maven" }
+        maven { url "http://files.minecraftforge.net/maven" }
+        maven { url "http://repo.spongepowered.org/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.4"
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+        classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'org.spongepowered.mixin'
+apply plugin: "java"
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: "org.spongepowered.mixin"
 
 repositories {
-    maven { url = "http://repo.spongepowered.org/maven" }
-    maven { url = "https://jitpack.io" }
+    maven { url "http://repo.spongepowered.org/maven" }
     ivy {
-        url 'https://google.com/404'
-        ivyPattern('https://google.com/404') // Workaround for https://github.com/gradle/gradle/issues/4107
-        artifactPattern('https://media.forgecdn.net/files/[organisation]/[module]/[revision].[ext]')
+        url "https://google.com/404"
+        ivyPattern("https://google.com/404") // Workaround for https://github.com/gradle/gradle/issues/4107
+        artifactPattern("https://media.forgecdn.net/files/[organisation]/[module]/[revision].[ext]")
     }
-}
-
-configurations {
-    embed
-    implementation.extendsFrom(embed)
 }
 
 dependencies {
-    embed("org.spongepowered:mixin:0.7.8-SNAPSHOT") {
-        exclude module: 'asm-commons'
-        exclude module: 'asm-tree'
-        exclude module: 'launchwrapper'
-        exclude module: 'guava'
-        exclude module: 'log4j-core'
-        exclude module: 'gson'
-        exclude module: 'commons-io'
+    implementation("org.spongepowered:mixin:0.7.8-SNAPSHOT") {
+        exclude module: "asm-commons"
+        exclude module: "asm-tree"
+        exclude module: "launchwrapper"
+        exclude module: "guava"
+        exclude module: "log4j-core"
+        exclude module: "gson"
+        exclude module: "commons-io"
     }
-    compileOnly '2535:884:Chisel-MC1.12.2-0.2.0.31@jar'
-    compileOnly '2530:225:OpenBlocks-1.12.2-1.7.6@jar'
-    compileOnly '2525:230:OpenModsLib-1.12.2-0.11.5@jar'
-    compileOnly '2568:0:TConstruct-1.12.2-2.10.1.84@jar'
+    compileOnly "2535:884:Chisel-MC1.12.2-0.2.0.31@jar"
+    compileOnly "2530:225:OpenBlocks-1.12.2-1.7.6@jar"
+    compileOnly "2525:230:OpenModsLib-1.12.2-0.11.5@jar"
+    compileOnly "2568:0:TConstruct-1.12.2-2.10.1.84@jar"
 }
 
-// Mod version
-version = ext.modversion = "1.0.8"
-group = "org.dimdev.vanillafix"
+def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
+def versionSuffix = travisBuildNumber != null ? travisBuildNumber : "SNAPSHOT"
+
+version "1.0.9-$versionSuffix"
+group "org.dimdev.vanillafix"
 archivesBaseName = "VanillaFix"
 
-// Build number
-String fullVersion = version
-if (System.getenv("TRAVIS_BUILD_NUMBER") != null) {
-    fullVersion += "+${System.getenv("TRAVIS_BUILD_NUMBER")}"
-} else {
-    fullVersion += "+SNAPSHOT"
-}
-String jarVersion = fullVersion.replace("+", "-") // Github/Travis doesn't seem to support + in filenames
-
-// Java version
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-// Configuration
 minecraft {
-    version = "1.12.2-14.23.4.2703"
-    runDir = "run"
-    mappings = "snapshot_20180227"
-    replace '${version}', fullVersion
-    makeObfSourceJar = false
+    version "1.12.2-14.23.4.2703"
+    runDir "run"
+    mappings "snapshot_20180607"
+    makeObfSourceJar false
 
     def args = [
             "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin",
@@ -80,18 +66,29 @@ minecraft {
     serverJvmArgs.addAll(args)
 }
 
-sourceSets {
-    main {
-        ext.refMap = "mixins.vanillafix.refmap.json"
+mixin {
+    add sourceSets.main, "mixins.vanillafix.refmap.json"
+}
+
+reobf {
+    shadowJar {
+        mappingType = 'SEARGE'
+        classpath = sourceSets.main.compileClasspath
     }
 }
 
-// Tasks
-jar {
-    archiveName = archivesBaseName + "-" + jarVersion + ".jar"
-    from(configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }) {
-        exclude "LICENSE.txt", "META-INF/MANIFSET.MF", "META-INF/maven/**", "META-INF/*.RSA", "META-INF/*.SF"
+processResources {
+    filesMatching("mcmod.info") {
+        expand "version": project.version, "mcversion": project.minecraft.version
     }
+
+    // Re-run this task when these change
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+}
+
+jar {
+    classifier "nolibs"
     manifest.attributes(
             "FMLCorePluginContainsFMLMod": "true",
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
@@ -101,32 +98,22 @@ jar {
     )
 }
 
+shadowJar {
+    classifier ""
+    exclude "LICENSE.txt", "dummyThing"
+}
+
 task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveName = archivesBaseName + "-" + jarVersion + "-sources.jar"
-    classifier = 'sources'
+    classifier "sources"
     from sourceSets.main.allSource
 }
 
 artifacts {
     archives jar
+    archives shadowJar
     archives sourcesJar
 }
 
-processResources {
-    // This will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
-
-    // Replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-        expand 'version': project.version, 'mcversion': project.minecraft.version
-    }
-
-    // Copy everything else except mcmod.info
-    from(sourceSets.main.resources.srcDirs)
-}
-
 // These are broken
-runClient.group = "other"
-runServer.group = "other"
+runClient.group "other"
+runServer.group "other"

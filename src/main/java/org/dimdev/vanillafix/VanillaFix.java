@@ -25,7 +25,6 @@ import java.util.Scanner;
 
 @Mod(modid = "vanillafix",
      name = "VanillaFix",
-     version = "${version}",
      acceptableRemoteVersions = "*",
      updateJSON = "https://gist.githubusercontent.com/Runemoro/28e8cf4c24a5f17f508a5d34f66d229f/raw/vanillafix_update.json")
 public class VanillaFix {
