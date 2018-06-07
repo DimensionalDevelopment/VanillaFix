@@ -9,7 +9,9 @@
   "mixins": [],
   "client": [
     "client.MixinMagicStitchingSprite",
-    "client.MixinTileEntityTankRenderer"
+    "client.MixinTileEntityTankRenderer",
+    "client.MixinGuiUtil",
+    "client.MixinRenderUtil"
   ],
   "injectors": {
     "maxShiftBy": 10

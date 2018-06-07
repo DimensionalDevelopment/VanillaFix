@@ -42,6 +42,7 @@ dependencies {
     compileOnly '2535:884:Chisel-MC1.12.2-0.2.0.31@jar'
     compileOnly '2530:225:OpenBlocks-1.12.2-1.7.6@jar'
     compileOnly '2525:230:OpenModsLib-1.12.2-0.11.5@jar'
+    compileOnly '2568:0:TConstruct-1.12.2-2.10.1.84@jar'
 }
 
 // Mod version
