@@ -10,13 +10,9 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class ModIdentifier { // TODO: non-forge mods too
     private static final Logger log = LogManager.getLogger();
@@ -24,7 +20,8 @@ public final class ModIdentifier { // TODO: non-forge mods too
     public static Set<ModContainer> identifyFromStacktrace(Throwable e) {
         Map<File, Set<ModContainer>> modMap = makeModMap();
 
-        HashSet<String> classes = new HashSet<>();
+        // Get the set of classes
+        HashSet<String> classes = new LinkedHashSet<>();
         while (e != null) {
             for (StackTraceElement element : e.getStackTrace()) {
                 classes.add(element.getClassName());
@@ -32,7 +29,7 @@ public final class ModIdentifier { // TODO: non-forge mods too
             e = e.getCause();
         }
 
-        Set<ModContainer> mods = new HashSet<>();
+        Set<ModContainer> mods = new LinkedHashSet<>();
         for (String className : classes) {
             Set<ModContainer> classMods = identifyFromClass(className, modMap);
             if (classMods != null) mods.addAll(classMods);
@@ -45,16 +42,22 @@ public final class ModIdentifier { // TODO: non-forge mods too
     }
 
     private static Set<ModContainer> identifyFromClass(String className, Map<File, Set<ModContainer>> modMap) {
+        // Skip identification for Mixin, one's mod copy of the library is shared with all other mods
+        if (className.startsWith("org.spongepowered.asm.mixin.")) return Collections.emptySet();
+
+        // Get the URL of the class
         final String untrasformedName = untransformName(Launch.classLoader, className);
         URL url = Launch.classLoader.getResource(untrasformedName.replace('.', '/') + ".class");
         log.debug(className + " = " + untrasformedName + " = " + url);
         if (url == null) {
             log.warn("Failed to identify " + className + " (untransformed name: " + untrasformedName + ")");
-            return new HashSet<>();
+            return Collections.emptySet();
         }
+
+        // Get the mod containing that class
         try {
             if (url.getProtocol().equals("jar")) url = new URL(url.getFile().substring(0, url.getFile().indexOf('!')));
-            return modMap.get((new File(url.toURI())).getCanonicalFile());
+            return modMap.get(new File(url.toURI()).getCanonicalFile());
         } catch (URISyntaxException | IOException e) {
             throw new RuntimeException(e);
         }

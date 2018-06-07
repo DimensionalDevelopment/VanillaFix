@@ -1,6 +1,5 @@
 package org.dimdev.vanillafix;
 
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.launchwrapper.Launch;
 import org.spongepowered.asm.lib.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -10,25 +9,15 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Determines which mixins should not be loaded because of compatibility problems.
- */
 public class ModCompatibilityMixinPlugin implements IMixinConfigPlugin {
-
-    private static final Set<String> NON_SPONGE_MIXINS = ImmutableSet.of(
-            "org.dimdev.vanillafix.profiler.mixins.MixinWorld"
-    );
-
     private boolean spongeInstalled;
+    private boolean neidInstalled;
 
     @Override
     public void onLoad(String mixinPackage) {
-        spongeInstalled = isSpongeInstalled();
-    }
-
-    private boolean isSpongeInstalled() {
         try {
-            return Launch.classLoader.getClassBytes("org.spongepowered.mod.SpongeCoremod") != null;
+            spongeInstalled = Launch.classLoader.getClassBytes("org.spongepowered.mod.SpongeCoremod") != null;
+            neidInstalled = Launch.classLoader.getClassBytes("ru.fewizz.neid.asm.Transformer") != null;
         } catch (IOException e) {
             throw new RuntimeException(e); // Should never happen
         }
@@ -40,17 +29,23 @@ public class ModCompatibilityMixinPlugin implements IMixinConfigPlugin {
     }
 
     @Override
+    @SuppressWarnings("RedundantIfStatement")
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (NON_SPONGE_MIXINS.contains(mixinClassName)) {
-            return !spongeInstalled;
+        // Sponge
+        if (spongeInstalled) {
+            if (targetClassName.equals("org.dimdev.vanillafix.profiler.mixins.MixinWorld")) return false;
         }
+
+        // NotEnoughIDs
+        if (neidInstalled) {
+            if (targetClassName.startsWith("org.dimdev.vanillafix.idlimit")) return false;
+        }
+
         return true;
     }
 
     @Override
-    public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {
-
-    }
+    public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {}
 
     @Override
     public List<String> getMixins() {
@@ -58,12 +53,8 @@ public class ModCompatibilityMixinPlugin implements IMixinConfigPlugin {
     }
 
     @Override
-    public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-
-    }
+    public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 
     @Override
-    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-
-    }
+    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 }
