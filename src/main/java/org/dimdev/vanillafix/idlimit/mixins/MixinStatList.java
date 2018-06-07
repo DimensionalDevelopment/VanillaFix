@@ -1,6 +1,5 @@
 package org.dimdev.vanillafix.idlimit.mixins;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import net.minecraft.block.Block;
 import net.minecraft.init.Items;
@@ -21,10 +20,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /** Rewrite most of the class to support an unlimited number of IDs (map rather than array). **/
 @Mixin(value = StatList.class, priority = 500)
@@ -123,11 +119,11 @@ public final class MixinStatList {
     private static void initItemDepleteStats() {
         for (Item item : Item.REGISTRY) {
             if (item != null && getItemName(item) != null && item.isDamageable()) {
-                StatCrafting stat = (new StatCrafting(
+                StatCrafting stat = new StatCrafting(
                         "stat.breakItem.",
                         getItemName(item),
                         new TextComponentTranslation("stat.breakItem", new ItemStack(item).getTextComponent()),
-                        item));
+                        item);
 
                 VF_OBJECT_BREAK_STATS.put(item, stat);
                 stat.registerStat();
@@ -170,13 +166,20 @@ public final class MixinStatList {
         USE_ITEM_STATS.clear();
         MINE_BLOCK_STATS.clear();
 
-        // TODO: Optimize this, it hangs on server shutdown for a few seconds with
-        ALL_STATS.removeAll(VF_BLOCK_STATS.values());
-        ALL_STATS.removeAll(VF_CRAFTS_STATS.values());
-        ALL_STATS.removeAll(VF_OBJECT_USE_STATS.values());
-        ALL_STATS.removeAll(VF_OBJECT_BREAK_STATS.values());
-        ALL_STATS.removeAll(VF_OBJECTS_PICKED_UP_STATS.values());
-        ALL_STATS.removeAll(VF_OBJECTS_DROPPED_STATS.values());
+        HashSet<StatBase> knownStats = new HashSet<>();
+        knownStats.addAll(VF_BLOCK_STATS.values());
+        knownStats.addAll(VF_CRAFTS_STATS.values());
+        knownStats.addAll(VF_OBJECT_USE_STATS.values());
+        knownStats.addAll(VF_OBJECT_BREAK_STATS.values());
+        knownStats.addAll(VF_OBJECTS_PICKED_UP_STATS.values());
+        knownStats.addAll(VF_OBJECTS_DROPPED_STATS.values());
+
+        List<StatBase> unknownStats = new ArrayList<>();
+        for (StatBase stat : ALL_STATS) {
+            if (!knownStats.contains(stat)) {
+                unknownStats.add(stat);
+            }
+        }
 
         VF_BLOCK_STATS.clear();
         VF_CRAFTS_STATS.clear();
@@ -184,10 +187,9 @@ public final class MixinStatList {
         VF_OBJECT_BREAK_STATS.clear();
         VF_OBJECTS_PICKED_UP_STATS.clear();
         VF_OBJECTS_DROPPED_STATS.clear();
-
-        List<StatBase> stats = Lists.newArrayList(ALL_STATS);
         ALL_STATS.clear();
-        for (StatBase stat : stats) stat.registerStat();
+
+        for (StatBase unknownStat : unknownStats) unknownStat.registerStat();
 
         init();
     }

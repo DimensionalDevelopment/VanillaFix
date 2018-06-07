@@ -55,7 +55,7 @@ String fullVersion = version
 if (System.getenv("TRAVIS_BUILD_NUMBER") != null) {
     fullVersion += "+${System.getenv("TRAVIS_BUILD_NUMBER")}"
 } else {
-    fullVersion += "+UNOFFICIAL"
+    fullVersion += "+SNAPSHOT"
 }
 String jarVersion = fullVersion.replace("+", "-") // Github/Travis doesn't seem to support + in filenames
 

@@ -30,6 +30,6 @@ public class MixinAnvilChunkLoader {
             ExtendedBlockStorage[] ignored0, NBTTagList ignored1, boolean ignored2, ExtendedBlockStorage[] ignored3, int ignored4, int ignored5,
             ExtendedBlockStorage extendedBlockStorage, NBTTagCompound storageNBT, byte[] blocks, NibbleArray data, NibbleArray add) {
         int[] palette = ((IPatchedBlockStateContainer) extendedBlockStorage.getData()).getTemporaryPalette();
-        storageNBT.setIntArray("Palette", palette);
+        if (palette != null) storageNBT.setIntArray("Palette", palette);
     }
 }

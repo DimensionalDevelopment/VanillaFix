@@ -12,7 +12,7 @@ import slimeknights.tconstruct.library.client.GuiUtil;
 @Pseudo
 @Mixin(GuiUtil.class)
 public class MixinGuiUtil {
-    @Inject(method = "renderTiledTextureAtlas", at = @At("HEAD"))
+    @Inject(method = "renderTiledTextureAtlas", at = @At("HEAD"), remap = false)
     private static void onRenderTiledTextureAtlas(int x, int y, int width, int height, float depth, TextureAtlasSprite sprite, boolean upsideDown, CallbackInfo ci) {
         ((IPatchedTextureAtlasSprite) sprite).markNeedsAnimationUpdate();
     }
