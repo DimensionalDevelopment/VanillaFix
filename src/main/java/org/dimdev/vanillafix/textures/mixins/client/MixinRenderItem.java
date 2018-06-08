@@ -22,6 +22,7 @@ public class MixinRenderItem {
     @Inject(method = "renderQuads", at = @At("HEAD"))
     public void beforeRenderItem(BufferBuilder renderer, List<BakedQuad> quads, int color, ItemStack stack, CallbackInfo ci) {
         for (BakedQuad quad : quads) {
+            if (quad.getSprite() == null) continue;
             ((IPatchedTextureAtlasSprite) quad.getSprite()).markNeedsAnimationUpdate();
         }
     }

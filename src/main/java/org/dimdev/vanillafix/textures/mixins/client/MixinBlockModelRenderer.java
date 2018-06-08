@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Mixin(BlockModelRenderer.class)
@@ -41,13 +42,18 @@ public class MixinBlockModelRenderer {
 
         for (EnumFacing side : EnumFacing.values()) {
             if (!checkSides || state.shouldSideBeRendered(world, pos, side)) {
-                for (BakedQuad quad : model.getQuads(state, side, rand)) {
+                List<BakedQuad> quads = model.getQuads(state, side, rand);
+                if (quads == null) continue;
+                for (BakedQuad quad : quads) {
+                    if (quad == null || quad.getSprite() == null) continue;
                     visibleTextures.add(quad.getSprite());
                 }
             }
         }
 
-        for (BakedQuad quad : model.getQuads(state, null, rand)) {
+        List<BakedQuad> quads = model.getQuads(state, null, rand);
+        if (quads != null) for (BakedQuad quad : quads) {
+            if (quad == null || quad.getSprite() == null) continue;
             visibleTextures.add(quad.getSprite());
         }
 
