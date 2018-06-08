@@ -33,12 +33,12 @@ public class ModCompatibilityMixinPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         // Sponge
         if (spongeInstalled) {
-            if (targetClassName.equals("org.dimdev.vanillafix.profiler.mixins.MixinWorld")) return false;
+            if (mixinClassName.equals("org.dimdev.vanillafix.profiler.mixins.MixinWorld")) return false;
         }
 
         // NotEnoughIDs
         if (neidInstalled) {
-            if (targetClassName.startsWith("org.dimdev.vanillafix.idlimit")) return false;
+            if (mixinClassName.startsWith("org.dimdev.vanillafix.idlimit.")) return false;
         }
 
         return true;
