@@ -10,7 +10,8 @@
     "MixinGameData",
     "MixinStatList",
     "MixinBlockStateContainer",
-    "MixinAnvilChunkLoader"
+    "MixinAnvilChunkLoader",
+    "MixinBlock"
   ],
   "client": [],
   "injectors": {
