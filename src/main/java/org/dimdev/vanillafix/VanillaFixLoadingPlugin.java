@@ -36,12 +36,13 @@ public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
 
         MixinBootstrap.init();
 
+        // @formatter:off
         if (config.bugFixes)      Mixins.addConfiguration("mixins.vanillafix.bugs.json");
         if (config.crashFixes)    Mixins.addConfiguration("mixins.vanillafix.crashes.json");
         if (config.profiler)      Mixins.addConfiguration("mixins.vanillafix.profiler.json");
         if (config.textureFixes)  Mixins.addConfiguration("mixins.vanillafix.textures.json");
-        if (config.idLimit)       Mixins.addConfiguration("mixins.vanillafix.idlimit.json");
         if (config.modSupport)    Mixins.addConfiguration("mixins.vanillafix.modsupport.json");
+        // @formatter:on
     }
 
     public static void initialize() {

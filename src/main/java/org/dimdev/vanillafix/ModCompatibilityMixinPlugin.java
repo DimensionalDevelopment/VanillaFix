@@ -11,13 +11,11 @@ import java.util.Set;
 
 public class ModCompatibilityMixinPlugin implements IMixinConfigPlugin {
     private boolean spongeInstalled;
-    private boolean neidInstalled;
 
     @Override
     public void onLoad(String mixinPackage) {
         try {
             spongeInstalled = Launch.classLoader.getClassBytes("org.spongepowered.mod.SpongeCoremod") != null;
-            neidInstalled = Launch.classLoader.getClassBytes("ru.fewizz.neid.asm.Transformer") != null;
         } catch (IOException e) {
             throw new RuntimeException(e); // Should never happen
         }
@@ -34,11 +32,6 @@ public class ModCompatibilityMixinPlugin implements IMixinConfigPlugin {
         // Sponge
         if (spongeInstalled) {
             if (mixinClassName.equals("org.dimdev.vanillafix.profiler.mixins.MixinWorld")) return false;
-        }
-
-        // NotEnoughIDs
-        if (neidInstalled) {
-            if (mixinClassName.startsWith("org.dimdev.vanillafix.idlimit.")) return false;
         }
 
         return true;

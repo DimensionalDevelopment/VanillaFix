@@ -1,7 +1,6 @@
 package org.dimdev.vanillafix;
 
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.common.config.Property;
 
 import java.io.File;
 
@@ -11,7 +10,6 @@ public class LoadingConfig {
 
     public boolean bugFixes;
     public boolean crashFixes;
-    public boolean idLimit;
     public boolean modSupport;
     public boolean profiler;
     public boolean textureFixes;
@@ -21,7 +19,6 @@ public class LoadingConfig {
         if (!file.exists()) {
             bugFixes = true;
             crashFixes = true;
-            idLimit = true;
             modSupport = true;
             profiler = true;
             textureFixes = true;
@@ -34,17 +31,10 @@ public class LoadingConfig {
     }
 
     public void reload() {
-        bugFixes = getBoolean("bugFixes", "fixes", true);
-        crashFixes = getBoolean("crashFixes", "fixes", true);
-        idLimit = getBoolean("idLimit", "fixes", true);
-        modSupport = getBoolean("modSupport", "fixes", true);
-        profiler = getBoolean("profiler", "fixes", true);
-        textureFixes = getBoolean("textureFixes", "fixes", true);
+        bugFixes = config.get("fixes", "bugFixes", true).getBoolean();
+        crashFixes = config.get("fixes", "crashFixes", true).getBoolean();
+        modSupport = config.get("fixes", "modSupport", true).getBoolean();
+        profiler = config.get("fixes", "profiler", true).getBoolean();
+        textureFixes = config.get("fixes", "textureFixes", true).getBoolean();
     }
-
-    private boolean getBoolean(String name, String category, boolean defaultValue) {
-        Property prop = config.get(category, name, defaultValue);
-        return prop.getBoolean(defaultValue);
-    }
-
 }

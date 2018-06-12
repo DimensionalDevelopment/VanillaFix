@@ -31,11 +31,6 @@ public final class ModConfig {
         @RequiresMcRestart
         public boolean crashFixes = true;
 
-        @Name("idLimit")
-        @LangKey("vanillafix.fixes.idLimit")
-        @RequiresMcRestart
-        public boolean idLimit = true;
-
         @Name("modSupport")
         @LangKey("vanillafix.fixes.modSupport")
         @RequiresMcRestart
