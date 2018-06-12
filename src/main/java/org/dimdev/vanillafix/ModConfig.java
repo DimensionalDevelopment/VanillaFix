@@ -21,7 +21,35 @@ public final class ModConfig {
     public static Crashes crashes = new Crashes();
 
     public static class Fixes {
-        // TODO
+        @Name("bugFixes")
+        @LangKey("vanillafix.fixes.bugFixes")
+        @RequiresMcRestart
+        public boolean bugFixes = true;
+
+        @Name("crashFixes")
+        @LangKey("vanillafix.fixes.crashFixes")
+        @RequiresMcRestart
+        public boolean crashFixes = true;
+
+        @Name("idLimit")
+        @LangKey("vanillafix.fixes.idLimit")
+        @RequiresMcRestart
+        public boolean idLimit = true;
+
+        @Name("modSupport")
+        @LangKey("vanillafix.fixes.modSupport")
+        @RequiresMcRestart
+        public boolean modSupport = true;
+
+        @Name("profiler")
+        @LangKey("vanillafix.fixes.profiler")
+        @RequiresMcRestart
+        public boolean profiler = true;
+
+        @Name("textureFixes")
+        @LangKey("vanillafix.fixes.textureFixes")
+        @RequiresMcRestart
+        public boolean textureFixes = true;
     }
 
     public static class Crashes {

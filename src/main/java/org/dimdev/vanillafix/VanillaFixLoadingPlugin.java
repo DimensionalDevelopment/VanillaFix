@@ -29,21 +29,27 @@ public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
     private static final String MCP_VERSION = "20180601-1.12"; // TODO: Use version for current Minecraft version!
     private static boolean initialized = false;
 
+    public static LoadingConfig config;
+
     public VanillaFixLoadingPlugin() {
         initialize();
 
         MixinBootstrap.init();
-        Mixins.addConfiguration("mixins.vanillafix.bugs.json");
-        Mixins.addConfiguration("mixins.vanillafix.crashes.json");
-        Mixins.addConfiguration("mixins.vanillafix.profiler.json");
-        Mixins.addConfiguration("mixins.vanillafix.textures.json");
-        Mixins.addConfiguration("mixins.vanillafix.idlimit.json");
-        Mixins.addConfiguration("mixins.vanillafix.modsupport.json");
+
+        if (config.bugFixes)      Mixins.addConfiguration("mixins.vanillafix.bugs.json");
+        if (config.crashFixes)    Mixins.addConfiguration("mixins.vanillafix.crashes.json");
+        if (config.profiler)      Mixins.addConfiguration("mixins.vanillafix.profiler.json");
+        if (config.textureFixes)  Mixins.addConfiguration("mixins.vanillafix.textures.json");
+        if (config.idLimit)       Mixins.addConfiguration("mixins.vanillafix.idlimit.json");
+        if (config.modSupport)    Mixins.addConfiguration("mixins.vanillafix.modsupport.json");
     }
 
     public static void initialize() {
         if (initialized) return;
         initialized = true;
+
+        config = new LoadingConfig();
+        config.init(new File(Launch.minecraftHome, "config/vanillafix.cfg"));
 
         // Trust the "IdenTrust DST Root CA X3" certificate (used by Let's Encrypt, which is used by paste.dimdev.org)
         // TODO: Trust two other certificates, use same alias: https://bugs.openjdk.java.net/browse/JDK-8161008
