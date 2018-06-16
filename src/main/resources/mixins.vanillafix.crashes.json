@@ -15,7 +15,9 @@
     "MixinTileEntity"
   ],
   "client": [
-    "client.MixinMinecraft"
+    "client.MixinMinecraft",
+    "client.MixinBufferBuilder",
+    "client.MixinTileEntityRenderDispatcher"
   ],
   "injectors": {
     "maxShiftBy": 10

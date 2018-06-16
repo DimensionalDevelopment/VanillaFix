@@ -1,6 +1,7 @@
 package org.dimdev.vanillafix.crashes.mixins.client;
 
 import com.google.common.util.concurrent.ListenableFutureTask;
+import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.*;
@@ -26,6 +27,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.SplashProgress;
 import org.apache.logging.log4j.Logger;
+import org.dimdev.utils.GlUtil;
 import org.dimdev.vanillafix.ModConfig;
 import org.dimdev.vanillafix.VanillaFix;
 import org.dimdev.vanillafix.VanillaFixLoadingPlugin;
@@ -97,6 +99,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow protected abstract void checkGLError(String message);
     // @formatter:on
 
+    @Shadow public LoadingScreenRenderer loadingScreen;
     private boolean crashIntegratedServerNextTick;
     private int clientCrashCount = 0;
     private int serverCrashCount = 0;
@@ -126,7 +129,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
                         clientCrashCount++;
                         addGraphicsAndWorldToCrashReport(e.getCrashReport());
                         addInfoToCrash(e.getCrashReport());
-                        freeMemory();
+                        resetGameState();
                         LOGGER.fatal("Reported exception thrown!", e);
                         displayCrashScreen(e.getCrashReport());
                     } catch (Throwable e) {
@@ -134,7 +137,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
                         CrashReport report = new CrashReport("Unexpected error", e);
                         addGraphicsAndWorldToCrashReport(report);
                         addInfoToCrash(report);
-                        freeMemory();
+                        resetGameState();
                         LOGGER.fatal("Unreported exception thrown!", e);
                         displayCrashScreen(report);
                     }
@@ -246,7 +249,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         }
     }
 
-    public void displayCrashScreen(CrashReport report) { // TODO: Shouldn't the GL state be reset here and on displayInitErrorScreen?
+    public void displayCrashScreen(CrashReport report) {
         try {
             CrashUtils.outputReport(report);
 
@@ -275,6 +278,49 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         CrashUtils.outputReport(report);
     }
 
+    public void resetGameState() {
+        try {
+            // Free up memory such that this works properly in case of an OutOfMemoryError
+            int originalMemoryReserveSize = -1;
+            try { // In case another mod actually deletes the memoryReserve field
+                if (memoryReserve != null) {
+                    originalMemoryReserveSize = memoryReserve.length;
+                    memoryReserve = new byte[0];
+                }
+            } catch (Throwable ignored) {}
+
+            // Reset registered resettables
+            StateManager.resetStates();
+
+            // Close the world
+            if (getConnection() != null) {
+                // Fix: Close the connection to avoid receiving packets from old server
+                // when playing in another world (MC-128953)
+                getConnection().getNetworkManager().closeChannel(new TextComponentString("[VanillaFix] Client crashed"));
+            }
+            loadWorld(null);
+            if (entityRenderer.isShaderActive()) entityRenderer.stopUseShader();
+            scheduledTasks.clear(); // TODO: Figure out why this isn't necessary for vanilla disconnect
+
+            // Reset graphics
+            GlUtil.resetState();
+
+            // Re-create memory reserve so that future crashes work well too
+            if (originalMemoryReserveSize != -1) {
+                try {
+                    memoryReserve = new byte[originalMemoryReserveSize];
+                } catch (Throwable ignored) {}
+            }
+            System.gc();
+        } catch (Throwable t) {
+            LOGGER.error("Failed to reset state after a crash", t);
+            try {
+                StateManager.resetStates();
+                GlUtil.resetState();
+            } catch (Throwable ignored) {}
+        }
+    }
+
     /**
      * @reason Disconnect from the current world and free memory, using a memory reserve
      * to make sure that an OutOfMemory doesn't happen while doing this.
@@ -284,50 +330,8 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
      * - Memory reserve not recreated after out-of memory
      */
     @Overwrite
-    @SuppressWarnings("CallToSystemGC")
     public void freeMemory() {
-        int originalMemoryReserveSize = -1;
-        try {
-            // Separate try in case another mod actually deletes the memoryReserve field
-            if (memoryReserve != null) {
-                originalMemoryReserveSize = memoryReserve.length;
-                memoryReserve = new byte[0];
-            }
-        } catch (Throwable ignored) {}
-
-        try {
-            renderGlobal.deleteAllDisplayLists();
-        } catch (Throwable ignored) {}
-
-        try {
-            System.gc();
-
-            // Fix: Close the connection to avoid receiving packets from old server
-            // when playing in another world (MC-128953)
-            if (getConnection() != null) {
-                getConnection().getNetworkManager().closeChannel(new TextComponentString("[VanillaFix] Client crashed"));
-            }
-
-            loadWorld(null);
-
-            // TODO: Figure out why this isn't necessary for vanilla disconnect:
-            scheduledTasks.clear();
-
-            // Fix: Probably not necessary, but do this now rathe than next tick to
-            // make it identical to a regular disconnect:
-            if (entityRenderer.isShaderActive()) {
-                entityRenderer.stopUseShader();
-            }
-        } catch (Throwable ignored) {}
-
-        System.gc();
-
-        // Fix: Re-create memory reserve so that future crashes work well too
-        if (originalMemoryReserveSize != -1) {
-            try {
-                memoryReserve = new byte[originalMemoryReserveSize];
-            } catch (Throwable ignored) {}
-        }
+        resetGameState();
     }
 
     /**
@@ -375,6 +379,10 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             }
         }
         return -1;
+    }
+
+    private void breakRendering() {
+        getTextureManager().bindTexture(Gui.OPTIONS_BACKGROUND);
     }
 
     /** @reason Disables the vanilla F3 + C logic. */
