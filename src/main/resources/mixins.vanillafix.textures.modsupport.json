@@ -11,7 +11,9 @@
     "client.MixinMagicStitchingSprite",
     "client.MixinTileEntityTankRenderer",
     "client.MixinGuiUtil",
-    "client.MixinRenderUtil"
+    "client.MixinRenderUtil",
+    "client.MixinHaloRenderItem",
+    "client.MixinWrappedItemRenderer"
   ],
   "injectors": {
     "maxShiftBy": 10

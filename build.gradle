@@ -18,6 +18,7 @@ apply plugin: "org.spongepowered.mixin"
 
 repositories {
     maven { url "http://repo.spongepowered.org/maven" }
+    maven { url "http://chickenbones.net/maven/" }
     ivy {
         url "https://google.com/404"
         ivyPattern("https://google.com/404") // Workaround for https://github.com/gradle/gradle/issues/4107
@@ -26,7 +27,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.spongepowered:mixin:0.7.8-SNAPSHOT") {
+    implementation("org.spongepowered:mixin:0.7.10-SNAPSHOT") {
         exclude module: "asm-commons"
         exclude module: "asm-tree"
         exclude module: "launchwrapper"
@@ -39,6 +40,9 @@ dependencies {
     compileOnly "2530:225:OpenBlocks-1.12.2-1.7.6@jar"
     compileOnly "2525:230:OpenModsLib-1.12.2-0.11.5@jar"
     compileOnly "2568:0:TConstruct-1.12.2-2.10.1.84@jar"
+    compileOnly "2568:0:TConstruct-1.12.2-2.10.1.84@jar"
+    compileOnly "2511:625:Avaritia-1.12-3.2.0.13-universal@jar"
+    compileOnly "codechicken:CodeChickenLib:1.12.2-3.1.9.344:deobf"
 }
 
 def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
