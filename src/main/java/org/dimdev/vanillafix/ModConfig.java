@@ -48,6 +48,10 @@ public final class ModConfig {
     }
 
     public static class Crashes {
+        @Name("disableReturnToMainMenu")
+        @LangKey("vanillafix.crashes.disableReturnToMainMenu")
+        public boolean disableReturnToMainMenu = false;
+
         @Name("scheduledTaskproblemAction")
         @LangKey("vanillafix.crashes.scheduledTaskproblemAction")
         public ProblemAction scheduledTaskAction = ProblemAction.NOTIFICATION;

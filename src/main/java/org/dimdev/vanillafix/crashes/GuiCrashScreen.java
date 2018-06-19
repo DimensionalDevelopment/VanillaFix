@@ -7,6 +7,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.crash.CrashReport;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.dimdev.vanillafix.ModConfig;
 
 @SideOnly(Side.CLIENT)
 public class GuiCrashScreen extends GuiProblemScreen {
@@ -18,7 +19,12 @@ public class GuiCrashScreen extends GuiProblemScreen {
     @Override
     public void initGui() {
         super.initGui();
-        buttonList.add(new GuiOptionButton(0, width / 2 - 155, height / 4 + 120 + 12, I18n.format("gui.toTitle")));
+        GuiOptionButton mainMenuButton = new GuiOptionButton(0, width / 2 - 155, height / 4 + 120 + 12, I18n.format("gui.toTitle"));
+        buttonList.add(mainMenuButton);
+        if (ModConfig.crashes.disableReturnToMainMenu) {
+            mainMenuButton.enabled = false;
+            mainMenuButton.displayString = I18n.format("vanillafix.gui.disabledByConfig");
+        }
     }
 
     @Override
