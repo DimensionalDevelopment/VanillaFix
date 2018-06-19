@@ -381,10 +381,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
         return -1;
     }
 
-    private void breakRendering() {
-        getTextureManager().bindTexture(Gui.OPTIONS_BACKGROUND);
-    }
-
     /** @reason Disables the vanilla F3 + C logic. */
     @Redirect(method = "runTickKeyboard", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Keyboard;isKeyDown(I)Z", ordinal = 0))
     private boolean isKeyDownF3(int key) {
@@ -416,8 +412,14 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             ProblemToast lastToast = getToastGui().getToast(ProblemToast.class, IToast.NO_TOKEN);
             if (lastToast != null) {
                 lastToast.hide = true;
-                displayGuiScreen(new GuiWarningScreen(lastToast.report, Minecraft.getMinecraft().currentScreen));
+                displayGuiScreen(new GuiWarningScreen(lastToast.report, currentScreen));
             }
         }
+    }
+
+    @Override
+    public void showWarningScreen(CrashReport report) {
+        // TODO: runGuiLoop instead, to prevent errors from happening while the warning screen is open?
+        addScheduledTask(() -> displayGuiScreen(new GuiWarningScreen(report, currentScreen)));
     }
 }

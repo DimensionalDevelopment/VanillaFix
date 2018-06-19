@@ -19,10 +19,11 @@ public final class CrashUtils {
 
     public static void warn(CrashReport report) {
         if (isClient()) {
-            // TODO: what if there's several exceptions in a row?
             outputReport(report);
-            Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().displayGuiScreen(new GuiWarningScreen(report, Minecraft.getMinecraft().currentScreen)));
-        } else {
+            // Don't inline showWarningScreen, that will cause Java to load the GuiScreen
+            // class on servers, because of the lambda!
+            ((IPatchedMinecraft) Minecraft.getMinecraft()).showWarningScreen(report);
+            } else {
             log.fatal(report.getDescription(), report.getCrashCause());
         }
     }

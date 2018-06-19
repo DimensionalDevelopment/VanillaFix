@@ -22,11 +22,10 @@ import java.security.cert.CertificateException;
 import java.util.Map;
 
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
-@IFMLLoadingPlugin.SortingIndex(-10000)
-@IFMLLoadingPlugin.TransformerExclusions("org.dimdev.vanillafix.")
+@IFMLLoadingPlugin.SortingIndex(-100000)
 public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
     private static final Logger log = LogManager.getLogger();
-    private static final String MCP_VERSION = "20180601-1.12"; // TODO: Use version for current Minecraft version!
+    private static final String MCP_VERSION = "20180618-1.12"; // TODO: Use version for current Minecraft version!
     private static boolean initialized = false;
 
     public static LoadingConfig config;
