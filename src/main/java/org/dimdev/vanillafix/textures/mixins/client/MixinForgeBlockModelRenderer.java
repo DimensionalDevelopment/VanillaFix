@@ -28,7 +28,7 @@ public class MixinForgeBlockModelRenderer {
      * @reason Adds the textures used to render this block to the set of textures in
      * the CompiledChunk.
      */
-    @Inject(method = "render", at = @At("HEAD"))
+    @Inject(method = "render", at = @At("HEAD"), remap = false)
     private static void onRender(VertexLighterFlat lighter, IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, BufferBuilder wr, boolean checkSides, long rand, CallbackInfoReturnable<Boolean> cir) {
         CompiledChunk compiledChunk = TemporaryStorage.currentCompiledChunk.get();
         if (compiledChunk != null) {
