@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(NetHandlerPlayClient.class)
+@Mixin(value = NetHandlerPlayClient.class, priority = 500)
 public abstract class MixinNetHandlerPlayClient implements INetHandlerPlayClient {
     @Shadow private boolean doneLoadingTerrain;
     @Shadow(aliases = "clientWorldController") private WorldClient world;

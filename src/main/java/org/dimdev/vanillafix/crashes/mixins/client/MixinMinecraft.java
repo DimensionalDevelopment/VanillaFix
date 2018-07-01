@@ -1,6 +1,7 @@
 package org.dimdev.vanillafix.crashes.mixins.client;
 
 import com.google.common.util.concurrent.ListenableFutureTask;
+import lumien.custommainmenu.gui.GuiCustom;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
@@ -26,6 +27,7 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.SplashProgress;
+import net.minecraftforge.fml.common.Loader;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.utils.GlUtil;
 import org.dimdev.vanillafix.ModConfig;
@@ -205,7 +207,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
 
     private void runGUILoop(GuiScreen screen) throws IOException {
         displayGuiScreen(screen);
-        while (running && currentScreen != null && !(currentScreen instanceof GuiMainMenu)) {
+        while (running && currentScreen != null && !(currentScreen instanceof GuiMainMenu) && !(Loader.isModLoaded("custommainmenu") && currentScreen instanceof GuiCustom)) {
             if (Display.isCreated() && Display.isCloseRequested()) System.exit(0);
             leftClickCounter = 10000;
             currentScreen.handleInput();

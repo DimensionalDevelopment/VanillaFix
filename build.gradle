@@ -43,12 +43,13 @@ dependencies {
     compileOnly "2568:0:TConstruct-1.12.2-2.10.1.84@jar"
     compileOnly "2511:625:Avaritia-1.12-3.2.0.13-universal@jar"
     compileOnly "codechicken:CodeChickenLib:1.12.2-3.1.9.344:deobf"
+    compileOnly "2482:584:CustomMainMenu-MC1.12.2-2.0.8@jar"
 }
 
 def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
 def versionSuffix = travisBuildNumber != null ? travisBuildNumber : "SNAPSHOT"
 
-version "1.0.9-$versionSuffix"
+version "1.0.10-$versionSuffix"
 group "org.dimdev.vanillafix"
 archivesBaseName = "VanillaFix"
 

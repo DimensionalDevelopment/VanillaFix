@@ -110,10 +110,10 @@ public abstract class MixinCrashReport implements IPatchedCrashReport {
 
     private String getVanillaFixComment() {
         try {
-            if (Math.random() < 0.5 && !suspectedMods.isEmpty()) {
+            if (Math.random() < 0.01 && !suspectedMods.isEmpty()) {
                 ModContainer mod = suspectedMods.iterator().next();
-                String author = mod.getMetadata().authorList.get((int) (Math.random() * mod.getMetadata().authorList.size()));
-                return "I blame " + author + ", author of " + mod.getName() + ".";
+                String author = mod.getMetadata().authorList.get(0);
+                return "I blame " + author + ".";
             }
         } catch (Throwable ignored) {}
 
