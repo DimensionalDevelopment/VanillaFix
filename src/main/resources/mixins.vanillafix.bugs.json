@@ -11,7 +11,8 @@
     "MixinEntityPlayerMP",
     "MixinEntity",
     "MixinInventoryPlayer",
-    "MixinChunk"
+    "MixinChunk",
+    "MixinMinecraftServer"
   ],
   "client": [
     "client.MixinMinecraft",
