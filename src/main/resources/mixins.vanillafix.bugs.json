@@ -12,7 +12,8 @@
     "MixinEntity",
     "MixinInventoryPlayer",
     "MixinChunk",
-    "MixinMinecraftServer"
+    "MixinMinecraftServer",
+    "MixinStateImplementation"
   ],
   "client": [
     "client.MixinMinecraft",
