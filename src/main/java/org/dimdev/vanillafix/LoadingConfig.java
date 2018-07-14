@@ -13,6 +13,7 @@ public class LoadingConfig {
     public boolean modSupport;
     public boolean profiler;
     public boolean textureFixes;
+    public boolean blockstates;
 
 
     public void init(File file) {
@@ -36,5 +37,6 @@ public class LoadingConfig {
         modSupport = config.get("fixes", "modSupport", true).getBoolean();
         profiler = config.get("fixes", "profiler", true).getBoolean();
         textureFixes = config.get("fixes", "textureFixes", true).getBoolean();
+        blockstates = config.get("fixes", "blockstates", true).getBoolean();
     }
 }

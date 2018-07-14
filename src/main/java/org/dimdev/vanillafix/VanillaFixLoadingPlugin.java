@@ -46,6 +46,7 @@ public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
         if (config.profiler)      Mixins.addConfiguration("mixins.vanillafix.profiler.json");
         if (config.textureFixes)  Mixins.addConfiguration("mixins.vanillafix.textures.json");
         if (config.modSupport)    Mixins.addConfiguration("mixins.vanillafix.modsupport.json");
+        if (config.blockstates)    Mixins.addConfiguration("mixins.vanillafix.blockstates.json");
         // @formatter:on
     }
 

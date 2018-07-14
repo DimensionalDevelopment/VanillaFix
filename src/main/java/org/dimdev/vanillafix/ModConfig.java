@@ -45,6 +45,11 @@ public final class ModConfig {
         @LangKey("vanillafix.fixes.textureFixes")
         @RequiresMcRestart
         public boolean textureFixes = true;
+
+        @Name("blockstates")
+        @LangKey("vanillafix.fixes.blockstates")
+        @RequiresMcRestart
+        public boolean blockstates = true;
     }
 
     public static class Crashes {

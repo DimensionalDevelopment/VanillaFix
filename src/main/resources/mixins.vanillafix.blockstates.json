@@ -1,0 +1,19 @@
+{
+  "package": "org.dimdev.vanillafix.blockstates.mixins",
+  "required": true,
+  "refmap": "mixins.vanillafix.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.6",
+  "plugin": "org.dimdev.vanillafix.ModCompatibilityMixinPlugin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinBlockStateContainer",
+    "MixinExtendedBlockState",
+    "MixinPropertyHelper"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "maxShiftBy": 10
+  }
+}

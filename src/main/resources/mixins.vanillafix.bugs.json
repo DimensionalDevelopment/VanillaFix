@@ -13,7 +13,6 @@
     "MixinInventoryPlayer",
     "MixinChunk",
     "MixinMinecraftServer",
-    "MixinStateImplementation"
   ],
   "client": [
     "client.MixinMinecraft",
