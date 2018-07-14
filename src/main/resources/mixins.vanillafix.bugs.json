@@ -13,13 +13,15 @@
     "MixinInventoryPlayer",
     "MixinChunk",
     "MixinMinecraftServer",
+    "MixinSPacketPong"
   ],
   "client": [
     "client.MixinMinecraft",
     "client.MixinNetHandlerPlayClient",
     "client.MixinEntityPlayerSP",
     "client.MixinIntegratedServer",
-    "client.MixinEntityRenderer"
+    "client.MixinEntityRenderer",
+    "client.MixinServerPinger$1"
   ],
   "injectors": {
     "maxShiftBy": 10
