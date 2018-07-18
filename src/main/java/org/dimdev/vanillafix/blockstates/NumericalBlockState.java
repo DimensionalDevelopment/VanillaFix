@@ -42,10 +42,12 @@ public class NumericalBlockState extends BlockStateBase {
     private static final Map<IProperty<?>, Integer> propertyWidths = new HashMap<>();
 
     protected final BlockStateContainer container;
+    protected final Block block;
     protected final int data; // TODO: short
 
     protected NumericalBlockState(BlockStateContainer container, int data) {
         this.container = container;
+        block = container.getBlock();
         this.data = data;
     }
 
@@ -104,7 +106,7 @@ public class NumericalBlockState extends BlockStateBase {
         int offset = ((IPatchedBlockStateContainer) container).getPropertyOffsets().getOrDefault(property, -1);
 
         if (offset == -1) {
-            throw new IllegalArgumentException("Cannot get property " + property + " as it does not exist in " + container.getBlock().getBlockState());
+            throw new IllegalArgumentException("Cannot get property " + property + " as it does not exist in " + container);
         }
 
         int width = propertyWidths.get(property);
@@ -119,7 +121,7 @@ public class NumericalBlockState extends BlockStateBase {
         int offset = ((IPatchedBlockStateContainer) container).getPropertyOffsets().getOrDefault(property, -1);
 
         if (offset == -1) {
-            throw new IllegalArgumentException("Cannot set property " + property + " as it does not exist in " + container.getBlock().getBlockState());
+            throw new IllegalArgumentException("Cannot set property " + property + " as it does not exist in " + container);
         }
 
         @SuppressWarnings("SuspiciousMethodCalls") int number = valueToNumber.get(new ImmutablePair<>(property, value));
@@ -152,235 +154,235 @@ public class NumericalBlockState extends BlockStateBase {
 
     @Override
     public Block getBlock() {
-        return container.getBlock();
+        return block;
     }
 
     // <editor-fold defaultstate="collapsed" desc="Methods proxied to block class">
     @Override
     public Material getMaterial() {
-        return container.getBlock().getMaterial(this);
+        return block.getMaterial(this);
     }
 
     @Override
     public boolean isFullBlock() {
-        return container.getBlock().isFullBlock(this);
+        return block.isFullBlock(this);
     }
 
     @Override
     public boolean canEntitySpawn(Entity entity) {
-        return container.getBlock().canEntitySpawn(this, entity);
+        return block.canEntitySpawn(this, entity);
     }
 
     @Override
     public int getLightOpacity() {
-        return container.getBlock().getLightOpacity(this);
+        return block.getLightOpacity(this);
     }
 
     @Override
     public int getLightValue() {
-        return container.getBlock().getLightValue(this);
+        return block.getLightValue(this);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public boolean isTranslucent() {
-        return container.getBlock().isTranslucent(this);
+        return block.isTranslucent(this);
     }
 
     @Override
     public boolean useNeighborBrightness() {
-        return container.getBlock().getUseNeighborBrightness(this);
+        return block.getUseNeighborBrightness(this);
     }
 
     @Override
     public MapColor getMapColor(IBlockAccess p_185909_1_, BlockPos p_185909_2_) {
-        return container.getBlock().getMapColor(this, p_185909_1_, p_185909_2_);
+        return block.getMapColor(this, p_185909_1_, p_185909_2_);
     }
 
     @Override
     public IBlockState withRotation(Rotation rot) {
-        return container.getBlock().withRotation(this, rot);
+        return block.withRotation(this, rot);
     }
 
     @Override
     public IBlockState withMirror(Mirror mirror) {
-        return container.getBlock().withMirror(this, mirror);
+        return block.withMirror(this, mirror);
     }
 
     @Override
     public boolean isFullCube() {
-        return container.getBlock().isFullCube(this);
+        return block.isFullCube(this);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public boolean hasCustomBreakingProgress() {
-        return container.getBlock().hasCustomBreakingProgress(this);
+        return block.hasCustomBreakingProgress(this);
     }
 
     @Override
     public EnumBlockRenderType getRenderType() {
-        return container.getBlock().getRenderType(this);
+        return block.getRenderType(this);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public int getPackedLightmapCoords(IBlockAccess source, BlockPos pos) {
-        return container.getBlock().getPackedLightmapCoords(this, source, pos);
+        return block.getPackedLightmapCoords(this, source, pos);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public float getAmbientOcclusionLightValue() {
-        return container.getBlock().getAmbientOcclusionLightValue(this);
+        return block.getAmbientOcclusionLightValue(this);
     }
 
     @Override
     public boolean isBlockNormalCube() {
-        return container.getBlock().isBlockNormalCube(this);
+        return block.isBlockNormalCube(this);
     }
 
     @Override
     public boolean isNormalCube() {
-        return container.getBlock().isNormalCube(this);
+        return block.isNormalCube(this);
     }
 
     @Override
     public boolean canProvidePower() {
-        return container.getBlock().canProvidePower(this);
+        return block.canProvidePower(this);
     }
 
     @Override
     public int getWeakPower(IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-        return container.getBlock().getWeakPower(this, blockAccess, pos, side);
+        return block.getWeakPower(this, blockAccess, pos, side);
     }
 
     @Override
     public boolean hasComparatorInputOverride() {
-        return container.getBlock().hasComparatorInputOverride(this);
+        return block.hasComparatorInputOverride(this);
     }
 
     @Override
     public int getComparatorInputOverride(World world, BlockPos pos) {
-        return container.getBlock().getComparatorInputOverride(this, world, pos);
+        return block.getComparatorInputOverride(this, world, pos);
     }
 
     @Override
     public float getBlockHardness(World world, BlockPos pos) {
-        return container.getBlock().getBlockHardness(this, world, pos);
+        return block.getBlockHardness(this, world, pos);
     }
 
     @Override
     public float getPlayerRelativeBlockHardness(EntityPlayer player, World world, BlockPos pos) {
-        return container.getBlock().getPlayerRelativeBlockHardness(this, player, world, pos);
+        return block.getPlayerRelativeBlockHardness(this, player, world, pos);
     }
 
     @Override
     public int getStrongPower(IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-        return container.getBlock().getStrongPower(this, blockAccess, pos, side);
+        return block.getStrongPower(this, blockAccess, pos, side);
     }
 
     @Override
     public EnumPushReaction getMobilityFlag() {
-        return container.getBlock().getMobilityFlag(this);
+        return block.getMobilityFlag(this);
     }
 
     @Override
     public IBlockState getActualState(IBlockAccess blockAccess, BlockPos pos) {
-        return container.getBlock().getActualState(this, blockAccess, pos);
+        return block.getActualState(this, blockAccess, pos);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getSelectedBoundingBox(World world, BlockPos pos) {
-        return container.getBlock().getSelectedBoundingBox(this, world, pos);
+        return block.getSelectedBoundingBox(this, world, pos);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public boolean shouldSideBeRendered(IBlockAccess blockAccess, BlockPos pos, EnumFacing facing) {
-        return container.getBlock().shouldSideBeRendered(this, blockAccess, pos, facing);
+        return block.shouldSideBeRendered(this, blockAccess, pos, facing);
     }
 
     @Override
     public boolean isOpaqueCube() {
-        return container.getBlock().isOpaqueCube(this);
+        return block.isOpaqueCube(this);
     }
 
     @Override
     @Nullable
     public AxisAlignedBB getCollisionBoundingBox(IBlockAccess world, BlockPos pos) {
-        return container.getBlock().getCollisionBoundingBox(this, world, pos);
+        return block.getCollisionBoundingBox(this, world, pos);
     }
 
     @Override
     public void addCollisionBoxToList(World world, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entity, boolean p_185908_6_) {
-        container.getBlock().addCollisionBoxToList(this, world, pos, entityBox, collidingBoxes, entity, p_185908_6_);
+        block.addCollisionBoxToList(this, world, pos, entityBox, collidingBoxes, entity, p_185908_6_);
     }
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockAccess blockAccess, BlockPos pos) {
-        return container.getBlock().getBoundingBox(this, blockAccess, pos);
+        return block.getBoundingBox(this, blockAccess, pos);
     }
 
     @Override
     public RayTraceResult collisionRayTrace(World world, BlockPos pos, Vec3d start, Vec3d end) {
-        return container.getBlock().collisionRayTrace(this, world, pos, start, end);
+        return block.collisionRayTrace(this, world, pos, start, end);
     }
 
     @Override
     public boolean isTopSolid() {
-        return container.getBlock().isTopSolid(this);
+        return block.isTopSolid(this);
     }
 
     @Override
     public Vec3d getOffset(IBlockAccess access, BlockPos pos) {
-        return container.getBlock().getOffset(this, access, pos);
+        return block.getOffset(this, access, pos);
     }
 
     @Override
     public boolean onBlockEventReceived(World world, BlockPos pos, int id, int param) {
-        return container.getBlock().eventReceived(this, world, pos, id, param);
+        return block.eventReceived(this, world, pos, id, param);
     }
 
     @Override
     public void neighborChanged(World world, BlockPos pos, Block block, BlockPos fromPos) {
-        container.getBlock().neighborChanged(this, world, pos, block, fromPos);
+        this.block.neighborChanged(this, world, pos, block, fromPos);
     }
 
     @Override
     public boolean causesSuffocation() {
-        return container.getBlock().causesSuffocation(this);
+        return block.causesSuffocation(this);
     }
 
     @Override
     public BlockFaceShape getBlockFaceShape(IBlockAccess world, BlockPos pos, EnumFacing facing) {
-        return container.getBlock().getBlockFaceShape(world, this, pos, facing);
+        return block.getBlockFaceShape(world, this, pos, facing);
     }
 
     @Override
     public int getLightOpacity(IBlockAccess world, BlockPos pos) {
-        return container.getBlock().getLightOpacity(this, world, pos);
+        return block.getLightOpacity(this, world, pos);
     }
 
     @Override
     public int getLightValue(IBlockAccess world, BlockPos pos) {
-        return container.getBlock().getLightValue(this, world, pos);
+        return block.getLightValue(this, world, pos);
     }
 
     @Override
     public boolean isSideSolid(IBlockAccess world, BlockPos pos, EnumFacing side) {
-        return container.getBlock().isSideSolid(this, world, pos, side);
+        return block.isSideSolid(this, world, pos, side);
     }
 
     @Override
     public boolean doesSideBlockChestOpening(IBlockAccess world, BlockPos pos, EnumFacing side) {
-        return container.getBlock().doesSideBlockChestOpening(this, world, pos, side);
+        return block.doesSideBlockChestOpening(this, world, pos, side);
     }
 
     @Override
     public boolean doesSideBlockRendering(IBlockAccess world, BlockPos pos, EnumFacing side) {
-        return container.getBlock().doesSideBlockRendering(this, world, pos, side);
+        return block.doesSideBlockRendering(this, world, pos, side);
     }
     // </editor-fold>
 }

@@ -14,7 +14,7 @@ public class LoadingConfig {
     public boolean profiler;
     public boolean textureFixes;
     public boolean blockstates;
-
+    public boolean dynamicResources;
 
     public void init(File file) {
         if (!file.exists()) {
@@ -23,6 +23,8 @@ public class LoadingConfig {
             modSupport = true;
             profiler = true;
             textureFixes = true;
+            blockstates = true;
+            dynamicResources = true;
             return;
         }
         if (config == null) {
@@ -38,5 +40,6 @@ public class LoadingConfig {
         profiler = config.get("fixes", "profiler", true).getBoolean();
         textureFixes = config.get("fixes", "textureFixes", true).getBoolean();
         blockstates = config.get("fixes", "blockstates", true).getBoolean();
+        dynamicResources = config.get("fixes", "dynamicresources", true).getBoolean();
     }
 }

@@ -1,0 +1,22 @@
+{
+  "package": "org.dimdev.vanillafix.dynamicresources.mixins",
+  "required": true,
+  "refmap": "mixins.vanillafix.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.6",
+  "plugin": "org.dimdev.vanillafix.ModCompatibilityMixinPlugin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "client": [
+    "client.MixinModelManager",
+    "client.MixinBlockModelShapes",
+    "client.MixinMinecraft",
+    "client.MixinModelLoaderRegistry",
+    "client.MixinItemModelMesherForge",
+    "client.MixinModelBlockAnimation"
+  ],
+  "injectors": {
+    "maxShiftBy": 10
+  }
+}

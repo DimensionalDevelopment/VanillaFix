@@ -8,6 +8,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -72,6 +73,9 @@ public class VanillaFix {
 
         // Register event listeners
         MinecraftForge.EVENT_BUS.register(ModConfig.class);
+
+        // Don't render terrain on main thread for higher FPS, but possibly seeing missing chunks
+        ForgeModContainer.alwaysSetupTerrainOffThread = true;
 
         IForgeRegistry<Block> blockRegistry = GameRegistry.findRegistry(Block.class);
         IForgeRegistry<Item> itemRegistry = GameRegistry.findRegistry(Item.class);

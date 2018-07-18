@@ -26,6 +26,6 @@ public abstract class MixinExtendedBlockState extends MixinBlockStateContainer {
             return normalState;
         }
 
-        return new NumericalExtendedBlockState(normalState, unlistedProperties);
+        return NumericalExtendedBlockState.getClean(normalState, unlistedProperties);
     }
 }

@@ -50,6 +50,11 @@ public final class ModConfig {
         @LangKey("vanillafix.fixes.blockstates")
         @RequiresMcRestart
         public boolean blockstates = true;
+
+        @Name("dynamicresources")
+        @LangKey("vanillafix.fixes.dynamicresources")
+        @RequiresMcRestart
+        public boolean dynamicresources = true;
     }
 
     public static class Crashes {
