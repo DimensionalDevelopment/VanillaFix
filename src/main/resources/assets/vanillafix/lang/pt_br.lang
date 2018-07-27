@@ -1,69 +1,85 @@
-vanillafix.gui.getLink=Obter link
+vanillafix.gui.getLink=Acessar link
 vanillafix.gui.failed=[Falha]
 vanillafix.gui.keepPlaying=Continuar jogando
 vanillafix.gui.restart=Reiniciar o Minecraft
+vanillafix.gui.disabledByConfig=Desativado pela config.
 
-vanillafix.crashscreen.title=Houve um crash no Minecraft!
-vanillafix.crashscreen.summary=Minecraft teve um problema e houve um crash.
+vanillafix.crashscreen.title=O Minecraft parou de funcionar!
+vanillafix.crashscreen.summary=O Minecraft parou em decorrência de um erro.
 
-vanillafix.crashscreen.paragraph1.line1=O(s) seguinte(s) mod(s) foram identificados como possíveis causas:
+vanillafix.crashscreen.paragraph1.line1=Os seguinte(s) mod(s) foram apontados como possíveis causas:
 
-vanillafix.crashscreen.unknownCause=Causa desconhecida
-vanillafix.crashscreen.identificationErrored=[Erro ao identificar, reporte ao VanillaFix]
+vanillafix.crashscreen.unknownCause=Desconhecido
+vanillafix.crashscreen.identificationErrored=[Erro ao identificar, relatar ao VanillaFix]
 
-vanillafix.crashscreen.paragraph2.line1=Clique em um mod na lista para ir ao website desse para obter suporte.
-vanillafix.crashscreen.paragraph2.line2=Um relatório foi gerado, e pode ser encontrado aqui (clique):
+vanillafix.crashscreen.paragraph2.line1=Clique em qualquer mod da lista para acessar a página de assistência. Um
+vanillafix.crashscreen.paragraph2.line2=relatório foi criado e pode ser acessado aqui (clique):
 
-vanillafix.crashscreen.reportSaveFailed=[Erro ao salvar o relatório, veja os logs]
+vanillafix.crashscreen.reportSaveFailed=[Erro ao salvar o relatório, ver o registro]
 
-vanillafix.crashscreen.paragraph3.line1=Clique no botão "Obter link" para abrir em seu navegador. Você é
-vanillafix.crashscreen.paragraph3.line2=incentivado(a) a mandar este relatório ao/à autor(a) do mod para ajudá-lo(a)
-vanillafix.crashscreen.paragraph3.line3=a corrigir este problema. Já que o VanillaFix está instalado, você pode
-vanillafix.crashscreen.paragraph3.line4=continuar jogando apesar desse crash.
+vanillafix.crashscreen.paragraph3.line1=Clique em "Acessar link" para abri-lo em seu navegador. Se preferir,
+vanillafix.crashscreen.paragraph3.line2=envie este relatório para o desenvolvedor do mod a fim de ajudá-lo
+vanillafix.crashscreen.paragraph3.line3=a corrigir o erro. Já que o VanillaFix está instalado, você pode
+vanillafix.crashscreen.paragraph3.line4=continuar jogando.
 
-vanillafix.initerrorscreen.title=Minecraft falhou ao iniciar!
-vanillafix.initerrorscreen.summary=Um erro durante a inicialização impediu o Minecraft de iniciar
+vanillafix.initerrorscreen.title=O Minecraft não pôde ser inicializado!
+vanillafix.initerrorscreen.summary=Um erro de inicialização impediu a execução do Minecraft
 
-vanillafix.initerrorscreen.paragraph3.line1=Clique no botão "Obter link" para abrir em seu navegador. Você é
-vanillafix.initerrorscreen.paragraph3.line2=incentivado(a) a mandar este relatório ao/à autor(a) do mod para ajudá-lo(a)
-vanillafix.initerrorscreen.paragraph3.line3=a corrigir este problema. Infelizmente não é possível continuar
-vanillafix.initerrorscreen.paragraph3.line4=a carregar o Minecraft após este erro.
+vanillafix.initerrorscreen.paragraph3.line1=Clique em "Acessar link" para abri-lo em seu navegador. Se preferir,
+vanillafix.initerrorscreen.paragraph3.line2=envie este relatório ao desenvolvedor do mod para ajudá-lo a
+vanillafix.initerrorscreen.paragraph3.line3=corrigir o erro. Lamentamos, não será possível continuar jogando
+vanillafix.initerrorscreen.paragraph3.line4=o Minecraft devido ao erro.
 
-vanillafix.warnscreen.title=Possível problema encontrado!
-vanillafix.warnscreen.summary=O Minecraft teve um problema.
+vanillafix.warnscreen.title=Problema em potencial encontrado!
+vanillafix.warnscreen.summary=O Minecraft parou de funcionar em decorrência de um erro.
 
-vanillafix.warnscreen.paragraph1.line1=Isto não causou um crash, mas provavelmente haverá
-vanillafix.warnscreen.paragraph1.line2=consequências como corrupção do mundo, ou funcionalidades quebradas.
-vanillafix.warnscreen.paragraph1.line3=O(s) seguinte(s) mod(s) foram identificados como possíveis causas:
+vanillafix.warnscreen.paragraph1.line1=Isso não causou um erro, mas podem ocorrer consequências indesejadas
+vanillafix.warnscreen.paragraph1.line2=como mundos corrompidos ou mau funcionamento de recursos.
+vanillafix.warnscreen.paragraph1.line3=Os seguinte(s) mod(s) foram apontados como possíveis causas:
 
-vanillafix.warnscreen.paragraph3.line1=Clique no botão "Obter link" para abrir em seu navegador. Você é
-vanillafix.warnscreen.paragraph3.line2=incentivado(a) a mandar este relatório ao/à autor(a) do mod para ajudá-lo(a)
-vanillafix.warnscreen.paragraph3.line3=a corrigir este problema. Já que o VanillaFix está instalado, você pode
-vanillafix.warnscreen.paragraph3.line4=continuar jogando, mas saiba que provavelmente você encontrará problemas no futuro.
-vanillafix.warnscreen.paragraph3.line5=Este aviso pode ser desativado em Mods > VanillaFix > Config > Crashes.
+vanillafix.warnscreen.paragraph3.line1=Clique em "Acessar link" para abri-lo em seu navegador. Se preferir,
+vanillafix.warnscreen.paragraph3.line2=envie este relatório ao desenvolvedor do mod para ajudá-lo a
+vanillafix.warnscreen.paragraph3.line3=corrigir o erro. Você pode continuar jogando, porém, esteja ciente 
+vanillafix.warnscreen.paragraph3.line4=de que mais falhas podem ocorrer. Este aviso pode ser desativado em
+vanillafix.warnscreen.paragraph3.line5=Mods > VanillaFix > Config. > Erros
 
 vanillafix.notification.title.unknown=Ocorreu um problema desconhecido!
-vanillafix.notification.title.mod=%s teve um problema!
-vanillafix.notification.description=Pressione Ctrl + I para mais informações
+vanillafix.notification.title.mod=%s está com problemas!
+vanillafix.notification.description=Pressione Ctrl + I para saber mais
 
-vanillafix.fixes=Habilitar/desabilitar correções
-vanillafix.fixes.tooltip=Control which fixes are enabled and disabled.
-vanillafix.crashes=Opções de crash
-vanillafix.crashes.tooltip=Opções de como os crashes são controlados
-vanillafix.crashes.problemAction.log=Log
+vanillafix.fixes=Ativar/Desativar correções
+vanillafix.fixes.tooltip=Definir quais correções estão ativadas ou desativadas.
+vanillafix.crashes=Opções de erros
+vanillafix.crashes.tooltip=Opções para gerenciamento de erros
+vanillafix.crashes.disableReturnToMainMenu=Desativar "Voltar ao menu principal"
+vanillafix.crashes.disableReturnToMainMenu.tooltip=Desativa o botão "Voltar ao menu principal" na tela de erro, o qual força o usuário a fechar o jogo após a interrupção. A tela de erro continuará exibindo os mods suspeitos e oferecerá o envio do relatório de erros.
+vanillafix.crashes.problemAction.log=Registro
 vanillafix.crashes.problemAction.notification=Notificação
 vanillafix.crashes.problemAction.warningScreen=Tela de aviso
-vanillafix.crashes.problemAction.crash=Crash
-vanillafix.crashes.scheduledTaskproblemAction=Ações para exceção de tarefas agendadas
-vanillafix.crashes.scheduledTaskproblemAction.tooltip=O que deve acontecer quando uma tarefa agendada lança uma exceção
-vanillafix.crashes.errorNotificationDuration=Duração da notificação de erro
-vanillafix.crashes.errorNotificationDuration.tooltip=O tempo em milissegundos para mostrar notificações de erro.
-vanillafix.crashes.replaceErrorNotifications=Substituir notificações de erro
-vanillafix.crashes.replaceErrorNotifications.tooltip=Quando ocorrer erros em sequência, substituir a notificação ao invés de enfileirar mais notificações
-vanillafix.crashes.hasteURL=URL do Haste
-vanillafix.crashes.hasteURL.tooltip=A URL da instância do haste para enviar relatórios de crashes, sem barra final.
+vanillafix.crashes.problemAction.crash=Erro
+vanillafix.crashes.scheduledTaskproblemAction=Ação de exceção para tarefas agendadas
+vanillafix.crashes.scheduledTaskproblemAction.tooltip=Protocolo de ação para exceções iniciadas por tarefas agendadas.
+vanillafix.crashes.errorNotificationDuration=Duração da notificação de erros
+vanillafix.crashes.errorNotificationDuration.tooltip=O tempo de exibição para notificações de erros em milissegundos.
+vanillafix.crashes.replaceErrorNotifications=Reposicionr notificações de erros
+vanillafix.crashes.replaceErrorNotifications.tooltip=Quando vários erros ocorrem de uma vez só, reposiciona as notificações em vez de exibir mais.
+vanillafix.crashes.hasteURL=Haste URL
+vanillafix.crashes.hasteURL.tooltip=The URL to the root of the haste instance to upload crash reports to, without a trailing slash.
+vanillafix.fixes.bugFixes=Correções e otimizações
+vanillafix.fixes.bugFixes.tooltip=Ativar ou desativar otimizações ou correções do jogo.
+vanillafix.fixes.crashFixes=Melhorias para erros
+vanillafix.fixes.crashFixes.tooltip=Ativar ou desativar melhorias para erros (tela de erros, identificação de mods, formato do relatório de erros). Tenha em mente de que você só pode desativar o botão "Voltar ao menu principal" da configuração "Opções de erros".
+vanillafix.fixes.modSupport=Assistência para mods
+vanillafix.fixes.modSupport.tooltip=Ativar ou desativar a assistência para outros mods. Atenção: Isso pode interromper algumas texturas animadas de mods. Não desative esta opção a menos que esteja causando erros.
+vanillafix.fixes.profiler=Melhorias de análise
+vanillafix.fixes.profiler.tooltip=Ativar ou desativar melhorias para a análise de depuração (Alt + F3): Dividir entidades e tile entities por mod, adicionar a combinação F3 + S para a depuração do servidor.
+vanillafix.fixes.textureFixes=Otimizar textura
+vanillafix.fixes.textureFixes.tooltip=Ativar ou desativar otimizações de textura. Esta funcionalidade aumenta a taxa de quadros do jogo, portanto, não é recomendado desativá-lo.
+vanillafix.fixes.blockstates=Otimizar estados de blocos
+vanillafix.fixes.blockstates.tooltip=Ativar ou desativar otimizações de estados de blocos. Este recurso pode reduzir o consumo de 10 MB de memória por mod, em média. Porém pode provocar problemas de incompatibilidade com outros mods.
+vanillafix.fixes.dynamicresources=Recursos dinâmicos
+vanillafix.fixes.dynamicresources.tooltip=Ativar ou desativar recursos dinâmicos. Esta funcionalidade desativa o carregamento de modelos, texturas e sons em início; os recursos citados são carregados durante o jogo, e sua memória de uso reduz-se em 75%. Isso pode causar incompatibilidades com outros mods.
 
-
-vanillafix.debug.switch_profiler.help=F3 + S = Alternar profiler cliente <-> servidor interno
-vanillafix.debug.switch_profiler.server=Usando profiler do servidor
-vanillafix.debug.switch_profiler.client=Usando profiler do cliente
+vanillafix.debug.switch_profiler.help=F3 + S = Alternar entre análise do cliente <-> servidor integrado
+vanillafix.debug.switch_profiler.server=Utilizando análise do servidor
+vanillafix.debug.switch_profiler.client=Utilizando análise do cliente
