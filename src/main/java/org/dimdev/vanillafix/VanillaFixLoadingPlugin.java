@@ -30,7 +30,6 @@ import java.util.Map;
 @IFMLLoadingPlugin.SortingIndex(Integer.MIN_VALUE + 10000)
 public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
     private static final Logger log = LogManager.getLogger();
-    private static final String MCP_VERSION = "20180618-1.12"; // TODO: Use version for current Minecraft version!
     private static boolean initialized = false;
 
     public static LoadingConfig config;
@@ -124,13 +123,13 @@ public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
         // Initialize StacktraceDeobfuscator
         log.info("Initializing StacktraceDeobfuscator");
         try {
-            File mappings = new File(modDir, "methods-" + MCP_VERSION + ".csv");
+            File mappings = new File(modDir, "methods-stable_39.csv");
             if (mappings.exists()) {
                 log.info("Found MCP method mappings: " + mappings.getName());
             } else {
                 log.info("Downloading MCP method mappings to: " + mappings.getName());
             }
-            StacktraceDeobfuscator.init(mappings, MCP_VERSION);
+            StacktraceDeobfuscator.init(mappings);
         } catch (Exception e) {
             log.error("Failed to get MCP data!", e);
         }

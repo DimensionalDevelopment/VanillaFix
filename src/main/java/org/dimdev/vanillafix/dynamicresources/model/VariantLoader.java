@@ -34,18 +34,18 @@ public class VariantLoader implements ICustomModelLoader {
             return new WeightedRandomModel(definition.getVariant(variant.getVariant()));
         } else {
             if (definition.hasMultipartData()) {
-                Block block = ModelLocationInformation.getBlockFromBlockstateLocation(new ResourceLocation(variant.getResourceDomain(), variant.getResourcePath()));
+                Block block = ModelLocationInformation.getBlockFromBlockstateLocation(new ResourceLocation(variant.getNamespace(), variant.getPath()));
                 if (block != null) {
                     definition.getMultipartData().setStateContainer(block.getBlockState());
                 }
             }
 
-            return new MultipartModel(new ResourceLocation(variant.getResourceDomain(), variant.getResourcePath()), definition.getMultipartData());
+            return new MultipartModel(new ResourceLocation(variant.getNamespace(), variant.getPath()), definition.getMultipartData());
         }
     }
 
     private ModelBlockDefinition loadMultiPartModelBlockDefinition(ResourceLocation location) {
-        ResourceLocation blockstateLocation = new ResourceLocation(location.getResourceDomain(), "blockstates/" + location.getResourcePath() + ".json");
+        ResourceLocation blockstateLocation = new ResourceLocation(location.getNamespace(), "blockstates/" + location.getPath() + ".json");
 
         List<ModelBlockDefinition> list = Lists.newArrayList();
         try {

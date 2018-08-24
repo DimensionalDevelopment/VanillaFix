@@ -283,8 +283,8 @@ public class NumericalBlockState extends BlockStateBase {
     }
 
     @Override
-    public EnumPushReaction getMobilityFlag() {
-        return block.getMobilityFlag(this);
+    public EnumPushReaction getPushReaction() {
+        return block.getPushReaction(this);
     }
 
     @Override

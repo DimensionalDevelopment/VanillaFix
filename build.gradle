@@ -60,7 +60,7 @@ targetCompatibility = 1.8
 minecraft {
     version "1.12.2-14.23.4.2703"
     runDir "run"
-    mappings "snapshot_20180607"
+    mappings "stable_39"
     makeObfSourceJar false
 
     def args = [

@@ -1,21 +1,13 @@
 package org.dimdev.vanillafix;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.util.ReportedException;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeModContainer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -30,8 +22,6 @@ import java.util.Scanner;
      updateJSON = "https://gist.githubusercontent.com/Runemoro/28e8cf4c24a5f17f508a5d34f66d229f/raw/vanillafix_update.json")
 public class VanillaFix {
     private static final int CONFIG_VERSION = 1;
-    private static final boolean DEBUG_BLOCK_IDS = false;
-    private static final boolean DEBUG_ITEM_IDS = false;
     private static final boolean DEBUG_INIT_ERROR = false; // For testing the init error screen outside of dev. Don't forget to unset!
 
     @Mod.EventHandler
@@ -76,32 +66,6 @@ public class VanillaFix {
 
         // Don't render terrain on main thread for higher FPS, but possibly seeing missing chunks
         ForgeModContainer.alwaysSetupTerrainOffThread = true;
-
-        IForgeRegistry<Block> blockRegistry = GameRegistry.findRegistry(Block.class);
-        IForgeRegistry<Item> itemRegistry = GameRegistry.findRegistry(Item.class);
-
-        if (DEBUG_BLOCK_IDS) {
-            for (int i = 0; i < 5000; i++) {
-                Block block = new Block(Material.GROUND)
-                        .setCreativeTab(CreativeTabs.BUILDING_BLOCKS)
-                        .setUnlocalizedName("block_" + i)
-                        .setRegistryName(new ResourceLocation("vanillafix:block_" + i));
-
-                blockRegistry.register(block);
-                itemRegistry.register(new ItemBlock(block).setRegistryName(new ResourceLocation("vanillafix:block_" + i)));
-            }
-        }
-
-        if (DEBUG_ITEM_IDS) {
-            for (int i = 0; i < 40000; i++) {
-                Item item = new Item()
-                        .setCreativeTab(CreativeTabs.FOOD)
-                        .setUnlocalizedName("item_" + i)
-                        .setRegistryName(new ResourceLocation("vanillafix:item_" + i));
-
-                itemRegistry.register(item);
-            }
-        }
 
         if (DEBUG_INIT_ERROR) throw new ReportedException(new CrashReport("Debug init crash", new Throwable()));
     }

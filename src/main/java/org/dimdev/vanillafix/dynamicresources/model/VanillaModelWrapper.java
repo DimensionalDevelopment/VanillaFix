@@ -67,7 +67,7 @@ public class VanillaModelWrapper implements IModel {
                 set.add(dep);
             }
         }
-        if (model.getParentLocation() != null && !model.getParentLocation().getResourcePath().startsWith("builtin/")) {
+        if (model.getParentLocation() != null && !model.getParentLocation().getPath().startsWith("builtin/")) {
             set.add(model.getParentLocation());
         }
         return ImmutableSet.copyOf(set);
@@ -77,7 +77,7 @@ public class VanillaModelWrapper implements IModel {
     public Collection<ResourceLocation> getTextures() {
         // Setting parent here to make textures resolve properly
         if (model.getParentLocation() != null) {
-            if (model.getParentLocation().getResourcePath().equals("builtin/generated")) {
+            if (model.getParentLocation().getPath().equals("builtin/generated")) {
                 model.parent = BuiltinLoader.MODEL_GENERATED;
             } else {
                 IModel parent = ModelLoaderRegistry.getModelOrLogError(model.getParentLocation(), "Could not load vanilla model parent '" + model.getParentLocation() + "' for '" + model);

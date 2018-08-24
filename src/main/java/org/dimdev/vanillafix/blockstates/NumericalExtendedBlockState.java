@@ -299,8 +299,8 @@ public class NumericalExtendedBlockState extends BlockStateBase implements IExte
     }
 
     @Override
-    public EnumPushReaction getMobilityFlag() {
-        return normalState.getMobilityFlag();
+    public EnumPushReaction getPushReaction() {
+        return normalState.getPushReaction();
     }
 
     @Override

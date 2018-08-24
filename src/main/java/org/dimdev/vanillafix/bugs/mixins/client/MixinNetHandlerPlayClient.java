@@ -35,7 +35,7 @@ public abstract class MixinNetHandlerPlayClient implements INetHandlerPlayClient
             client.displayGuiScreen(null);
 
             Scoreboard scoreboard = world.getScoreboard();
-            world = new WorldClient((NetHandlerPlayClient) (Object) this, new WorldSettings(0L, packetIn.getGameType(), false, client.world.getWorldInfo().isHardcoreModeEnabled(), packetIn.getWorldType()), packetIn.getDimensionID(), packetIn.getDifficulty(), client.mcProfiler);
+            world = new WorldClient((NetHandlerPlayClient) (Object) this, new WorldSettings(0L, packetIn.getGameType(), false, client.world.getWorldInfo().isHardcoreModeEnabled(), packetIn.getWorldType()), packetIn.getDimensionID(), packetIn.getDifficulty(), client.profiler);
             world.setWorldScoreboard(scoreboard);
             client.loadWorld(world);
             client.player.dimension = packetIn.getDimensionID();

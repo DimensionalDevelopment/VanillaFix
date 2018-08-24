@@ -30,7 +30,7 @@ import java.util.List;
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo {
     @Shadow @Nullable private IntegratedServer integratedServer;
-    @Shadow @Final public Profiler mcProfiler;
+    @Shadow @Final public Profiler profiler;
     @Shadow public GameSettings gameSettings;
     @Shadow protected abstract void displayDebugInfo(long elapsedTicksTime);
 
@@ -69,9 +69,9 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo {
 
     /** @reason Use the integrated server profiler rather than client profiler after F3 + S was pressed. */
     @SuppressWarnings("InvalidMemberReference") // https://github.com/minecraft-dev/MinecraftDev/issues/387
-    @Redirect(method = {"displayDebugInfo", "updateDebugProfilerName"}, at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;mcProfiler:Lnet/minecraft/profiler/Profiler;"))
+    @Redirect(method = {"displayDebugInfo", "updateDebugProfilerName"}, at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;profiler:Lnet/minecraft/profiler/Profiler;"))
     private Profiler getCurrentProfiler(Minecraft minecraft) {
-        return useIntegratedServerProfiler && integratedServer != null ? integratedServer.profiler : mcProfiler;
+        return useIntegratedServerProfiler && integratedServer != null ? integratedServer.profiler : profiler;
     }
 
     /**

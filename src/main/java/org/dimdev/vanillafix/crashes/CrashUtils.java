@@ -46,7 +46,7 @@ public final class CrashUtils {
                 reportName += Minecraft.getMinecraft().isCallingFromMinecraftThread() ? "-client" : "-server";
                 reportName += ".txt";
 
-                File reportsDir = isClient() ? new File(Minecraft.getMinecraft().mcDataDir, "crash-reports") : new File("crash-reports");
+                File reportsDir = isClient() ? new File(Minecraft.getMinecraft().gameDir, "crash-reports") : new File("crash-reports");
                 File reportFile = new File(reportsDir, reportName);
 
                 report.saveToFile(reportFile);

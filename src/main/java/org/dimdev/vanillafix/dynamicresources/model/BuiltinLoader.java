@@ -27,12 +27,12 @@ public class BuiltinLoader implements ICustomModelLoader {
 
     @Override
     public boolean accepts(ResourceLocation modelLocation) {
-        return modelLocation.getResourcePath().startsWith("builtin/");
+        return modelLocation.getPath().startsWith("builtin/");
     }
 
     @Override
     public IModel loadModel(ResourceLocation modelLocation) throws Exception {
-        String path = modelLocation.getResourcePath();
+        String path = modelLocation.getPath();
 
         if ("builtin/generated".equals(path)) {
             return new VanillaModelWrapper(modelLocation, MODEL_GENERATED);

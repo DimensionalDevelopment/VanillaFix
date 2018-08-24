@@ -25,7 +25,7 @@ public class VanillaLoader implements ICustomModelLoader {
     public IModel loadModel(ResourceLocation modelLocation) throws Exception {
         // Load vanilla model
         ModelBlock vanillaModel;
-        ResourceLocation vanillaModelLocation = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath() + ".json");
+        ResourceLocation vanillaModelLocation = new ResourceLocation(modelLocation.getNamespace(), modelLocation.getPath() + ".json");
         try (IResource resource = Minecraft.getMinecraft().getResourceManager().getResource(vanillaModelLocation);
              Reader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
             vanillaModel = ModelBlock.deserialize(reader);
@@ -33,11 +33,11 @@ public class VanillaLoader implements ICustomModelLoader {
         }
 
         // Load armature animation (currently disabled for efficiency, see MixinModelBlockAnimation)
-        String modelPath = modelLocation.getResourcePath();
+        String modelPath = modelLocation.getPath();
         if (modelPath.startsWith("models/")) {
             modelPath = modelPath.substring("models/".length());
         }
-        ResourceLocation armatureLocation = new ResourceLocation(modelLocation.getResourceDomain(), "armatures/" + modelPath + ".json");
+        ResourceLocation armatureLocation = new ResourceLocation(modelLocation.getNamespace(), "armatures/" + modelPath + ".json");
         ModelBlockAnimation animation = ModelBlockAnimation.loadVanillaAnimation(Minecraft.getMinecraft().getResourceManager(), armatureLocation);
 
         // Return the vanilla model weapped in a VanillaModelWrapper

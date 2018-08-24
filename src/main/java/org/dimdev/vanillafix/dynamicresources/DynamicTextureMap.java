@@ -134,12 +134,12 @@ public class DynamicTextureMap extends TextureMap {
     }
 
     public void update() {
-        Minecraft.getMinecraft().mcProfiler.startSection("updateTextureMap");
+        Minecraft.getMinecraft().profiler.startSection("updateTextureMap");
 
         if (atlasNeedsExpansion) {
             atlasNeedsExpansion = false;
 
-            Minecraft.getMinecraft().mcProfiler.startSection("expandAtlas");
+            Minecraft.getMinecraft().profiler.startSection("expandAtlas");
             LOGGER.info("Expanding texture atlas to {}x{}", stitcher.getCurrentWidth(), stitcher.getCurrentHeight());
 
             TextureUtil.allocateTextureImpl(getGlTextureId(), mipmapLevels, stitcher.getCurrentWidth(), stitcher.getCurrentHeight());
@@ -151,17 +151,17 @@ public class DynamicTextureMap extends TextureMap {
                 TextureUtil.uploadTextureMipmap(loadedSprite.getFrameTextureData(0), loadedSprite.getIconWidth(), loadedSprite.getIconHeight(), loadedSprite.getOriginX(), loadedSprite.getOriginY(), false, false);
             }
 
-            Minecraft.getMinecraft().mcProfiler.endSection();
+            Minecraft.getMinecraft().profiler.endSection();
         }
 
-        Minecraft.getMinecraft().mcProfiler.startSection("uploadTexture");
+        Minecraft.getMinecraft().profiler.startSection("uploadTexture");
         GlStateManager.bindTexture(getGlTextureId());
         for (TextureAtlasSprite sprite : spritesNeedingUpload) {
             spritesNeedingUpload.remove(sprite);
             TextureUtil.uploadTextureMipmap(sprite.getFrameTextureData(0), sprite.getIconWidth(), sprite.getIconHeight(), sprite.getOriginX(), sprite.getOriginY(), false, false);
         }
-        Minecraft.getMinecraft().mcProfiler.endSection();
+        Minecraft.getMinecraft().profiler.endSection();
 
-        Minecraft.getMinecraft().mcProfiler.endSection();
+        Minecraft.getMinecraft().profiler.endSection();
     }
 }

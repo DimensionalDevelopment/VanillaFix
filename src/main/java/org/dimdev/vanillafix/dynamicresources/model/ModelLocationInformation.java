@@ -111,7 +111,7 @@ public class ModelLocationInformation {
 
     public static ResourceLocation getItemLocation(String location) {
         ResourceLocation resourcelocation = new ResourceLocation(location.replaceAll("#.*", ""));
-        return new ResourceLocation(resourcelocation.getResourceDomain(), "item/" + resourcelocation.getResourcePath());
+        return new ResourceLocation(resourcelocation.getNamespace(), "item/" + resourcelocation.getPath());
     }
 
     public static ModelResourceLocation getInventoryVariant(String variant) {
