@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.texture.*;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.ForgeHooksClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,12 +19,14 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class DynamicTextureMap extends TextureMap {
     private static final Logger LOGGER = LogManager.getLogger();
-    protected DynamicStitcher stitcher;
-    protected IResourceManager resourceManager = Minecraft.getMinecraft().getResourceManager();
-    private Map<String, TextureAtlasSprite> loadedSprites = new ConcurrentHashMap<>();
-    private List<TextureAtlasSprite> spritesNeedingUpload = new CopyOnWriteArrayList<>();
+
+    private final Minecraft minecraft = Minecraft.getMinecraft();
+    private final IResourceManager resourceManager = minecraft.getResourceManager();
+    private final Map<String, TextureAtlasSprite> loadedSprites = new ConcurrentHashMap<>();
+    private final List<TextureAtlasSprite> spritesNeedingUpload = new CopyOnWriteArrayList<>();
+    private final Lock spriteLoadingLock = new ReentrantLock();
+    private DynamicStitcher stitcher;
     private boolean atlasNeedsExpansion;
-    private Lock spriteLoadingLock = new ReentrantLock();
 
     public DynamicTextureMap(String basePath) {
         super(basePath);
@@ -55,9 +58,12 @@ public class DynamicTextureMap extends TextureMap {
 
         missingImage.generateMipmaps(mipmapLevels);
 
-        LOGGER.info("Created: {}x{} {}-atlas", stitcher.getCurrentWidth(), stitcher.getCurrentHeight(), basePath);
+        LOGGER.info("Created {}x{} '{}' atlas", stitcher.getImageWidth(), stitcher.getImageHeight(), basePath);
 
-        TextureUtil.allocateTextureImpl(getGlTextureId(), mipmapLevels, stitcher.getCurrentWidth(), stitcher.getCurrentHeight());
+        TextureUtil.allocateTextureImpl(getGlTextureId(), mipmapLevels, stitcher.getImageWidth(), stitcher.getImageHeight());
+
+        ForgeHooksClient.onTextureStitchedPre(this);
+        ForgeHooksClient.onTextureStitchedPost(this);
     }
 
     @Override
@@ -78,12 +84,12 @@ public class DynamicTextureMap extends TextureMap {
         return sprite;
     }
 
-    protected TextureAtlasSprite loadSprite(String iconName) {
-//        LOGGER.info("Loading texture " + iconName);
+    protected TextureAtlasSprite loadSprite(String name) {
+//        LOGGER.info("Loading texture " + name);
 
-        TextureAtlasSprite sprite = mapRegisteredSprites.get(iconName);
+        TextureAtlasSprite sprite = mapRegisteredSprites.get(name);
         if (sprite == null) {
-            sprite = new TextureAtlasSprite(iconName);
+            sprite = new TextureAtlasSprite(name);
         }
 
         // Load the sprite
@@ -91,7 +97,9 @@ public class DynamicTextureMap extends TextureMap {
 
         if (sprite.hasCustomLoader(resourceManager, location)) {
             sprite.load(resourceManager, location, l -> getAtlasSprite(l.toString()));
-        } else if (!iconName.equals("missingno")) {
+        } else if (name.equals("minecraft:missingno")) {
+            return missingImage;
+        } else {
             try (IResource resource = resourceManager.getResource(location)) {
                 PngSizeInfo pngSizeInfo = PngSizeInfo.makeFromResource(resourceManager.getResource(location));
                 boolean isAnimated = resource.getMetadata("animation") != null;
@@ -107,13 +115,13 @@ public class DynamicTextureMap extends TextureMap {
         }
 
         // Allocate it a spot on the texture map
-        int oldWidth = stitcher.getCurrentWidth();
-        int oldHeight = stitcher.getCurrentHeight();
+        int oldWidth = stitcher.getImageWidth();
+        int oldHeight = stitcher.getImageHeight();
 
         stitcher.addSprite(sprite);
 
         // Texture map got resized, recreate it and upload all textures
-        if (stitcher.getCurrentWidth() != oldWidth || stitcher.getCurrentHeight() != oldHeight) {
+        if (stitcher.getImageWidth() != oldWidth || stitcher.getImageHeight() != oldHeight) {
             atlasNeedsExpansion = true;
         }
 
@@ -126,7 +134,8 @@ public class DynamicTextureMap extends TextureMap {
         }
 
         // Updade if calling from Minecraft thread so that inventory items don't flicker
-        if (Minecraft.getMinecraft().isCallingFromMinecraftThread()) {
+        // Don't load during init to avoid problems with loading screen
+        if (minecraft.isCallingFromMinecraftThread() && ((IPatchedMinecraft) minecraft).isDoneLoading()) {
             update();
         }
 
@@ -134,34 +143,40 @@ public class DynamicTextureMap extends TextureMap {
     }
 
     public void update() {
-        Minecraft.getMinecraft().profiler.startSection("updateTextureMap");
+        minecraft.profiler.startSection("updateTextureMap");
 
         if (atlasNeedsExpansion) {
             atlasNeedsExpansion = false;
 
-            Minecraft.getMinecraft().profiler.startSection("expandAtlas");
-            LOGGER.info("Expanding texture atlas to {}x{}", stitcher.getCurrentWidth(), stitcher.getCurrentHeight());
+            minecraft.profiler.startSection("expandAtlas");
 
-            TextureUtil.allocateTextureImpl(getGlTextureId(), mipmapLevels, stitcher.getCurrentWidth(), stitcher.getCurrentHeight());
+            int newWidth = stitcher.getImageWidth();
+            int newHeight = stitcher.getImageHeight();
+            LOGGER.info("Expanding '{}' atlas to {}x{}", basePath, newWidth, newHeight);
+
+            TextureScaleInfo.textureId = -1;
+            TextureUtil.allocateTextureImpl(getGlTextureId(), mipmapLevels, newWidth, newHeight);
+
+            TextureScaleInfo.textureId = getGlTextureId();
+            TextureScaleInfo.xScale = (double) DynamicStitcher.BASE_WIDTH / newWidth;
+            TextureScaleInfo.yScale = (double) DynamicStitcher.BASE_HEIGHT / newHeight;
 
             GlStateManager.bindTexture(getGlTextureId());
-            List<TextureAtlasSprite> slots = stitcher.getStichSlots();
-
-            for (TextureAtlasSprite loadedSprite : slots) {
+            for (TextureAtlasSprite loadedSprite : stitcher.getAllSprites()) {
                 TextureUtil.uploadTextureMipmap(loadedSprite.getFrameTextureData(0), loadedSprite.getIconWidth(), loadedSprite.getIconHeight(), loadedSprite.getOriginX(), loadedSprite.getOriginY(), false, false);
             }
 
-            Minecraft.getMinecraft().profiler.endSection();
+            minecraft.profiler.endSection();
         }
 
-        Minecraft.getMinecraft().profiler.startSection("uploadTexture");
+        minecraft.profiler.startSection("uploadTexture");
         GlStateManager.bindTexture(getGlTextureId());
         for (TextureAtlasSprite sprite : spritesNeedingUpload) {
             spritesNeedingUpload.remove(sprite);
             TextureUtil.uploadTextureMipmap(sprite.getFrameTextureData(0), sprite.getIconWidth(), sprite.getIconHeight(), sprite.getOriginX(), sprite.getOriginY(), false, false);
         }
-        Minecraft.getMinecraft().profiler.endSection();
+        minecraft.profiler.endSection();
 
-        Minecraft.getMinecraft().profiler.endSection();
+        minecraft.profiler.endSection();
     }
 }

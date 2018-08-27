@@ -17,7 +17,7 @@ import java.util.List;
 
 @Mixin(TextureMap.class)
 public abstract class MixinTextureMap extends AbstractTexture {
-    @Shadow @Final private List<TextureAtlasSprite> listAnimatedSprites;
+    @SuppressWarnings("ShadowModifiers" /*(AT)*/) @Shadow @Final private List<TextureAtlasSprite> listAnimatedSprites;
 
     /**
      * @reason Replaces the updateAnimations method to only tick animated textures
@@ -42,6 +42,7 @@ public abstract class MixinTextureMap extends AbstractTexture {
             if (((IPatchedTextureAtlasSprite) texture).needsAnimationUpdate()) {
                 Minecraft.getMinecraft().profiler.startSection(texture.getIconName());
                 texture.updateAnimation();
+                ((IPatchedTextureAtlasSprite) texture).unmarkNeedsAnimationUpdate(); // Can't do this from updateAnimation mixin, that method can be overriden
                 Minecraft.getMinecraft().profiler.endSection();
             }
         }

@@ -9,7 +9,6 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.model.ICustomModelLoader;
-import net.minecraftforge.client.model.ModelDynBucket;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.ForgeModContainer;
@@ -76,10 +75,9 @@ public class MixinModelManager {
         defaultModel = modelRegistry.getObject(new ModelResourceLocation("builtin/missing", "missing"));
 
         // Register the universal bucket item
-        if(FluidRegistry.isUniversalBucketEnabled()) {
+        if (FluidRegistry.isUniversalBucketEnabled()) {
             ModelLoader.setBucketModelDefinition(ForgeModContainer.getInstance().universalBucket);
         }
-        ModelDynBucket.LoaderDynBucket.INSTANCE.register(texMap);
 
         // Post the event, but just log an error if a listener throws an exception. The ModelLoader is
         // null, but very few mods use it. Custom support will be needed for those that do.
@@ -104,7 +102,7 @@ public class MixinModelManager {
             try {
                 listener.invoke(event);
             } catch (Throwable t) {
-                LOGGER.error(event + " listener " + listener + "threw exception, models may be broken", t);
+                LOGGER.error(event + " listener '" + listener + "' threw exception, models may be broken", t);
             }
         }
     }

@@ -83,3 +83,7 @@ vanillafix.fixes.dynamicresources.tooltip=Enable or disable dynamic resources. T
 vanillafix.debug.switch_profiler.help=F3 + S = Cycle client <-> integrated server profiler
 vanillafix.debug.switch_profiler.server=Using server profiler
 vanillafix.debug.switch_profiler.client=Using client profiler
+
+vanillafix.debug.draw_texture_map.help=F3 + M = Enable/disable texture map debug overlay
+vanillafix.debug.draw_texture_map.enabled=Texture map overlay enabled
+vanillafix.debug.draw_texture_map.disabled=Texture map overlay disabled

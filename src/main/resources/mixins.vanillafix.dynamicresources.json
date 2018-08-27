@@ -14,7 +14,8 @@
     "client.MixinMinecraft",
     "client.MixinModelLoaderRegistry",
     "client.MixinItemModelMesherForge",
-    "client.MixinModelBlockAnimation"
+    "client.MixinModelBlockAnimation",
+    "client.MixinGlStateManager"
   ],
   "injectors": {
     "maxShiftBy": 10

@@ -2,9 +2,11 @@ package org.dimdev.vanillafix.dynamicresources.model;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.IResource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.client.model.IModel;
@@ -13,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
+import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +59,18 @@ public class DynamicBakedModelProvider implements IRegistry<ModelResourceLocatio
         try {
             ResourceLocation inventoryVariantLocation = ModelLocationInformation.getInventoryVariantLocation(location);
             if (inventoryVariantLocation != null) {
-                IModel model = modelProvider.getObject(inventoryVariantLocation);
+                IModel model;
+                try {
+                    model = modelProvider.getObject(inventoryVariantLocation);
+                } catch (Throwable t) {
+                    try (IResource ignored = Minecraft.getMinecraft().getResourceManager().getResource(inventoryVariantLocation)) {
+                        throw t;
+                    } catch (FileNotFoundException ignored) {
+                        // load from blockstate json
+                        ModelLocationInformation.addInventoryVariantLocation(location, location);
+                        model = modelProvider.getObject(location);
+                    }
+                }
 
                 if (model instanceof VanillaModelWrapper) {
                     for (ResourceLocation dep : ((VanillaModelWrapper) model).getOverrides()) {

@@ -1,79 +1,67 @@
 package org.dimdev.vanillafix.dynamicresources;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import net.minecraft.client.renderer.StitcherException;
 import net.minecraft.client.renderer.texture.Stitcher.Holder;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.List;
-import java.util.Set;
 
 public class DynamicStitcher {
-    private final int mipmapLevelStitcher;
-    private final Set<Holder> setStitchHolders = Sets.newHashSetWithExpectedSize(256);
-    private final List<Slot> stitchSlots = Lists.newArrayListWithCapacity(256);
+    public static final int BASE_WIDTH = 32;
+    public static final int BASE_HEIGHT = 32;
+
+    private final int mipmapLevels;
+    private final List<Slot> slots = Lists.newArrayListWithCapacity(256);
     private int currentWidth;
     private int currentHeight;
     private final int maxWidth;
     private final int maxHeight;
-    private final int maxTileDimension;
+    private final int maxSpriteSize;
 
-    public DynamicStitcher(int maxWidthIn, int maxHeightIn, int maxTileDimensionIn, int mipmapLevelStitcherIn) {
-        mipmapLevelStitcher = mipmapLevelStitcherIn;
-        maxWidth = maxWidthIn;
-        maxHeight = maxHeightIn;
-        maxTileDimension = maxTileDimensionIn;
-
-        currentWidth = 512;
-        currentHeight = 512;
-        stitchSlots.add(new Slot(0, 0, currentWidth, currentHeight));
+    public DynamicStitcher(int maxWidth, int maxHeight, int maxSpriteSize, int mipmapLevels) {
+        this.mipmapLevels = mipmapLevels;
+        this.maxWidth = maxWidth;
+        this.maxHeight = maxHeight;
+        this.maxSpriteSize = maxSpriteSize;
     }
 
-    public int getCurrentWidth() {
-        return currentWidth;
+    public int getImageWidth() {
+        return Math.max(BASE_WIDTH, MathHelper.smallestEncompassingPowerOfTwo(currentWidth));
     }
 
-    public int getCurrentHeight() {
-        return currentHeight;
+    public int getImageHeight() {
+        return Math.max(BASE_HEIGHT, MathHelper.smallestEncompassingPowerOfTwo(currentHeight));
     }
 
     public void addSprite(TextureAtlasSprite sprite) {
-        Holder holder = new Holder(sprite, mipmapLevelStitcher);
+        Holder holder = new Holder(sprite, mipmapLevels);
 
-        if (maxTileDimension > 0) {
-            holder.setNewDimension(maxTileDimension);
+        if (maxSpriteSize > 0) {
+            holder.setNewDimension(maxSpriteSize);
         }
-
-        setStitchHolders.add(holder);
 
         Slot slot = allocateSlot(holder);
 
         if (slot == null) {
-            throw new StitcherException(null, String.format("Unable to fit: %s - size: %dx%d", holder.getAtlasSprite().getIconName(), holder.getAtlasSprite().getIconWidth(), holder.getAtlasSprite().getIconHeight()));
+            throw new StitcherException(null, String.format("Unable to fit %s (size %dx%d)", sprite.getIconName(), sprite.getIconWidth(), sprite.getIconHeight()));
         }
 
-        currentWidth = MathHelper.smallestEncompassingPowerOfTwo(currentWidth);
-        currentHeight = MathHelper.smallestEncompassingPowerOfTwo(currentHeight);
-
-        sprite.initSprite(currentWidth, currentHeight, slot.getOriginX(), slot.getOriginY(), holder.isRotated());
+        sprite.initSprite(BASE_WIDTH, BASE_HEIGHT, slot.getOriginX(), slot.getOriginY(), holder.isRotated());
     }
 
-    public List<TextureAtlasSprite> getStichSlots() {
-        List<Slot> slots = Lists.newArrayList();
+    public List<TextureAtlasSprite> getAllSprites() {
+        List<Slot> allSlots = Lists.newArrayList();
 
-        for (Slot stitchSlot : stitchSlots) {
-            stitchSlot.getAllStitchSlots(slots);
+        for (Slot slot : slots) {
+            slot.getAllStitchSlots(allSlots);
         }
 
         List<TextureAtlasSprite> sprites = Lists.newArrayList();
 
-        for (Slot slot : slots) {
-            Holder holder = slot.getStitchHolder();
-            TextureAtlasSprite sprite = holder.getAtlasSprite();
-            sprite.initSprite(currentWidth, currentHeight, slot.getOriginX(), slot.getOriginY(), holder.isRotated());
-            sprites.add(sprite);
+        for (Slot slot : allSlots) {
+            sprites.add(slot.getStitchHolder().getAtlasSprite());
         }
 
         return sprites;
@@ -83,7 +71,7 @@ public class DynamicStitcher {
         TextureAtlasSprite sprite = holder.getAtlasSprite();
         boolean notSquare = sprite.getIconWidth() != sprite.getIconHeight();
 
-        for (Slot stitchSlot : stitchSlots) {
+        for (Slot stitchSlot : slots) {
             Slot slot = stitchSlot.addSlot(holder);
             if (slot != null) {
                 return slot;
@@ -102,59 +90,63 @@ public class DynamicStitcher {
             }
         }
 
-        // TODO: Fix this, expanding the atlas changes all previous UV coordinates
         return expandAndAllocateSlot(holder);
     }
 
     private Slot expandAndAllocateSlot(Holder holder) {
-        int i = Math.min(holder.getWidth(), holder.getHeight());
-        int k = MathHelper.smallestEncompassingPowerOfTwo(currentWidth);
-        int l = MathHelper.smallestEncompassingPowerOfTwo(currentHeight);
-        int i1 = MathHelper.smallestEncompassingPowerOfTwo(currentWidth + i);
-        int j1 = MathHelper.smallestEncompassingPowerOfTwo(currentHeight + i);
-        boolean flag1 = i1 <= maxWidth;
-        boolean flag2 = j1 <= maxHeight;
+        int smallestDimension = Math.min(holder.getWidth(), holder.getHeight());
 
-        if (!flag1 && !flag2) {
+        int currentImageWidth = MathHelper.smallestEncompassingPowerOfTwo(currentWidth);
+        int currentImageHeight = MathHelper.smallestEncompassingPowerOfTwo(currentHeight);
+
+        int increasedImageWidth = MathHelper.smallestEncompassingPowerOfTwo(currentWidth + smallestDimension);
+        int increasedImageHeight = MathHelper.smallestEncompassingPowerOfTwo(currentHeight + smallestDimension);
+
+        boolean canExpandWidth = increasedImageWidth <= maxWidth;
+        boolean canExpandHeight = increasedImageHeight <= maxHeight;
+
+        if (!canExpandWidth && !canExpandHeight) {
             return null;
-        } else {
-            boolean flag3 = flag1 && k != i1;
-            boolean flag4 = flag2 && l != j1;
-            boolean flag;
-
-            if (flag3 ^ flag4) {
-                flag = !flag3 && flag1; //Forge: Fix DynamicStitcher not expanding entire height before growing width, and {potentially} growing larger then the max size.
-            } else {
-                flag = flag1 && k <= l;
-            }
-
-            Slot newSlot;
-
-            if (flag) {
-                if (holder.getWidth() > holder.getHeight()) {
-                    holder.rotate();
-                }
-
-                if (currentHeight == 0) {
-                    currentHeight = holder.getHeight();
-                }
-
-                if (currentWidth == 0) {
-                    currentWidth = holder.getWidth();
-                }
-
-                newSlot = new Slot(currentWidth, 0, holder.getWidth(), currentHeight);
-                currentWidth += holder.getWidth();
-            } else {
-                newSlot = new Slot(0, currentHeight, currentWidth, holder.getHeight());
-                currentHeight += holder.getHeight();
-            }
-
-            Slot slot = newSlot.addSlot(holder);
-            stitchSlots.add(newSlot);
-
-            return slot;
         }
+
+        boolean imageWidthWouldIncrease = canExpandWidth && increasedImageWidth != currentImageWidth;
+        boolean imageHeightWouldIncrease = canExpandHeight && increasedImageHeight != currentImageHeight;
+
+        boolean expandWidth = imageWidthWouldIncrease == imageHeightWouldIncrease
+                              ? currentImageWidth <= currentImageHeight
+                              : !imageWidthWouldIncrease;
+
+        expandWidth &= canExpandWidth;
+
+        Slot newSlot;
+        if (expandWidth) {
+            if (holder.getWidth() > holder.getHeight()) {
+                holder.rotate();
+            }
+
+            if (currentHeight == 0) {
+                currentHeight = holder.getHeight();
+            }
+
+            if (currentWidth == 0) {
+                currentWidth = holder.getWidth();
+            }
+
+            newSlot = new Slot(currentWidth, 0, holder.getWidth(), currentHeight);
+            currentWidth += holder.getWidth();
+        } else {
+//            if (holder.getHeight() > holder.getWidth()) {
+//                holder.rotate();
+//            }
+
+            newSlot = new Slot(0, currentHeight, currentWidth, holder.getHeight());
+            currentHeight += holder.getHeight();
+        }
+
+        Slot slot = newSlot.addSlot(holder);
+        slots.add(newSlot);
+
+        return slot;
     }
 
     public static class Slot {
@@ -165,11 +157,11 @@ public class DynamicStitcher {
         private List<Slot> subSlots;
         private Holder holder;
 
-        public Slot(int originXIn, int originYIn, int widthIn, int heightIn) {
-            originX = originXIn;
-            originY = originYIn;
-            width = widthIn;
-            height = heightIn;
+        public Slot(int originX, int originY, int width, int height) {
+            this.originX = originX;
+            this.originY = originY;
+            this.width = width;
+            this.height = height;
         }
 
         public Holder getStitchHolder() {
@@ -233,6 +225,7 @@ public class DynamicStitcher {
                 }
 
                 return null;
+
             }
         }
 
@@ -240,8 +233,8 @@ public class DynamicStitcher {
             if (holder != null) {
                 target.add(this);
             } else if (subSlots != null) {
-                for (Slot stitcher$slot : subSlots) {
-                    stitcher$slot.getAllStitchSlots(target);
+                for (Slot slot : subSlots) {
+                    slot.getAllStitchSlots(target);
                 }
             }
         }
