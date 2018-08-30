@@ -44,7 +44,7 @@ public class DynamicBakedModelProvider implements IRegistry<ModelResourceLocatio
         try {
             return loadedBakedModels.get(location, () -> Optional.ofNullable(loadBakedModel(location))).orElse(null);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getCause());
         }
     }
 

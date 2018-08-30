@@ -57,18 +57,28 @@ public abstract class MixinBlockStateContainer implements IPatchedBlockStateCont
 
             for (List<Comparable<?>> list : Cartesian.cartesianProduct(getAllowedValues())) {
                 Map<IProperty<?>, Comparable<?>> propertyValueMap = MapPopulator.createMap(properties.values(), list);
-                IBlockState state = createState(propertyValueMap, unlistedProperties);
+                IBlockState state = createState(ImmutableMap.<IProperty<?>, Comparable<?>>builder().putAll(propertyValueMap).build(), unlistedProperties);
                 states.add(state);
             }
 
-            validStatesCache = states.build(); // TODO: make validStates a WeakRef/SoftRef?
+            validStatesCache = states.build();
         }
 
         return validStatesCache;
     }
 
-    protected IBlockState createState(Map<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<IUnlistedProperty<?>, java.util.Optional<?>> unlistedProperties) {
-        return NumericalBlockState.fromPropertyValueMap((BlockStateContainer) (Object) this, properties);
+    @Overwrite
+    protected BlockStateContainer.StateImplementation createState(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties) {
+        return null;
+    }
+
+    protected IBlockState createState(ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties) {
+        BlockStateContainer.StateImplementation state = createState(block, properties, unlistedProperties);
+        if (state != null) {
+            return state;
+        } else {
+            return NumericalBlockState.fromPropertyValueMap((BlockStateContainer) (Object) this, properties);
+        }
     }
 
     @Overwrite

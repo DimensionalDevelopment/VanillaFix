@@ -8,8 +8,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinBlockStateContainer",
-    "MixinExtendedBlockState",
-    "MixinPropertyHelper"
+    "MixinExtendedBlockState"
   ],
   "client": [
   ],

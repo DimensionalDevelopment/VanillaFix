@@ -37,7 +37,7 @@ public class DynamicModelProvider implements IRegistry<ResourceLocation, IModel>
         try {
             return loadedModels.get(location, () -> Optional.ofNullable(loadModel(location))).orElse(null);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getCause());
         }
     }
 
