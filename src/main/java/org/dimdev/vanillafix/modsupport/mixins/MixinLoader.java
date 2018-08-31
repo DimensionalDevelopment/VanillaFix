@@ -42,6 +42,7 @@ public class MixinLoader {
 
         // Add and reload mixin configs
         if (VanillaFixLoadingPlugin.config.textureFixes) Mixins.addConfiguration("mixins.vanillafix.textures.modsupport.json");
+        if (VanillaFixLoadingPlugin.config.dynamicResources) Mixins.addConfiguration("mixins.vanillafix.dynamicresources.modsupport.json");
         Proxy mixinProxy = (Proxy) Launch.classLoader.getTransformers().stream().filter(transformer -> transformer instanceof Proxy).findFirst().get();
         try {
             Field transformerField = Proxy.class.getDeclaredField("transformer");

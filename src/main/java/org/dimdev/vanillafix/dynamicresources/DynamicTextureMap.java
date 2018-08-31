@@ -46,21 +46,19 @@ public class DynamicTextureMap extends TextureMap {
     }
 
     public void init() {
-        initMissingImage();
         deleteGlTexture();
-
         int maximumTextureSize = Minecraft.getGLMaximumTextureSize();
 
         stitcher = new DynamicStitcher(maximumTextureSize, maximumTextureSize, 0, mipmapLevels);
-
-        mapUploadedSprites.clear();
         listAnimatedSprites.clear();
 
+        initMissingImage();
         missingImage.generateMipmaps(mipmapLevels);
-
-        LOGGER.info("Created {}x{} '{}' atlas", stitcher.getImageWidth(), stitcher.getImageHeight(), basePath);
+        spritesNeedingUpload.add(missingImage);
+        stitcher.addSprite(missingImage);
 
         TextureUtil.allocateTextureImpl(getGlTextureId(), mipmapLevels, stitcher.getImageWidth(), stitcher.getImageHeight());
+        LOGGER.info("Created {}x{} '{}' atlas", stitcher.getImageWidth(), stitcher.getImageHeight(), basePath);
 
         ForgeHooksClient.onTextureStitchedPre(this);
         ForgeHooksClient.onTextureStitchedPost(this);
