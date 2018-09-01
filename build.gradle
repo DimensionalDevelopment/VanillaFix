@@ -98,10 +98,8 @@ processResources {
 jar {
     classifier "thin"
     manifest.attributes(
-            "FMLCorePluginContainsFMLMod": "true",
-            "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixLoadingPlugin",
-            "ForceLoadAsMod": "true",
+            "FMLCorePluginContainsFMLMod": "true",
             "FMLAT": "vanillafix_at.cfg"
     )
 }

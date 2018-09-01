@@ -5,41 +5,28 @@ import net.minecraftforge.common.config.Configuration;
 import java.io.File;
 
 public class LoadingConfig {
+    public boolean bugFixes = true;
+    public boolean crashFixes = true;
+    public boolean modSupport = true;
+    public boolean profiler = true;
+    public boolean textureFixes = true;
+    public boolean blockstates = true;
+    public boolean dynamicResources = true;
+    public boolean improvedLaunchWrapper = true;
 
-    private Configuration config;
-
-    public boolean bugFixes;
-    public boolean crashFixes;
-    public boolean modSupport;
-    public boolean profiler;
-    public boolean textureFixes;
-    public boolean blockstates;
-    public boolean dynamicResources;
-
-    public void init(File file) {
+    public LoadingConfig(File file) {
         if (!file.exists()) {
-            bugFixes = true;
-            crashFixes = true;
-            modSupport = true;
-            profiler = true;
-            textureFixes = true;
-            blockstates = true;
-            dynamicResources = true;
             return;
         }
-        if (config == null) {
-            config = new Configuration(file);
-            reload();
-        }
-    }
 
-    public void reload() {
+        Configuration config = new Configuration(file);
         bugFixes = config.get("fixes", "bugFixes", true).getBoolean();
         crashFixes = config.get("fixes", "crashFixes", true).getBoolean();
         modSupport = config.get("fixes", "modSupport", true).getBoolean();
         profiler = config.get("fixes", "profiler", true).getBoolean();
         textureFixes = config.get("fixes", "textureFixes", true).getBoolean();
         blockstates = config.get("fixes", "blockstates", true).getBoolean();
-        dynamicResources = config.get("fixes", "dynamicresources", true).getBoolean();
+        dynamicResources = config.get("fixes", "dynamicResources", true).getBoolean();
+        improvedLaunchWrapper = config.get("fixes", "improvedLaunchWrapper", true).getBoolean();
     }
 }

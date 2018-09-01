@@ -11,7 +11,6 @@ import org.dimdev.vanillafix.blockstates.NumericalExtendedBlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
@@ -22,7 +21,8 @@ public abstract class MixinExtendedBlockState extends MixinBlockStateContainer {
     }
 
     @Override
-    @Overwrite
+    @Overwrite(remap = false)
+    @SuppressWarnings("OverwriteModifiers" /* (no @NonNull) */)
     protected BlockStateContainer.StateImplementation createState(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties) {
         return null;
     }

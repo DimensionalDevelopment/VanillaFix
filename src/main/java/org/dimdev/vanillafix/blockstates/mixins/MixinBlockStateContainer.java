@@ -67,7 +67,7 @@ public abstract class MixinBlockStateContainer implements IPatchedBlockStateCont
         return validStatesCache;
     }
 
-    @Overwrite
+    @Overwrite(remap = false)
     protected BlockStateContainer.StateImplementation createState(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties) {
         return null;
     }

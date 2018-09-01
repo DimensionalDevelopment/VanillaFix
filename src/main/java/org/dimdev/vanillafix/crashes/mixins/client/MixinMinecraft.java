@@ -32,7 +32,6 @@ import org.apache.logging.log4j.Logger;
 import org.dimdev.utils.GlUtil;
 import org.dimdev.vanillafix.ModConfig;
 import org.dimdev.vanillafix.VanillaFix;
-import org.dimdev.vanillafix.VanillaFixLoadingPlugin;
 import org.dimdev.vanillafix.crashes.*;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -167,8 +166,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     public void displayInitErrorScreen(CrashReport report) {
         CrashUtils.outputReport(report);
         try {
-            VanillaFixLoadingPlugin.initialize();
-
             try {
                 URL url = VanillaFix.class.getProtectionDomain().getCodeSource().getLocation();
                 if (url.getProtocol().equals("jar")) url = new URL(url.getFile().substring(0, url.getFile().indexOf('!')));
