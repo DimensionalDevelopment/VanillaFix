@@ -30,7 +30,7 @@ public class MixinBlockModelRenderer {
      */
     @Inject(method = "renderModel(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/client/renderer/block/model/IBakedModel;Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/client/renderer/BufferBuilder;ZJ)Z", at = @At("HEAD"))
     private void beforeRenderModel(IBlockAccess world, IBakedModel model, IBlockState state, BlockPos pos, BufferBuilder buffer, boolean checkSides, long rand, CallbackInfoReturnable<Boolean> ci) {
-        CompiledChunk compiledChunk = TemporaryStorage.currentCompiledChunk.get(Thread.currentThread().getId());
+        CompiledChunk compiledChunk = TemporaryStorage.currentCompiledChunk.get();
         Set<TextureAtlasSprite> visibleTextures;
         if (compiledChunk != null) {
             visibleTextures = ((IPatchedCompiledChunk) compiledChunk).getVisibleTextures();

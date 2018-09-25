@@ -19,6 +19,8 @@ apply plugin: "org.spongepowered.mixin"
 repositories {
     maven { url "http://repo.spongepowered.org/maven" }
     maven { url "http://chickenbones.net/maven/" }
+    maven { url "http://www.dimdev.org/maven" }
+    maven { url "http://maven.tterrag.com/" }
     ivy {
         url "https://google.com/404"
         ivyPattern("https://google.com/404") // Workaround for https://github.com/gradle/gradle/issues/4107
@@ -27,7 +29,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.spongepowered:mixin:0.7.10-SNAPSHOT") {
+    implementation("org.dimdev:mixin:0.7.11-SNAPSHOT") {
         exclude module: "asm-commons"
         exclude module: "asm-tree"
         exclude module: "launchwrapper"
@@ -43,12 +45,14 @@ dependencies {
     compileOnly "2568:0:TConstruct-1.12.2-2.10.1.84@jar"
     compileOnly "2511:625:Avaritia-1.12-3.2.0.13-universal@jar"
     compileOnly "codechicken:CodeChickenLib:1.12.2-3.1.9.344:deobf"
+    compileOnly "2482:584:CustomMainMenu-MC1.12.2-2.0.8@jar"
+    compileOnly "team.chisel.ctm:CTM:MC1.12-0.2.3.12"
 }
 
 def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
 def versionSuffix = travisBuildNumber != null ? travisBuildNumber : "SNAPSHOT"
 
-version "1.0.9-$versionSuffix"
+version "1.0.10-$versionSuffix"
 group "org.dimdev.vanillafix"
 archivesBaseName = "VanillaFix"
 
@@ -58,13 +62,14 @@ targetCompatibility = 1.8
 minecraft {
     version "1.12.2-14.23.4.2703"
     runDir "run"
-    mappings "snapshot_20180607"
+    mappings "stable_39"
     makeObfSourceJar false
 
     def args = [
             "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin",
             "-Dmixin.hotSwap=true",
-            "-Dmixin.checks.interfaces=true"
+            "-Dmixin.checks.interfaces=true",
+            "-Dmixin.debug.export=true"
     ]
     clientJvmArgs.addAll(args)
     serverJvmArgs.addAll(args)

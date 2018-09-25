@@ -19,7 +19,7 @@ public class MixinBlockFluidRenderer {
      */
     @ModifyVariable(method = "renderFluid", at = @At(value = "CONSTANT", args = "floatValue=0.001", ordinal = 1), ordinal = 0)
     private TextureAtlasSprite afterTextureDetermined(TextureAtlasSprite texture) {
-        CompiledChunk compiledChunk = TemporaryStorage.currentCompiledChunk.get(Thread.currentThread().getId());
+        CompiledChunk compiledChunk = TemporaryStorage.currentCompiledChunk.get();
         if (compiledChunk != null) {
             ((IPatchedCompiledChunk) compiledChunk).getVisibleTextures().add(texture);
         } else {

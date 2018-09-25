@@ -4,6 +4,7 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModClassLoader;
 import net.minecraftforge.fml.common.ModContainer;
+import org.dimdev.vanillafix.VanillaFixLoadingPlugin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.spongepowered.asm.mixin.Mixins;
@@ -40,7 +41,7 @@ public class MixinLoader {
         }
 
         // Add and reload mixin configs
-        Mixins.addConfiguration("mixins.vanillafix.textures.modsupport.json");
+        if (VanillaFixLoadingPlugin.config.textureFixes) Mixins.addConfiguration("mixins.vanillafix.textures.modsupport.json");
         Proxy mixinProxy = (Proxy) Launch.classLoader.getTransformers().stream().filter(transformer -> transformer instanceof Proxy).findFirst().get();
         try {
             Field transformerField = Proxy.class.getDeclaredField("transformer");

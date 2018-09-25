@@ -1,6 +1,7 @@
 package org.dimdev.vanillafix.crashes.mixins.client;
 
 import com.google.common.util.concurrent.ListenableFutureTask;
+import lumien.custommainmenu.gui.GuiCustom;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
@@ -26,11 +27,11 @@ import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.SplashProgress;
+import net.minecraftforge.fml.common.Loader;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.utils.GlUtil;
 import org.dimdev.vanillafix.ModConfig;
 import org.dimdev.vanillafix.VanillaFix;
-import org.dimdev.vanillafix.VanillaFixLoadingPlugin;
 import org.dimdev.vanillafix.crashes.*;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -76,12 +77,12 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     @Shadow public TextureManager renderEngine;
     @Shadow public FontRenderer fontRenderer;
     @Shadow private int leftClickCounter;
-    @Shadow private Framebuffer framebufferMc;
-    @Shadow private IReloadableResourceManager mcResourceManager;
-    @Shadow private SoundHandler mcSoundHandler;
+    @Shadow private Framebuffer framebuffer;
+    @Shadow private IReloadableResourceManager resourceManager;
+    @Shadow private SoundHandler soundHandler;
     @Shadow @Final private List<IResourcePack> defaultResourcePacks;
-    @Shadow private LanguageManager mcLanguageManager;
-    @Shadow @Final private MetadataSerializer metadataSerializer_;
+    @Shadow private LanguageManager languageManager;
+    @Shadow @Final private MetadataSerializer metadataSerializer;
 
     @Shadow @SuppressWarnings("RedundantThrows") private void init() throws LWJGLException, IOException {}
     @Shadow @SuppressWarnings("RedundantThrows") private void runGameLoop() throws IOException {}
@@ -165,8 +166,6 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
     public void displayInitErrorScreen(CrashReport report) {
         CrashUtils.outputReport(report);
         try {
-            VanillaFixLoadingPlugin.initialize();
-
             try {
                 URL url = VanillaFix.class.getProtectionDomain().getCodeSource().getLocation();
                 if (url.getProtocol().equals("jar")) url = new URL(url.getFile().substring(0, url.getFile().indexOf('!')));
@@ -176,19 +175,19 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
                 LOGGER.error("Failed to load VanillaFix resource pack", t);
             }
 
-            mcResourceManager = new SimpleReloadableResourceManager(metadataSerializer_);
-            renderEngine = new TextureManager(mcResourceManager);
-            mcResourceManager.registerReloadListener(renderEngine);
+            resourceManager = new SimpleReloadableResourceManager(metadataSerializer);
+            renderEngine = new TextureManager(resourceManager);
+            resourceManager.registerReloadListener(renderEngine);
 
-            mcLanguageManager = new LanguageManager(metadataSerializer_, gameSettings.language);
-            mcResourceManager.registerReloadListener(mcLanguageManager);
+            languageManager = new LanguageManager(metadataSerializer, gameSettings.language);
+            resourceManager.registerReloadListener(languageManager);
 
             refreshResources(); // TODO: Why is this necessary?
             fontRenderer = new FontRenderer(gameSettings, new ResourceLocation("textures/font/ascii.png"), renderEngine, false);
-            mcResourceManager.registerReloadListener(fontRenderer);
+            resourceManager.registerReloadListener(fontRenderer);
 
-            mcSoundHandler = new SoundHandler(mcResourceManager, gameSettings);
-            mcResourceManager.registerReloadListener(mcSoundHandler);
+            soundHandler = new SoundHandler(resourceManager, gameSettings);
+            resourceManager.registerReloadListener(soundHandler);
 
             running = true;
             try {
@@ -205,7 +204,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
 
     private void runGUILoop(GuiScreen screen) throws IOException {
         displayGuiScreen(screen);
-        while (running && currentScreen != null && !(currentScreen instanceof GuiMainMenu)) {
+        while (running && currentScreen != null && !(currentScreen instanceof GuiMainMenu) && !(Loader.isModLoaded("custommainmenu") && currentScreen instanceof GuiCustom)) {
             if (Display.isCreated() && Display.isCloseRequested()) System.exit(0);
             leftClickCounter = 10000;
             currentScreen.handleInput();
@@ -213,7 +212,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
 
             GlStateManager.pushMatrix();
             GlStateManager.clear(16640);
-            framebufferMc.bindFramebuffer(true);
+            framebuffer.bindFramebuffer(true);
             GlStateManager.enableTexture2D();
 
             GlStateManager.viewport(0, 0, displayWidth, displayHeight);
@@ -235,11 +234,11 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo, I
             int mouseY = height - Mouse.getY() * height / displayHeight - 1;
             currentScreen.drawScreen(mouseX, mouseY, 0);
 
-            framebufferMc.unbindFramebuffer();
+            framebuffer.unbindFramebuffer();
             GlStateManager.popMatrix();
 
             GlStateManager.pushMatrix();
-            framebufferMc.framebufferRender(displayWidth, displayHeight);
+            framebuffer.framebufferRender(displayWidth, displayHeight);
             GlStateManager.popMatrix();
 
             updateDisplay();

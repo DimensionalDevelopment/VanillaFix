@@ -29,7 +29,7 @@ import java.io.File;
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo {
     @Shadow @Final private static Logger LOGGER;
-    @Shadow @Final public Profiler mcProfiler;
+    @Shadow @Final public Profiler profiler;
 
     @Shadow public GuiIngame ingameGUI;
 
@@ -42,9 +42,9 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo {
     /** @reason Part 2 of GUI logic fix. */
     @Redirect(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/texture/TextureManager;tick()V", ordinal = 0))
     private void tickTextureManagerWithCorrectProfiler(TextureManager textureManager) {
-        mcProfiler.endStartSection("textures");
+        profiler.endStartSection("textures");
         textureManager.tick();
-        mcProfiler.endStartSection("gui");
+        profiler.endStartSection("gui");
     }
 
     /** @reason Make saving screenshots async (https://bugs.mojang.com/browse/MC-33383) */

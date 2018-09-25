@@ -18,14 +18,14 @@ public final class StacktraceDeobfuscator {
      * If the file does not exits, downloads latest method mappings and saves them to it.
      * Initializes a HashMap between obfuscated and deobfuscated names from that file.
      */
-    public static void init(File mappings, String version) {
+    public static void init(File mappings) {
         if (srgMcpMethodMap != null) return;
 
         // Download the file if necessary
         if (!mappings.exists()) {
             HttpURLConnection connection = null;
             try {
-                URL mappingsURL = new URL("http://export.mcpbot.bspk.rs/mcp_snapshot_nodoc/" + version + "/mcp_snapshot_nodoc-" + version + ".zip");
+                URL mappingsURL = new URL("http://export.mcpbot.bspk.rs/mcp_stable_nodoc/39-1.12/mcp_stable_nodoc-39-1.12.zip");
                 connection = (HttpURLConnection) mappingsURL.openConnection();
                 connection.setDoInput(true);
                 connection.connect();
@@ -110,7 +110,7 @@ public final class StacktraceDeobfuscator {
     }
 
     public static void main(String[] args) {
-        init(new File("methods.csv"), "20180519-1.12");
+        init(new File("methods.csv"));
         for (Map.Entry<String, String> entry : srgMcpMethodMap.entrySet()) {
             System.out.println(entry.getKey() + " <=> " + entry.getValue());
         }

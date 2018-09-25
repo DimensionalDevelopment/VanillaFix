@@ -19,7 +19,7 @@ public class MixinItemRenderer {
      * @reason Add the texture of the block the player is holding to the
      * list of visible textures such that it can be animated next tick.
      */
-    @Inject(method = "renderBlockInHand", at = @At("HEAD"))
+    @Inject(method = "renderSuffocationOverlay", at = @At("HEAD"))
     private void beforeRenderBlockInHand(TextureAtlasSprite texture, CallbackInfo ci) {
         ((IPatchedTextureAtlasSprite) texture).markNeedsAnimationUpdate();
     }

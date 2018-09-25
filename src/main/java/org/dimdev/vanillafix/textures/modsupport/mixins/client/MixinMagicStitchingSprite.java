@@ -11,7 +11,7 @@ import team.chisel.client.TextureStitcher;
 @Pseudo
 @SuppressWarnings("deprecation")
 @Mixin(TextureStitcher.MagicStitchingSprite.class)
-public class MixinMagicStitchingSprite extends MixinTextureAtlasSprite {
+public abstract class MixinMagicStitchingSprite extends MixinTextureAtlasSprite {
     @Shadow private TextureAtlasSprite parent;
 
     @Override
