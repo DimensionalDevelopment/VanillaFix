@@ -22,45 +22,21 @@ import java.security.cert.CertificateException;
 import java.util.Map;
 
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
-@IFMLLoadingPlugin.SortingIndex(-100000)
+@IFMLLoadingPlugin.SortingIndex(Integer.MIN_VALUE + 10000)
 public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
-    private static final Logger log = LogManager.getLogger();
-    private static boolean initialized = false;
-
+    private static final Logger log = LogManager.getLogger("VanillaFix");
     public static LoadingConfig config;
 
-    public VanillaFixLoadingPlugin() {
-        initialize();
+    static {
+        log.info("Initializing VanillaFix");
+        config = new LoadingConfig(new File(Launch.minecraftHome, "config/vanillafix.cfg"));
 
-        MixinBootstrap.init();
-
-        // @formatter:off
-        if (config.bugFixes)      Mixins.addConfiguration("mixins.vanillafix.bugs.json");
-        if (config.crashFixes)    Mixins.addConfiguration("mixins.vanillafix.crashes.json");
-        if (config.profiler)      Mixins.addConfiguration("mixins.vanillafix.profiler.json");
-        if (config.textureFixes)  Mixins.addConfiguration("mixins.vanillafix.textures.json");
-        if (config.modSupport)    Mixins.addConfiguration("mixins.vanillafix.modsupport.json");
-        // @formatter:on
+        trustIdenTrust();
+        initStacktraceDeobfuscator();
+        initMixin();
     }
 
-    public static void initialize() {
-        if (initialized) return;
-        initialized = true;
-
-        config = new LoadingConfig();
-        config.init(new File(Launch.minecraftHome, "config/vanillafix.cfg"));
-
-        // Trust the "IdenTrust DST Root CA X3" certificate (used by Let's Encrypt, which is used by paste.dimdev.org)
-        // TODO: Trust two other certificates, use same alias: https://bugs.openjdk.java.net/browse/JDK-8161008
-        try (InputStream keyStoreInputStream = VanillaFixLoadingPlugin.class.getResourceAsStream("/dst_root_ca_x3.jks")) {
-            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keyStore.load(keyStoreInputStream, "password".toCharArray());
-            SSLUtils.trustCertificates(keyStore);
-        } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
-            throw new RuntimeException();
-        }
-
-        // Initialize StacktraceDeobfuscator
+    private static void initStacktraceDeobfuscator() {
         File modDir = new File(Launch.minecraftHome, "config/vanillafix");
         modDir.mkdirs();
 
@@ -81,6 +57,42 @@ public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
 
         // Install the log exception deobfuscation rewrite policy
         DeobfuscatingRewritePolicy.install();
+    }
+
+    private static void initMixin() {
+        MixinBootstrap.init();
+
+        if (config.bugFixes) {
+            log.info("Initializing Bug Fix Mixins");
+            Mixins.addConfiguration("mixins.vanillafix.bugs.json");
+        }
+        if (config.crashFixes) {
+            log.info("Initializing Crash Fix Mixins");
+            Mixins.addConfiguration("mixins.vanillafix.crashes.json");
+        }
+        if (config.profiler) {
+            log.info("Initializing Profiler Improvement Mixins");
+            Mixins.addConfiguration("mixins.vanillafix.profiler.json");
+        }
+        if (config.textureFixes) {
+            log.info("Initializing Texture Fix Mixins");
+            Mixins.addConfiguration("mixins.vanillafix.textures.json");
+        }
+        if (config.modSupport) {
+            log.info("Initializing Mod Support Mixins");
+            Mixins.addConfiguration("mixins.vanillafix.modsupport.json");
+        }
+    }
+
+    private static void trustIdenTrust() {
+        // Trust the "IdenTrust DST Root CA X3" certificate (used by Let's Encrypt, which is used by paste.dimdev.org)
+        try (InputStream keyStoreInputStream = VanillaFixLoadingPlugin.class.getResourceAsStream("/dst_root_ca_x3.jks")) {
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(keyStoreInputStream, "password".toCharArray());
+            SSLUtils.trustCertificates(keyStore);
+        } catch (IOException | CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
+            throw new RuntimeException();
+        }
     }
 
     @Override public String[] getASMTransformerClass() {

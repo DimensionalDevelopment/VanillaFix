@@ -10,10 +10,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Entity.class)
+@Mixin(value = Entity.class, priority = 500)
 public abstract class MixinEntity {
     @Shadow public float fallDistance;
-    @Shadow public boolean onGround;
     @Shadow public World world;
 
     /**

@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public final class CrashUtils {
-    private static final Logger log = LogManager.getLogger("VF");
+    private static final Logger log = LogManager.getLogger("VanillaFix");
 
     public static void crash(CrashReport report) {
         throw new ReportedException(report);

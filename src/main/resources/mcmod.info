@@ -9,7 +9,8 @@
       "mcversion": "${mcversion}",
       "url": "https://minecraft.curseforge.com/projects/vanillafix",
       "authorList": [
-        "Runemoro"
+        "Runemoro",
+        "ZombieHDGaming"
       ],
       "logoFile": "/assets/vanillafix/logo.png",
       "parent": "",

@@ -19,6 +19,7 @@ public final class ModConfig {
 
     public static Fixes fixes = new Fixes();
     public static Crashes crashes = new Crashes();
+    //public static Options options = new Options();
 
     public static class Fixes {
         @Name("bugFixes")
@@ -68,6 +69,13 @@ public final class ModConfig {
         @LangKey("vanillafix.crashes.errorNotificationDuration")
         public int errorNotificationDuration = 30000;
     }
+
+    /*public static class Options {
+        @Name("loginTimeout")
+        @LangKey("vanilafix.options.loginTimeout")
+        @RangeInt(min = 600)
+        public int loginTimeout = 600;
+    }*/
 
     @SubscribeEvent
     public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {

@@ -8,29 +8,17 @@ public class LoadingConfig {
 
     private Configuration config;
 
-    public boolean bugFixes;
-    public boolean crashFixes;
-    public boolean modSupport;
-    public boolean profiler;
-    public boolean textureFixes;
+    public boolean bugFixes = true;
+    public boolean crashFixes = true;
+    public boolean modSupport = true;
+    public boolean profiler = true;
+    public boolean textureFixes = true;
 
 
-    public void init(File file) {
-        if (!file.exists()) {
-            bugFixes = true;
-            crashFixes = true;
-            modSupport = true;
-            profiler = true;
-            textureFixes = true;
-            return;
-        }
-        if (config == null) {
-            config = new Configuration(file);
-            reload();
-        }
-    }
+    public LoadingConfig(File file) {
+        if (!file.exists()) { return; }
 
-    public void reload() {
+        config = new Configuration(file);
         bugFixes = config.get("fixes", "bugFixes", true).getBoolean();
         crashFixes = config.get("fixes", "crashFixes", true).getBoolean();
         modSupport = config.get("fixes", "modSupport", true).getBoolean();
