@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
+import org.dimdev.vanillafix.textures.ChunkSpriteStorage;
 import org.dimdev.vanillafix.textures.IPatchedCompiledChunk;
 import org.dimdev.vanillafix.textures.IPatchedTextureAtlasSprite;
 import org.spongepowered.asm.mixin.Final;
@@ -30,10 +31,13 @@ public abstract class MixinTextureMap extends AbstractTexture {
     public void updateAnimations() {
         // TODO: Recalculate list after chunk update instead!
         Minecraft.getMinecraft().profiler.startSection("determineVisibleTextures");
-        for (RenderGlobal.ContainerLocalRenderInformation renderInfo : Minecraft.getMinecraft().renderGlobal.renderInfos) {
-            for (TextureAtlasSprite texture : ((IPatchedCompiledChunk) renderInfo.renderChunk.compiledChunk).getVisibleTextures()) {
-                ((IPatchedTextureAtlasSprite) texture).markNeedsAnimationUpdate();
-            }
+//        for (RenderGlobal.ContainerLocalRenderInformation renderInfo : Minecraft.getMinecraft().renderGlobal.renderInfos) {
+//            for (TextureAtlasSprite texture : ((IPatchedCompiledChunk) renderInfo.renderChunk.compiledChunk).getVisibleTextures()) {
+//                ((IPatchedTextureAtlasSprite) texture).markNeedsAnimationUpdate();
+//            }
+//        }
+        for(TextureAtlasSprite sprite : ChunkSpriteStorage.getUsedSprites ()) {
+            ((IPatchedTextureAtlasSprite)sprite).markNeedsAnimationUpdate ();
         }
         Minecraft.getMinecraft().profiler.endSection();
 
