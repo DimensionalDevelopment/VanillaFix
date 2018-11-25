@@ -4,12 +4,15 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ChunkSpriteStorage {
     private static Logger log = LogManager.getLogger ();
-    private static ReentrantReadWriteLock lock = new ReentrantReadWriteLock ();
+    private static ReadWriteLock lock = new ReentrantReadWriteLock ();
     private static Map<TextureAtlasSprite, Integer> chunkSprites = new TreeMap<> (Comparator.comparing (TextureAtlasSprite::toString));
 
     public static void addUsage (TextureAtlasSprite sprite) {
@@ -43,10 +46,12 @@ public class ChunkSpriteStorage {
         }
     }
 
-    public static List<TextureAtlasSprite> getUsedSprites () {
+    public static void markAnimationsForUpdate () {
         lock.readLock ().lock ();
         try {
-            return new ArrayList<> (chunkSprites.keySet ());
+            for (TextureAtlasSprite sprite : chunkSprites.keySet ()) {
+                ((IPatchedTextureAtlasSprite) sprite).markNeedsAnimationUpdate ();
+            }
         } finally {
             lock.readLock ().unlock ();
         }
