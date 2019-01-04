@@ -21,10 +21,13 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.dimdev.utils.LeftIdentityPair;
+import org.dimdev.utils.Pair;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An implementation of IBlockState which stores the properties in a bitfield rather
@@ -35,10 +38,10 @@ import java.util.*;
  */
 @SuppressWarnings("deprecation")
 public class NumericalBlockState extends BlockStateBase {
-    private static final Map<LeftIdentityPair<BlockStateContainer, Integer>, NumericalBlockState> blockStates = new HashMap<>(); // TODO: WeakHashMap?
-    private static final Map<LeftIdentityPair<IProperty<?>, Comparable<?>>, Integer> valueToNumber = new HashMap<>();
-    private static final Map<LeftIdentityPair<IProperty<?>, Integer>, Comparable<?>> numberToValue = new HashMap<>();
-    private static final Map<IProperty<?>, Integer> propertyWidths = new IdentityHashMap<>();
+    private static final Map<Pair<BlockStateContainer, Integer>, NumericalBlockState> blockStates = new HashMap<>(); // TODO: WeakHashMap?
+    private static final Map<Pair<IProperty<?>, Comparable<?>>, Integer> valueToNumber = new HashMap<>();
+    private static final Map<Pair<IProperty<?>, Integer>, Comparable<?>> numberToValue = new HashMap<>();
+    private static final Map<IProperty<?>, Integer> propertyWidths = new HashMap<>();
 
     protected final BlockStateContainer container;
     protected final Block block;
@@ -54,7 +57,7 @@ public class NumericalBlockState extends BlockStateBase {
         // Getting it from a cache is necessary to make sure == between two NumericalBlockStates
         // with the same container and data will work. The cache is shared for all containers
         // to avoid the overhead of many small HashMaps.
-        LeftIdentityPair<BlockStateContainer, Integer> key = new LeftIdentityPair<>(container, data);
+        Pair<BlockStateContainer, Integer> key = new Pair<>(container, data);
         NumericalBlockState blockState = blockStates.get(key);
 
         if (blockState == null) {
@@ -71,7 +74,7 @@ public class NumericalBlockState extends BlockStateBase {
         int data = 0;
         for (Map.Entry<IProperty<?>, Comparable<?>> entry : map.entrySet()) {
             IProperty<?> property = entry.getKey();
-            data |= valueToNumber.get(new LeftIdentityPair<>(property, entry.getValue())) << offsets.get(property);
+            data |= valueToNumber.get(new Pair<>(property, entry.getValue())) << offsets.get(property);
         }
 
         return get(container, data);
@@ -88,8 +91,8 @@ public class NumericalBlockState extends BlockStateBase {
         // Fill the 'number -> value' and 'value -> number' maps
         int i = 0;
         for (T value : allowedValues) {
-            numberToValue.put(new LeftIdentityPair<>(property, i), value);
-            valueToNumber.put(new LeftIdentityPair<>(property, value), i);
+            numberToValue.put(new Pair<>(property, i), value);
+            valueToNumber.put(new Pair<>(property, value), i);
             i++;
         }
     }
@@ -109,7 +112,7 @@ public class NumericalBlockState extends BlockStateBase {
 
         int width = propertyWidths.get(property);
         int number = data >>> offset & 0xFFFFFFFF >>> 32 - width;
-        Comparable<?> value = numberToValue.get(new LeftIdentityPair<>(property, number));
+        Comparable<?> value = numberToValue.get(new Pair<>(property, number));
 
         return property.getValueClass().cast(value);
     }
@@ -122,7 +125,7 @@ public class NumericalBlockState extends BlockStateBase {
             throw new IllegalArgumentException("Cannot set property " + property + " as it does not exist in " + container);
         }
 
-        int number = valueToNumber.get(new LeftIdentityPair<>(property, value));
+        int number = valueToNumber.get(new Pair<>(property, value));
         int width = propertyWidths.get(property);
         int mask = (0xFFFFFFFF >>> offset & 0xFFFFFFFF >>> 32 - width) << offset;
         int newData = data & ~mask | number << offset;

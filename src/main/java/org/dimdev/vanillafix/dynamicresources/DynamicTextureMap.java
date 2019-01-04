@@ -6,7 +6,9 @@ import net.minecraft.client.renderer.texture.*;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.ModelDynBucket;
+import net.minecraftforge.client.model.ModelLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,8 +27,8 @@ public class DynamicTextureMap extends TextureMap {
     private final Map<String, TextureAtlasSprite> loadedSprites = new ConcurrentHashMap<>();
     private final List<TextureAtlasSprite> spritesNeedingUpload = new CopyOnWriteArrayList<>();
     private final Lock spriteLoadingLock = new ReentrantLock();
-    private DynamicStitcher stitcher;
-    private boolean atlasNeedsExpansion;
+    private DynamicStitcher stitcher = null;
+    private boolean atlasNeedsExpansion = false;
 
     public DynamicTextureMap(String basePath) {
         super(basePath);
@@ -60,8 +62,11 @@ public class DynamicTextureMap extends TextureMap {
         TextureUtil.allocateTextureImpl(getGlTextureId(), mipmapLevels, stitcher.getImageWidth(), stitcher.getImageHeight());
         LOGGER.info("Created {}x{} '{}' atlas", stitcher.getImageWidth(), stitcher.getImageHeight(), basePath);
 
-        ForgeHooksClient.onTextureStitchedPre(this);
-        ForgeHooksClient.onTextureStitchedPost(this);
+        EventUtil.postEventAllowingErrors(new TextureStitchEvent.Pre(this));
+        ModelLoader.White.INSTANCE.register(this);
+        ModelDynBucket.LoaderDynBucket.INSTANCE.register(this);
+
+        EventUtil.postEventAllowingErrors(new TextureStitchEvent.Post(this));
     }
 
     @Override

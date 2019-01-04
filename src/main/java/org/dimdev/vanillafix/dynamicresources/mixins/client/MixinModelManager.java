@@ -12,14 +12,9 @@ import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.common.ForgeModContainer;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fluids.FluidRegistry;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.EventBus;
-import net.minecraftforge.fml.common.eventhandler.IEventListener;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.dimdev.vanillafix.dynamicresources.DynamicTextureMap;
+import org.dimdev.vanillafix.dynamicresources.EventUtil;
 import org.dimdev.vanillafix.dynamicresources.model.DynamicBakedModelProvider;
 import org.dimdev.vanillafix.dynamicresources.model.DynamicModelProvider;
 import org.dimdev.vanillafix.dynamicresources.model.ModelLocationInformation;
@@ -37,8 +32,6 @@ public class MixinModelManager {
     @Shadow private IBakedModel defaultModel;
     @Shadow @Final private BlockModelShapes modelProvider;
     @Shadow @Final private TextureMap texMap;
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     /**
      * @reason Don't set up the ModelLoader. Instead, set up the caching DynamicModelProvider
@@ -81,29 +74,9 @@ public class MixinModelManager {
 
         // Post the event, but just log an error if a listener throws an exception. The ModelLoader is
         // null, but very few mods use it. Custom support will be needed for those that do.
-        postEventAllowingErrors(new ModelBakeEvent((ModelManager) (Object) this, modelRegistry, null));
+        EventUtil.postEventAllowingErrors(new ModelBakeEvent((ModelManager) (Object) this, modelRegistry, null));
 
         // Make the model provider load blockstate to model information. See MixinBlockModelShapes
         modelProvider.reloadModels();
-    }
-
-    private static void postEventAllowingErrors(Event event) {
-        int busID;
-        try {
-            Field busIDField = EventBus.class.getDeclaredField("busID");
-            busIDField.setAccessible(true);
-            busID = (int) busIDField.get(MinecraftForge.EVENT_BUS);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
-
-        IEventListener[] listeners = event.getListenerList().getListeners(busID);
-        for (IEventListener listener : listeners) {
-            try {
-                listener.invoke(event);
-            } catch (Throwable t) {
-                LOGGER.error(event + " listener '" + listener + "' threw exception, models may be broken", t);
-            }
-        }
     }
 }
