@@ -30,7 +30,8 @@ public abstract class MixinBlockStateContainer implements IPatchedBlockStateCont
     // @formatter:on
 
     @SuppressWarnings("EqualsBetweenInconvertibleTypes") // mixin
-    private boolean isNumerical = getClass().equals(BlockStateContainer.class) || getClass().equals(ExtendedBlockState.class);
+    protected
+    boolean isNumerical = getClass().equals(BlockStateContainer.class) || getClass().equals(ExtendedBlockState.class);
     private final ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties;
     private final Map<IProperty<?>, Integer> propertyOffsets = new HashMap<>();
     protected ImmutableList<IBlockState> validStatesCache = null;

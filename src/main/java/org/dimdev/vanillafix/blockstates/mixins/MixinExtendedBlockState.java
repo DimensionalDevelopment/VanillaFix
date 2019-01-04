@@ -9,7 +9,9 @@ import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 import org.dimdev.vanillafix.blockstates.NumericalExtendedBlockState;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -20,11 +22,11 @@ public abstract class MixinExtendedBlockState extends MixinBlockStateContainer {
         super(block, properties, unlistedProperties);
     }
 
-    @Override
-    @Overwrite(remap = false)
-    @SuppressWarnings("OverwriteModifiers" /* (no @NonNull) */)
-    protected BlockStateContainer.StateImplementation createState(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties) {
-        return null;
+    @Inject(method = "createState", remap = false, at = @At("HEAD"), cancellable = true)
+    protected void overrideCreateState(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties, CallbackInfoReturnable<BlockStateContainer.StateImplementation> cir) {
+        if (isNumerical) {
+            cir.setReturnValue(null);
+        }
     }
 
     @Override

@@ -17,7 +17,7 @@ public class EventUtil {
         try {
             Field busIDField = EventBus.class.getDeclaredField("busID");
             busIDField.setAccessible(true);
-            busID = (int) busIDField.get(MinecraftForge.EVENT_BUS);
+            busID = busIDField.getInt(MinecraftForge.EVENT_BUS);
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }

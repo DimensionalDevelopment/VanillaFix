@@ -81,7 +81,9 @@ public class NumericalBlockState extends BlockStateBase {
     }
 
     public static <T extends Comparable<T>> void makePropertyInfo(IProperty<T> property) {
-        if (propertyWidths.containsKey(property)) return;
+        if (propertyWidths.containsKey(property)) {
+            return;
+        }
 
         Collection<T> allowedValues = property.getAllowedValues();
 
