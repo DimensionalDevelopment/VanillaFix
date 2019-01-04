@@ -52,7 +52,7 @@ dependencies {
 def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
 def versionSuffix = travisBuildNumber != null ? travisBuildNumber : "SNAPSHOT"
 
-version "1.1-$versionSuffix"
+version "1.1.1-$versionSuffix"
 group "org.dimdev.vanillafix"
 archivesBaseName = "VanillaFix"
 
