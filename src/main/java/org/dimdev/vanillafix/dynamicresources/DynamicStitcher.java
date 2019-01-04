@@ -132,12 +132,22 @@ public class DynamicStitcher {
                 currentWidth = holder.getWidth();
             }
 
+            // TODO: this can lead to unused space on the texture map, optimize this
+            if (currentHeight < holder.getHeight()) {
+                currentHeight = holder.getHeight();
+            }
+
             newSlot = new Slot(currentWidth, 0, holder.getWidth(), currentHeight);
             currentWidth += holder.getWidth();
         } else {
 //            if (holder.getHeight() > holder.getWidth()) {
 //                holder.rotate();
 //            }
+
+            // TODO: this can lead to unused space on the texture map, optimize this
+            if (currentWidth < holder.getWidth()) {
+                currentWidth = holder.getWidth();
+            }
 
             newSlot = new Slot(0, currentHeight, currentWidth, holder.getHeight());
             currentHeight += holder.getHeight();

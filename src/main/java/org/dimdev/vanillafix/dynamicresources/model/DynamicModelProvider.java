@@ -2,6 +2,7 @@ package org.dimdev.vanillafix.dynamicresources.model;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.IRegistry;
 import net.minecraftforge.client.model.ICustomModelLoader;
@@ -14,7 +15,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class DynamicModelProvider implements IRegistry<ResourceLocation, IModel> {
-//    private static final Logger LOGGER = LogManager.getLogger();
+    //    private static final Logger LOGGER = LogManager.getLogger();
     public static DynamicModelProvider instance;
 
     private final Set<ICustomModelLoader> loaders;
@@ -50,7 +51,7 @@ public class DynamicModelProvider implements IRegistry<ResourceLocation, IModel>
         }
 
         // Check if a custom loader accepts the model
-        ResourceLocation actualLocation = ModelLoaderRegistry.getActualLocation(location);
+        ResourceLocation actualLocation = getActualLocation(location);
         ICustomModelLoader accepted = null;
         for (ICustomModelLoader loader : loaders) {
             try {
@@ -88,6 +89,20 @@ public class DynamicModelProvider implements IRegistry<ResourceLocation, IModel>
         }
 
         return model;
+    }
+
+    private ResourceLocation getActualLocation(ResourceLocation location) {
+        if (location instanceof ModelResourceLocation) {
+            return location;
+        }
+
+        if (location.getPath().startsWith("builtin/") ||
+            location.getPath().startsWith("block/builtin/") ||
+            location.getPath().startsWith("item/builtin/")) { // TODO: why is this necessary
+            return location;
+        }
+
+        return new ResourceLocation(location.getNamespace(), "models/" + location.getPath());
     }
 
     @Override

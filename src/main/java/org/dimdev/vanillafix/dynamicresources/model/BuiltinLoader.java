@@ -6,6 +6,7 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.ICustomModelLoader;
 import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.model.ItemLayerModel;
 
 import java.io.FileNotFoundException;
 
@@ -27,15 +28,17 @@ public class BuiltinLoader implements ICustomModelLoader {
 
     @Override
     public boolean accepts(ResourceLocation modelLocation) {
-        return modelLocation.getPath().startsWith("builtin/");
+        return modelLocation.getPath().startsWith("builtin/") ||
+               modelLocation.getPath().startsWith("block/builtin/") ||
+               modelLocation.getPath().startsWith("item/builtin/");
     }
 
     @Override
     public IModel loadModel(ResourceLocation modelLocation) throws Exception {
         String path = modelLocation.getPath();
 
-        if ("builtin/generated".equals(path)) {
-            return new VanillaModelWrapper(modelLocation, MODEL_GENERATED);
+        if ("builtin/generated".equals(path) || "block/builtin/generated".equals(path) || "item/builtin/generated".equals(path)) { // TODO: why is this necessary?
+            return ItemLayerModel.INSTANCE; //new VanillaModelWrapper(modelLocation, MODEL_GENERATED);
         }
 
         if ("builtin/entity".equals(path)) {

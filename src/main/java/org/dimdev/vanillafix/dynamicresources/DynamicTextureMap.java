@@ -64,6 +64,7 @@ public class DynamicTextureMap extends TextureMap {
 
         EventUtil.postEventAllowingErrors(new TextureStitchEvent.Pre(this));
         ModelLoader.White.INSTANCE.register(this);
+        mapRegisteredSprites.put("builtin/white", ModelLoader.White.INSTANCE); // TODO: why is this necessary
         ModelDynBucket.LoaderDynBucket.INSTANCE.register(this);
 
         EventUtil.postEventAllowingErrors(new TextureStitchEvent.Post(this));
