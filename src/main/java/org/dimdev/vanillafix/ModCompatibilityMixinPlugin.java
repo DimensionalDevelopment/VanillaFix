@@ -10,15 +10,9 @@ import java.util.List;
 import java.util.Set;
 
 public class ModCompatibilityMixinPlugin implements IMixinConfigPlugin {
-    private boolean spongeInstalled;
-
     @Override
     public void onLoad(String mixinPackage) {
-        try {
-            spongeInstalled = Launch.classLoader.getClassBytes("org.spongepowered.mod.SpongeCoremod") != null;
-        } catch (IOException e) {
-            throw new RuntimeException(e); // Should never happen
-        }
+
     }
 
     @Override
@@ -27,14 +21,28 @@ public class ModCompatibilityMixinPlugin implements IMixinConfigPlugin {
     }
 
     @Override
-    @SuppressWarnings("RedundantIfStatement")
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        // Sponge
-        if (spongeInstalled) {
-            if (mixinClassName.equals("org.dimdev.vanillafix.profiler.mixins.MixinWorld")) return false;
+        if (mixinClassName.equals("org.dimdev.vanillafix.profiler.mixins.MixinWorld")) {
+            return !classExists("org.spongepowered.mod.SpongeCoremod");
+        }
+
+        if (mixinClassName.equals("org.dimdev.vanillafix.textures.mixins.client.MixinBlockModelRenderer")) {
+            return !classExists("optifine.OptiFineForgeTweaker");
+        }
+
+        if (mixinClassName.equals("org.dimdev.vanillafix.textures.mixins.client.MixinBlockModelRendererOptifine")) {
+            return classExists("optifine.OptiFineForgeTweaker");
         }
 
         return true;
+    }
+
+    public boolean classExists(String name) {
+        try {
+            return Launch.classLoader.getClassBytes(name) != null;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -52,12 +52,16 @@ dependencies {
 def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
 def versionSuffix = travisBuildNumber != null ? travisBuildNumber : "SNAPSHOT"
 
-version "1.0.10-$versionSuffix"
+version "1.1-$versionSuffix"
 group "org.dimdev.vanillafix"
 archivesBaseName = "VanillaFix"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+sourceSets {
+    main
+}
 
 minecraft {
     version "1.12.2-14.23.4.2703"

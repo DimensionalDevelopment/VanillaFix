@@ -3,10 +3,6 @@ package org.dimdev.vanillafix;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
-import net.minecraftforge.fml.relauncher.libraries.LibraryManager;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dimdev.utils.SSLUtils;
@@ -17,13 +13,12 @@ import org.spongepowered.asm.mixin.Mixins;
 import sun.misc.URLClassPath;
 
 import javax.annotation.Nullable;
-import java.io.*;
-import java.lang.management.ManagementFactory;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -38,20 +33,21 @@ import java.util.Map;
 public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
     private static final Logger log = LogManager.getLogger("VanillaFix");
     public static LoadingConfig config;
-    private static final boolean deobfuscatedEnvironment = VanillaFixLoadingPlugin.class.getResource("/net/minecraft/world/World.class") != null;
+    // private static final boolean deobfuscatedEnvironment = VanillaFixLoadingPlugin.class.getResource("/net/minecraft/world/World.class") != null;
 
     static {
         log.info("Initializing VanillaFix");
         config = new LoadingConfig(new File(Launch.minecraftHome, "config/vanillafix.cfg"));
         config.improvedLaunchWrapper = false; // TODO: fix this
 
-        replaceLaunchWrapper();
+        // replaceLaunchWrapper();
         trustIdenTrust();
         initStacktraceDeobfuscator();
         fixMixinClasspathOrder();
         initMixin();
     }
 
+    /*
     private static void replaceLaunchWrapper() {
         if (!config.improvedLaunchWrapper) {
             log.info("LaunchWrapper replacement disabled by config");
@@ -136,6 +132,7 @@ public class VanillaFixLoadingPlugin implements IFMLLoadingPlugin {
 
         return command.toString();
     }
+    */
 
     private static void trustIdenTrust() {
         // Trust the "IdenTrust DST Root CA X3" certificate (used by Let's Encrypt, which is used by paste.dimdev.org)

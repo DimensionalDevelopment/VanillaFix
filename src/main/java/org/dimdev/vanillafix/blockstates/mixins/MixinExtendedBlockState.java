@@ -29,6 +29,10 @@ public abstract class MixinExtendedBlockState extends MixinBlockStateContainer {
 
     @Override
     protected IBlockState createState(ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties) {
+        if (getClass() != MixinExtendedBlockState.class) {
+            return createState(getBlock(), properties, unlistedProperties);
+        }
+
         IBlockState normalState = super.createState(properties, unlistedProperties);
         if (unlistedProperties == null || unlistedProperties.isEmpty()) {
             return normalState;
