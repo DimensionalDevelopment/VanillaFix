@@ -46,15 +46,15 @@ public final class ModConfig {
         @RequiresMcRestart
         public boolean textureFixes = true;
 
-        @Name("blockstates")
-        @LangKey("vanillafix.fixes.blockstates")
+        @Name("blockStates")
+        @LangKey("vanillafix.fixes.blockStates")
         @RequiresMcRestart
-        public boolean blockstates = true;
+        public boolean blockStates = true;
 
-        @Name("dynamicresources")
-        @LangKey("vanillafix.fixes.dynamicresources")
+        @Name("dynamicResources")
+        @LangKey("vanillafix.fixes.dynamicResources")
         @RequiresMcRestart
-        public boolean dynamicresources = true;
+        public boolean dynamicResources = true;
     }
 
     public static class Crashes {
