@@ -75,10 +75,10 @@ vanillafix.fixes.profiler=Melhorias de análise
 vanillafix.fixes.profiler.tooltip=Ativar ou desativar melhorias para a análise de depuração (Alt + F3): Dividir entidades e tile entities por mod, adicionar a combinação F3 + S para a depuração do servidor.
 vanillafix.fixes.textureFixes=Otimizar textura
 vanillafix.fixes.textureFixes.tooltip=Ativar ou desativar otimizações de textura. Esta funcionalidade aumenta a taxa de quadros do jogo, portanto, não é recomendado desativá-lo.
-vanillafix.fixes.blockstates=Otimizar estados de blocos
-vanillafix.fixes.blockstates.tooltip=Ativar ou desativar otimizações de estados de blocos. Este recurso pode reduzir o consumo de 10 MB de memória por mod, em média. Porém pode provocar problemas de incompatibilidade com outros mods.
-vanillafix.fixes.dynamicresources=Recursos dinâmicos
-vanillafix.fixes.dynamicresources.tooltip=Ativar ou desativar recursos dinâmicos. Esta funcionalidade desativa o carregamento de modelos, texturas e sons em início; os recursos citados são carregados durante o jogo, e sua memória de uso reduz-se em 75%. Isso pode causar incompatibilidades com outros mods.
+vanillafix.fixes.blockStates=Otimizar estados de blocos
+vanillafix.fixes.blockStates.tooltip=Ativar ou desativar otimizações de estados de blocos. Este recurso pode reduzir o consumo de 10 MB de memória por mod, em média. Porém pode provocar problemas de incompatibilidade com outros mods.
+vanillafix.fixes.dynamicResources=Recursos dinâmicos
+vanillafix.fixes.dynamicResources.tooltip=Ativar ou desativar recursos dinâmicos. Esta funcionalidade desativa o carregamento de modelos, texturas e sons em início; os recursos citados são carregados durante o jogo, e sua memória de uso reduz-se em 75%. Isso pode causar incompatibilidades com outros mods.
 
 vanillafix.debug.switch_profiler.help=F3 + S = Alternar entre análise do cliente <-> servidor integrado
 vanillafix.debug.switch_profiler.server=Utilizando análise do servidor
