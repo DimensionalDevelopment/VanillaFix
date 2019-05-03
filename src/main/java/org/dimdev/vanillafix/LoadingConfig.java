@@ -10,7 +10,7 @@ public class LoadingConfig {
     public boolean modSupport = true;
     public boolean profiler = true;
     public boolean textureFixes = true;
-    public boolean blockstates = true;
+    public boolean blockStates = true;
     public boolean dynamicResources = true;
     public boolean improvedLaunchWrapper = true;
 
@@ -25,7 +25,7 @@ public class LoadingConfig {
         modSupport = config.get("fixes", "modSupport", true).getBoolean();
         profiler = config.get("fixes", "profiler", true).getBoolean();
         textureFixes = config.get("fixes", "textureFixes", true).getBoolean();
-        blockstates = config.get("fixes", "blockstates", true).getBoolean();
+        blockStates = config.get("fixes", "blockStates", true).getBoolean();
         dynamicResources = config.get("fixes", "dynamicResources", true).getBoolean();
         improvedLaunchWrapper = config.get("fixes", "improvedLaunchWrapper", true).getBoolean();
     }
