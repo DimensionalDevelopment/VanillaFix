@@ -75,10 +75,10 @@ vanillafix.fixes.profiler=Profiler improvements
 vanillafix.fixes.profiler.tooltip=Enable or disable improvements to the profiler (Alt + F3 pie chart): Split entities and tile entities by mod, add F3 + S for server profiler pie chart
 vanillafix.fixes.textureFixes=Texture optimizations
 vanillafix.fixes.textureFixes.tooltip=Enable or disable texture optimizations. This is the feature that increases the game's FPS, so it's not recommended to disable this.
-vanillafix.fixes.blockstates=Blockstate optimizations
-vanillafix.fixes.blockstates.tooltip=Enable or disable blockstate optimizations. This saves around 10 MB of memory per mod on average, but may cause incompatibilities with other mods.
-vanillafix.fixes.dynamicresources=Dynamic resources
-vanillafix.fixes.dynamicresources.tooltip=Enable or disable dynamic resources. This feature disables the loading of models, textures and sounds on init, and instead loads them during gameplay, resulting in a memory usage reduction of over 75%. It may cause incompatibility with other mods.
+vanillafix.fixes.blockStates=Blockstate optimizations
+vanillafix.fixes.blockStates.tooltip=Enable or disable blockstate optimizations. This saves around 10 MB of memory per mod on average, but may cause incompatibilities with other mods.
+vanillafix.fixes.dynamicResources=Dynamic resources
+vanillafix.fixes.dynamicResources.tooltip=Enable or disable dynamic resources. This feature disables the loading of models, textures and sounds on init, and instead loads them during gameplay, resulting in a memory usage reduction of over 75%. It may cause incompatibility with other mods.
 
 vanillafix.debug.switch_profiler.help=F3 + S = Cycle client <-> integrated server profiler
 vanillafix.debug.switch_profiler.server=Using server profiler
