@@ -1,6 +1,5 @@
 package org.dimdev.vanillafix.bugs.mixins.client;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,8 +13,8 @@ public class MixinEntityPlayerSP {
      * vanilla code thinks no GUI is open by forcing Minecraft.currentScreen to
      * always return null. (see https://bugs.mojang.com/browse/MC-2071)
      */
-    @Redirect(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", ordinal = 0))
-    private GuiScreen getCurrentScreen(Minecraft mc) {
-        return null;
+    @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;doesGuiPauseGame()Z"))
+    private boolean onPauseCheck(GuiScreen guiScreen) {
+        return false;
     }
 }
