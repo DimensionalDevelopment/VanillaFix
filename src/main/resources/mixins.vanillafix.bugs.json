@@ -21,7 +21,8 @@
     "client.MixinEntityPlayerSP",
     "client.MixinIntegratedServer",
     "client.MixinEntityRenderer",
-    "client.MixinServerPinger$1"
+    "client.MixinServerPinger$1",
+    "client.MixinThreadDownloadImageData"
   ],
   "injectors": {
     "maxShiftBy": 10
