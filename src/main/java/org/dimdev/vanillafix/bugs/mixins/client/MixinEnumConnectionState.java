@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.function.Supplier;
 
 @Mixin(EnumConnectionState.class)
-public class MixinEnumConnectionState {
+public final class MixinEnumConnectionState {
 
     private final Int2ObjectMap<Supplier<? extends Packet<?>>> serverbound = new Int2ObjectArrayMap<>();
     private final Int2ObjectMap<Supplier<? extends Packet<?>>> clientbound = new Int2ObjectArrayMap<>();
