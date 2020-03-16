@@ -8,10 +8,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public final class CrashUtils {
     private static final Logger log = LogManager.getLogger("VF");
+    private static final List<CrashListener> listeners = new ArrayList<>();
 
     public static void crash(CrashReport report) {
         throw new ReportedException(report);
@@ -23,7 +26,7 @@ public final class CrashUtils {
             // Don't inline showWarningScreen, that will cause Java to load the GuiScreen
             // class on servers, because of the lambda!
             ((IPatchedMinecraft) Minecraft.getMinecraft()).showWarningScreen(report);
-            } else {
+        } else {
             log.fatal(report.getDescription(), report.getCrashCause());
         }
     }
@@ -55,6 +58,14 @@ public final class CrashUtils {
             log.fatal("Failed saving report", e);
         }
 
+        for (int i = 0; i < listeners.size(); i++) {
+            try {
+                listeners.get(i).onReport(report);
+            } catch (Throwable e) {
+                log.fatal("Failed report crash to listener", e);
+            }
+        }
+
         log.fatal("Minecraft ran into a problem! " + (report.getFile() != null ? "Report saved to: " + report.getFile() : "Crash report could not be saved.")
                 + "\n" + report.getCompleteReport());
     }
@@ -65,5 +76,13 @@ public final class CrashUtils {
         } catch (NoClassDefFoundError e) {
             return false;
         }
+    }
+
+    public static void addListener(CrashListener crashListener) {
+        listeners.add(crashListener);
+    }
+
+    public interface CrashListener {
+        void onReport(CrashReport report);
     }
 }
