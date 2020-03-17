@@ -29,7 +29,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.dimdev:mixin:0.7.11-SNAPSHOT") {
+    implementation("org.spongepowered:mixin:0.8") {
         exclude module: "asm-commons"
         exclude module: "asm-tree"
         exclude module: "launchwrapper"
