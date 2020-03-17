@@ -21,7 +21,10 @@
     "client.MixinEntityPlayerSP",
     "client.MixinIntegratedServer",
     "client.MixinEntityRenderer",
-    "client.MixinThreadDownloadImageData"
+    "client.MixinThreadDownloadImageData",
+    "client.MixinEnumConnectionState",
+    "client.MixinNetHandlerLoginClient",
+    "client.MixinNetworkManager"
   ],
   "injectors": {
     "maxShiftBy": 10
