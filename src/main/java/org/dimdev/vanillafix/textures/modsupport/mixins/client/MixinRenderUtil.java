@@ -16,11 +16,13 @@ import slimeknights.tconstruct.library.client.RenderUtil;
 public class MixinRenderUtil {
     @Inject(method = "putTexturedQuad(Lnet/minecraft/client/renderer/BufferBuilder;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;DDDDDDLnet/minecraft/util/EnumFacing;IIIIIIZZ)V", at = @At("HEAD"), remap = false)
     private static void onRenderQuad(BufferBuilder renderer, TextureAtlasSprite sprite, double x, double y, double z, double w, double h, double d, EnumFacing face, int r, int g, int b, int a, int light1, int light2, boolean flowing, boolean flipHorizontally, CallbackInfo ci) {
-        ((IPatchedTextureAtlasSprite) sprite).markNeedsAnimationUpdate();
+        if (sprite != null)
+            ((IPatchedTextureAtlasSprite) sprite).markNeedsAnimationUpdate();
     }
 
     @Inject(method = "putRotatedQuad(Lnet/minecraft/client/renderer/BufferBuilder;Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;DDDDDLnet/minecraft/util/EnumFacing;IIIIIIZ)V", at = @At("HEAD"), remap = false)
     private static void onRenderRotatedQuad(BufferBuilder renderer, TextureAtlasSprite sprite, double x, double y, double z, double w, double d, EnumFacing rotation, int r, int g, int b, int a, int light1, int light2, boolean flowing, CallbackInfo ci) {
-        ((IPatchedTextureAtlasSprite) sprite).markNeedsAnimationUpdate();
+        if (sprite != null)
+            ((IPatchedTextureAtlasSprite) sprite).markNeedsAnimationUpdate();
     }
 }

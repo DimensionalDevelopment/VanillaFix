@@ -43,17 +43,20 @@ public class MixinBlockModelRenderer {
         for (EnumFacing side : EnumFacing.values()) {
             if (!checkSides || state.shouldSideBeRendered(world, pos, side)) {
                 List<BakedQuad> quads = model.getQuads(state, side, rand);
-                if (quads == null) continue;
                 for (BakedQuad quad : quads) {
-                    if (quad == null || quad.getSprite() == null) continue;
+                    if (quad == null) {
+                        continue;
+                    } else {
+                        quad.getSprite();
+                    }
                     visibleTextures.add(quad.getSprite());
                 }
             }
         }
 
         List<BakedQuad> quads = model.getQuads(state, null, rand);
-        if (quads != null) for (BakedQuad quad : quads) {
-            if (quad == null || quad.getSprite() == null) continue;
+        for (BakedQuad quad : quads) {
+            if (quad == null) continue;
             visibleTextures.add(quad.getSprite());
         }
 

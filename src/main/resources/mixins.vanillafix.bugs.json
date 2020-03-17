@@ -20,7 +20,8 @@
     "client.MixinNetHandlerPlayClient",
     "client.MixinEntityPlayerSP",
     "client.MixinIntegratedServer",
-    "client.MixinEntityRenderer"
+    "client.MixinEntityRenderer",
+    "client.MixinThreadDownloadImageData"
   ],
   "injectors": {
     "maxShiftBy": 10

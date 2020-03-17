@@ -10,12 +10,11 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(EntityPlayerSP.class)
 public class MixinEntityPlayerSP {
     /**
-     * @reason Enables opening GUIs in nether portals. This works by making the
-     * vanilla code thinks no GUI is open by forcing Minecraft.currentScreen to
-     * always return null. (see https://bugs.mojang.com/browse/MC-2071)
+     * @reason Enables opening GUIs in nether portals. (see https://bugs.mojang.com/browse/MC-2071)
+     * This works by making minecraft think that GUI pauses the game
      */
-    @Redirect(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", ordinal = 0))
-    private GuiScreen getCurrentScreen(Minecraft mc) {
-        return null;
+    @Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;doesGuiPauseGame()Z"))
+    private boolean onPauseCheck(GuiScreen guiScreen) {
+        return true;
     }
 }
