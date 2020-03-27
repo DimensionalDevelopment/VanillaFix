@@ -1,5 +1,5 @@
 language: java
-jdk: oraclejdk8
+jdk: openjdk8
 
 if: tag IS blank
 git:
@@ -24,5 +24,5 @@ deploy:
   file: "{$RELEASE_FILE_LIST}"
   on:
     repo: DimensionalDevelopment/VanillaFix
-    branch: master
+    branch: 1.0.10
     tags: false
