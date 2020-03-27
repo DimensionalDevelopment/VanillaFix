@@ -3,7 +3,7 @@
   "required": true,
   "refmap": "mixins.vanillafix.refmap.json",
   "target": "@env(DEFAULT)",
-  "minVersion": "0.6",
+  "minVersion": "0.7",
   "plugin": "org.dimdev.vanillafix.ModCompatibilityMixinPlugin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
@@ -21,10 +21,7 @@
     "client.MixinEntityPlayerSP",
     "client.MixinIntegratedServer",
     "client.MixinEntityRenderer",
-    "client.MixinThreadDownloadImageData",
-    "client.MixinEnumConnectionState",
-    "client.MixinNetHandlerLoginClient",
-    "client.MixinNetworkManager"
+    "client.MixinThreadDownloadImageData"
   ],
   "injectors": {
     "maxShiftBy": 10

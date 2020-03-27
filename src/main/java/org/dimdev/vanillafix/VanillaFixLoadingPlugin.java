@@ -2,6 +2,7 @@ package org.dimdev.vanillafix;
 
 import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.ForgeVersion;
+import net.minecraftforge.fml.relauncher.CoreModManager;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,15 +11,22 @@ import org.dimdev.vanillafix.crashes.DeobfuscatingRewritePolicy;
 import org.dimdev.vanillafix.crashes.StacktraceDeobfuscator;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.Mixins;
+import sun.misc.URLClassPath;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
