@@ -8,7 +8,7 @@ vanillafix.gui.disabledByConfig=被配置禁用
 vanillafix.crashscreen.title=Minecraft崩溃啦！
 vanillafix.crashscreen.summary=Minecraft遇到了一个问题并崩溃了。
 
-vanillafix.crashscreen.paragraph1.line1=下列模组被认为可能是导致崩溃的原因:
+vanillafix.crashscreen.paragraph1.line1=下列模组被认为可能是导致崩溃的原因：
 
 vanillafix.crashscreen.unknownCause=未知
 vanillafix.crashscreen.identificationErrored=[鉴别错误，请报告给VanillaFix模组]
@@ -40,7 +40,7 @@ vanillafix.warnscreen.paragraph1.line3=下列模组被认为是可能导致问�
 
 vanillafix.warnscreen.paragraph3.line1=点击"获取链接"按钮在你的浏览器中打开它。
 vanillafix.warnscreen.paragraph3.line2=我们建议您将此报告发送给模组的作者以帮助他们修复问题。
-vanillafix.warnscreen.paragraph3.line3=您可以继续游戏,但请注意，您稍后可能会遇到一些问题。
+vanillafix.warnscreen.paragraph3.line3=您可以继续游戏，但请注意，您稍后可能会遇到一些问题。
 vanillafix.warnscreen.paragraph3.line4=可以在 Mods > VanillaFix > Config > Crashes 中禁用此警告。
 vanillafix.warnscreen.paragraph3.line5= 
 
