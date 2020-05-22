@@ -1,0 +1,81 @@
+vanillafix.gui.getLink=Pobierz link
+vanillafix.gui.failed=[Błąd]
+vanillafix.gui.keepPlaying=Nie wyłączaj gry
+vanillafix.gui.restart=Restartuj Minecrafta
+vanillafix.gui.disabledByConfig=Wyłączone w configu
+
+vanillafix.crashscreen.title=Nastąpił Crash!
+vanillafix.crashscreen.summary=Minecraft wpadł w kłopoty i się scrashował!
+
+vanillafix.crashscreen.paragraph1.line1=Jako potencjalne przyczyny zidentyfikowano następujący(e) mod(y):
+
+vanillafix.crashscreen.unknownCause=Nie mogę znaleźć przyczyny, prawdopodobnie Forge!
+vanillafix.crashscreen.identificationErrored=[Identyfikacja błędów, zgłoszenie do VanillaFix]
+
+vanillafix.crashscreen.paragraph2.line1=Kliknij na dowolny mod z listy, aby przejść do ich strony internetowej w celu uzyskania wsparcia.
+vanillafix.crashscreen.paragraph2.line2=raport został wygenerowany i można go znaleźć tutaj (kliknij):
+
+vanillafix.crashscreen.reportSaveFailed=[Raport zapisywania błędów, patrz rejestr]
+
+vanillafix.crashscreen.paragraph3.line1=Kliknij przycisk "Pobierz link", aby otworzyć go w swojej przeglądarce. 
+vanillafix.crashscreen.paragraph3.line2=Zachęcamy do wysłania tego raportu do autora moda, aby pomóc gdyż
+vanillafix.crashscreen.paragraph3.line3=oni naprawiają problem. Ponieważ VanillaFix jest zainstalowany, możesz zachować
+vanillafix.crashscreen.paragraph3.line4=ten crash-log i grać dalej bez wychodzenia do pulpitu.
+
+vanillafix.initerrorscreen.title=Minecraft nie uruchomil się!
+vanillafix.initerrorscreen.summary=Błąd podczas rozruchu, uniemożliwiło to uruchomienie Minecrafta.
+
+vanillafix.initerrorscreen.paragraph3.line1=Kliknij przycisk "Pobierz link", aby otworzyć go w swojej przeglądarce. 
+vanillafix.initerrorscreen.paragraph3.line2=Zachęcamy do wysłania tego raportu do autora moda, aby pomóc gdyż
+vanillafix.initerrorscreen.paragraph3.line3=oni naprawiają problem. Ponieważ VanillaFix jest zainstalowany, możesz zachować
+vanillafix.initerrorscreen.paragraph3.line4=ten crash-log i grać dalej bez wychodzenia do pulpitu.
+
+vanillafix.warnscreen.title=Znaleziono potencjalny problem!
+vanillafix.warnscreen.summary=Minecraft wpadł w problem.
+
+vanillafix.warnscreen.paragraph1.line1=To nie spowodowało poważnej usterki, ale prawdopodobnie będą tego
+vanillafix.warnscreen.paragraph1.line2=konsekwencje, takie jak światowa korupcja chunków lub zniszczone bloki.
+vanillafix.warnscreen.paragraph1.line3=Jako potencjalne przyczyny zidentyfikowano następujący(e) mod(y):
+
+vanillafix.warnscreen.paragraph3.line1=Kliknij przycisk "Pobierz link", aby otworzyć go w swojej przeglądarce. 
+vanillafix.warnscreen.paragraph3.line2=Zachęcamy do wysłania tego raportu do autora moda, aby pomóc gdyż
+vanillafix.warnscreen.paragraph3.line3=oni naprawiają problem. Ponieważ VanillaFix jest zainstalowany, możesz zachować
+vanillafix.warnscreen.paragraph3.line4=ten crash-log i grać dalej bez wychodzenia do pulpitu.
+vanillafix.warnscreen.paragraph3.line5=Więcej crash-logów znajdziesz w Mods > VanillaFix > Config > Crashes.
+
+vanillafix.notification.title.unknown=Pojawił się nieznany problem!
+vanillafix.notification.title.mod=%s ma problem!
+vanillafix.notification.description=Naciśnij Ctrl + I, aby uzyskać więcej informacji
+
+vanillafix.fixes=Włączanie/wyłączanie poprawek
+vanillafix.fixes.tooltip=Kontrolowanie poprawek  które są włączone i wyłączone.
+vanillafix.crashes=Opcje awaryjne
+vanillafix.crashes.tooltip=Opcje dotyczące sposobu postępowania w przypadku awarii
+vanillafix.crashes.disableReturnToMainMenu=Wyłącz Powrót Do Menu Głównego
+vanillafix.crashes.disableReturnToMainMenu.tooltip=Wyłącza przycisk "Powrót Do Menu Głównego" na ekranie awarii zmuszając użytkownika do zamknięcia gry po crashu. Ekran crashu nadal będzie pokazywał podejrzane mody i oferował możliwość przesłania raportu o awarii.
+vanillafix.crashes.problemAction.log=Log
+vanillafix.crashes.problemAction.notification=Powiadomienie
+vanillafix.crashes.problemAction.warningScreen= Ekran ostrzegawczy
+vanillafix.crashes.problemAction.crash=Crash
+vanillafix.crashes.scheduledTaskproblemAction=Zaplanowane działanie wyłączające zadanie
+vanillafix.crashes.scheduledTaskproblemAction.tooltip=Co powinno się stać, gdy zaplanowane zadanie spowoduje wyjątek?
+vanillafix.crashes.errorNotificationDuration=Czas trwania powiadomienia o błędzie
+vanillafix.crashes.errorNotificationDuration.tooltip=Czas w milisekundach do wyświetlenia powiadomień o błędach dla
+vanillafix.crashes.replaceErrorNotifications=Zmień powiadomienia o błędach
+vanillafix.crashes.replaceErrorNotifications.tooltip=Gdy wystąpi kilka błędów pod rząd, zastąp powiadomienie zamiast ustawiać w kolejce więcej powiadomień
+vanillafix.crashes.hasteURL=Haste URL
+vanillafix.crashes.hasteURL.tooltip=Lokalizacja URL do miejsca LOGu w celu przesłania raportów o awarii do bez ukośnika.
+vanillafix.fixes.bugFixes=Optymizacje i poprawki błędów waniliowych
+vanillafix.fixes.bugFixes.tooltip=Włączanie lub wyłączanie małych optymalizacji i poprawek błędów waniliowych
+vanillafix.fixes.crashFixes=Ulepszenia w przypadku awarii
+vanillafix.fixes.crashFixes.tooltip=Uaktywnienie lub wyłączenie usprawnień dotyczących awarii (ekran awarii, identyfikacja modów, formatowanie raportów o awarii). Zauważ, że możesz wyłączyć tylko przycisk "Wróć Do Menu Głównego" w sekcji "Opcje konfiguracji awarii".
+vanillafix.fixes.modSupport=Wsparcie dla modów
+vanillafix.fixes.modSupport.tooltip=Włączenie lub wyłączenie obsługe innych modów. Ważne: To zepsuje nieznane tekstury niektórych modów. Nie wyłączaj tego, chyba że obsługa modów powoduje awarie sama z siebie.
+vanillafix.fixes.profiler=Ulepszenia profilu
+vanillafix.fixes.profileer.tooltip=Włączenie lub wyłączenie ulepszeń w profilerze (Alt + F3 - nazwa: pie chart): Podziel jednostki i jednostki w kafelkach na mod, dodaj F3 + S dla wykresu kołowego profilera tego serwera
+vanillafix.fixes.textureFixes= Optymalizacja tekstury
+vanillafix.fixes.textureFixes.tooltip=Włączanie lub wyłączanie optymalizacji tekstur. Jest to funkcja, która zwiększa FPS w grze, więc nie jest zalecane jej wyłączanie.
+
+vanillafix.debug.switch_profiler.help=F3 + S = Cycle client <-> zintegrowany profiler serwera
+vanillafix.debug.switch_profiler.server=Użycie profilera serwera
+vanillafix.debug.switch_profiler.client=Użycie profilera klienta
