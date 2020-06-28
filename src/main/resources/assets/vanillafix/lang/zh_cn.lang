@@ -48,7 +48,7 @@ vanillafix.notification.title.unknown=发生未知问题!
 vanillafix.notification.title.mod=%s 遇到问题!
 vanillafix.notification.description=按Ctrl + I获取更多信息
 
-vanillafix.fixes=启用/禁用 修复
+vanillafix.fixes=启用/禁用修复
 vanillafix.fixes.tooltip=控制启用/禁用哪些修复。
 vanillafix.crashes=崩溃选项
 vanillafix.crashes.tooltip=关于如何处理崩溃的选项
