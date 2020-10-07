@@ -9,10 +9,13 @@
     "Runemoro"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/vanillafix",
+    "sources": "https://github.com/DimensionalDevelopment/VanillaFix",
+    "issues": "https://github.com/BoogieMonster1O1/VanillaFix/issues",
+    "irc": "irc://irc.esper.net:6667/dimensional-development"
   },
 
+  "icon": "logo.png",
   "license": "MIT",
 
   "environment": "*",
