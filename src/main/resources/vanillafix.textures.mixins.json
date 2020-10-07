@@ -4,10 +4,8 @@
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
   "plugin": "org.dimdev.vanillafix.VanillaFixMixinPlugin",
-  "mixins": [
-    "SpriteMixin"
-  ],
   "client": [
+    "SpriteMixin"
   ],
   "injectors": {
     "defaultRequire": 1
