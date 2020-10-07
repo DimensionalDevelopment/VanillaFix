@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "vanillafix",
+  "version": "${version}",
+
+  "name": "VanillaFix",
+  "description": "Bug fixes and optimizations for Minecraft",
+  "authors": [
+    "Runemoro"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "MIT",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "org.dimdev.vanillafix.VanillaFix"
+    ]
+  },
+
+  "depends": {
+    "fabricloader": ">=0.9.0",
+    "fabric": "*"
+  }
+}

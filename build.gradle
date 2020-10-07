@@ -1,129 +1,112 @@
 buildscript {
-    repositories {
-        jcenter()
-        maven { url "http://files.minecraftforge.net/maven" }
-        maven { url "http://repo.spongepowered.org/maven" }
-    }
-    dependencies {
-        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.4"
-        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
-        classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
-    }
+	repositories {
+		jcenter()
+		maven {
+			name = 'Fabric'
+			url = 'https://maven.fabricmc.net/'
+		}
+	}
+	dependencies {
+		classpath "net.fabricmc:fabric-loom:0.5-SNAPSHOT"
+	}
 }
 
-apply plugin: "java"
-apply plugin: "com.github.johnrengelman.shadow"
-apply plugin: "net.minecraftforge.gradle.forge"
-apply plugin: "org.spongepowered.mixin"
+apply plugin: net.fabricmc.loom.LoomGradlePlugin
+apply plugin: 'maven-publish'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+archivesBaseName = project.archives_base_name
+version = project.mod_version
+group = project.maven_group
 
 repositories {
-    maven { url "http://repo.spongepowered.org/maven" }
-    maven { url "http://chickenbones.net/maven/" }
-    maven { url "http://www.dimdev.org/maven" }
-    maven { url "http://maven.tterrag.com/" }
-    ivy {
-        url "https://google.com/404"
-        ivyPattern("https://google.com/404") // Workaround for https://github.com/gradle/gradle/issues/4107
-        artifactPattern("https://media.forgecdn.net/files/[organisation]/[module]/[revision].[ext]")
-    }
+	mavenCentral()
+	maven {
+		name "Modmuss50 Repository"
+		url 'https://maven.fabricmc.net/'
+	}
+	maven { url "https://dl.bintray.com/shedaniel/shedaniel-mods" }
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    implementation("org.dimdev:mixin:0.7.11-SNAPSHOT") {
-        exclude module: "asm-commons"
-        exclude module: "asm-tree"
-        exclude module: "launchwrapper"
-        exclude module: "guava"
-        exclude module: "log4j-core"
-        exclude module: "gson"
-        exclude module: "commons-io"
-    }
-    compileOnly "2535:884:Chisel-MC1.12.2-0.2.0.31@jar"
-    compileOnly "2530:225:OpenBlocks-1.12.2-1.7.6@jar"
-    compileOnly "2525:230:OpenModsLib-1.12.2-0.11.5@jar"
-    compileOnly "2568:0:TConstruct-1.12.2-2.10.1.84@jar"
-    compileOnly "2568:0:TConstruct-1.12.2-2.10.1.84@jar"
-    compileOnly "2511:625:Avaritia-1.12-3.2.0.13-universal@jar"
-    compileOnly "codechicken:CodeChickenLib:1.12.2-3.1.9.344:deobf"
-    compileOnly "2482:584:CustomMainMenu-MC1.12.2-2.0.8@jar"
-    compileOnly "team.chisel.ctm:CTM:MC1.12-0.2.3.12"
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	
+	modImplementation "com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}"
+	include "com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}"
+
+	modImplementation 'com.github.jellysquid3:lithium-fabric:90c2427'
+	modImplementation 'com.github.jellysquid3:sodium-fabric:2af6510'
+	modImplementation 'com.github.jellysquid3:phosphor-fabric:0749029'
+	modImplementation 'me.shedaniel:RoughlyEnoughItems:5.6.1'
 }
 
-def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
-def versionSuffix = travisBuildNumber != null ? travisBuildNumber : "SNAPSHOT"
+task unzip(type: Copy) {
+	def zipFile = file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")
+	def outputDir = file("${buildDir}/unpacked/dist")
 
-version "1.1.1-$versionSuffix"
-group "org.dimdev.vanillafix"
-archivesBaseName = "VanillaFix"
+	if(outputDir.exists()){
+		outputDir.deleteDir()
+	}
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-sourceSets {
-    main
-}
-
-minecraft {
-    version "1.12.2-14.23.5.2768"
-    runDir "run"
-    mappings "stable_39"
-    makeObfSourceJar false
-
-    def args = [
-            "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin",
-            "-Dmixin.hotSwap=true",
-            "-Dmixin.checks.interfaces=true",
-            "-Dmixin.debug.export=true"
-    ]
-    clientJvmArgs.addAll(args)
-    serverJvmArgs.addAll(args)
-}
-
-mixin {
-    add sourceSets.main, "mixins.vanillafix.refmap.json"
-}
-
-reobf {
-    shadowJar {
-        mappingType = "SEARGE"
-    }
+	from zipTree(zipFile)
+	into outputDir
 }
 
 processResources {
-    filesMatching("mcmod.info") {
-        expand "version": project.version, "mcversion": project.minecraft.version
-    }
+	inputs.property "version", project.version
 
-    // Re-run this task when these change
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+	from(sourceSets.main.resources.srcDirs) {
+		include "fabric.mod.json"
+		expand "version": project.version
+	}
+
+	from(sourceSets.main.resources.srcDirs) {
+		exclude "fabric.mod.json"
+	}
+}
+
+// ensure that the encoding is set to UTF-8, no matter what the system default is
+// this fixes some edge cases with special characters not displaying correctly
+// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+tasks.withType(JavaCompile) {
+	options.encoding = "UTF-8"
+}
+
+// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+// if it is present.
+// If you remove this task, sources will not be generated.
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = "sources"
+	from sourceSets.main.allSource
 }
 
 jar {
-    classifier "thin"
-    manifest.attributes(
-            "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixLoadingPlugin",
-            "FMLCorePluginContainsFMLMod": "true",
-            "FMLAT": "vanillafix_at.cfg"
-    )
+	from "LICENSE"
 }
 
-shadowJar {
-    classifier ""
-    exclude "LICENSE.txt", "dummyThing"
-}
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			// add all the jars that should be included when publishing to maven
+			artifact(remapJar) {
+				builtBy remapJar
+			}
+			artifact(sourcesJar) {
+				builtBy remapSourcesJar
+			}
+		}
+	}
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier "sources"
-    from sourceSets.main.allSource
+	// select the repositories you want to publish to
+	repositories {
+		// uncomment to publish to the local maven
+		// mavenLocal()
+	}
 }
-
-artifacts {
-    archives jar
-    archives shadowJar
-    archives sourcesJar
-}
-
-// These are broken
-runClient.group "other"
-runServer.group "other"
