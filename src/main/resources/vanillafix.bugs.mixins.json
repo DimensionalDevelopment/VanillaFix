@@ -1,0 +1,15 @@
+{
+  "package": "org.dimdev.vanillafix.bugs.mixins",
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "plugin": "org.dimdev.vanillafix.VanillaFixMixinPlugin",
+  "mixins": [
+    "MinecraftServerMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

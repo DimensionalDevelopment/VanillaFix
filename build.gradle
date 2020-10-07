@@ -35,16 +35,34 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
+
+	// Cos why not
 	modImplementation "com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}"
 	include "com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}"
 
+	// Compatibility
 	modImplementation 'com.github.jellysquid3:lithium-fabric:90c2427'
 	modImplementation 'com.github.jellysquid3:sodium-fabric:2af6510'
 	modImplementation 'com.github.jellysquid3:phosphor-fabric:0749029'
-	modImplementation 'me.shedaniel:RoughlyEnoughItems:5.6.1'
+
+	// Fun
+	modImplementation ('me.shedaniel:RoughlyEnoughItems:5.6.1')  {
+		exclude module: 'fabric-api'
+	}
+
+	// Config
+	modImplementation ('me.sargunvohra.mcmods:autoconfig1u:3.2.2')  {
+		exclude module: 'fabric-api'
+	}
+	modImplementation ('me.shedaniel.cloth:config-2:4.8.2') {
+		exclude module: 'fabric-api'
+	}
+
+	// Accessing the config
+	modImplementation('io.github.prospector:modmenu:1.14.6+build.31') {
+		exclude module: 'fabric-api'
+	}
 }
 
 task unzip(type: Copy) {
