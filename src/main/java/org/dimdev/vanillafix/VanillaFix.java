@@ -10,7 +10,7 @@ import org.dimdev.vanillafix.util.config.ModConfig;
 import net.fabricmc.api.ModInitializer;
 
 public class VanillaFix implements ModInitializer {
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
     public static ConfigManager<ModConfig> configManager;
     public static ModConfig modConfig;
 
