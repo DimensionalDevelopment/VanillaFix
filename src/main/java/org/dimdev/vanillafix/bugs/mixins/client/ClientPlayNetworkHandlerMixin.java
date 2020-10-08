@@ -11,6 +11,13 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
+/**
+ * Makes interdimensional teleportation nearly as fast as same-dimension
+ * teleportation by removing the "Downloading terrain..." screen. This will cause
+ * the player to see partially loaded terrain rather than waiting for the whole
+ * render distance to load, but that's also the vanilla behaviour for same-dimension
+ * teleportation.
+ */
 @ModConfigCondition(category = "clientOnly", key = "fastInterdimensionalTeleportation")
 @Environment(EnvType.CLIENT)
 @Mixin(ClientPlayNetworkHandler.class)
