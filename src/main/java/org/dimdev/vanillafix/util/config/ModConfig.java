@@ -39,6 +39,16 @@ public class ModConfig implements ConfigData {
         @ConfigEntry.Gui.NoTooltip
         @ConfigEntry.Gui.RequiresRestart
         public boolean optimizedAnimatedTextures = true;
+
+        @Comment("Allows opening screens when inside a nether portal")
+        @ConfigEntry.Gui.NoTooltip
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean screenInNetherPortal = true;
+
+        @Comment("Split the screen ")
+        @ConfigEntry.Gui.NoTooltip
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean splitScreenAndTextureProfiler = true;
     }
 
     public static class AntiCheat {

@@ -8,6 +8,8 @@
     "EntityMixin",
     "MinecraftServerMixin",
     "PlayerInventoryMixin",
+    "client.ClientPlayerEntityMixin",
+    "client.MinecraftClientMixin",
     "invulnerable.ServerPlayerEntityMixin",
     "step.ServerPlayerEntityMixin"
   ],
