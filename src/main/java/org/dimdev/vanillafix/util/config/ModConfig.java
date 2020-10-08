@@ -45,10 +45,20 @@ public class ModConfig implements ConfigData {
         @ConfigEntry.Gui.RequiresRestart
         public boolean screenInNetherPortal = true;
 
-        @Comment("Split the screen ")
+        @Comment("Set the profilers location to \"gui\" from \"texture\" when running gui logic")
         @ConfigEntry.Gui.NoTooltip
         @ConfigEntry.Gui.RequiresRestart
         public boolean splitScreenAndTextureProfiler = true;
+
+        @Comment("Fixes issue with stuck \"Logging in...\" screen")
+        @ConfigEntry.Gui.NoTooltip
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean fixStuckLoggingInScreen = true;
+
+        @Comment("Makes interdimensional teleportation nearly as fast as same-dimension teleportation by removing the \"Downloading terrain...\" screen.")
+        @ConfigEntry.Gui.NoTooltip
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean fastInterdimensionalTeleportation = true;
     }
 
     public static class AntiCheat {
