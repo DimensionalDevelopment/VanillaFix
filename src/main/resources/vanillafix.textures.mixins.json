@@ -8,12 +8,7 @@
     "BakedQuadAccessor",
     "EntityRenderDispatcherMixin",
     "ItemRendererMixin",
-    "SpriteMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  },
-  "mixins": [
+    "SpriteMixin",
     "BlockModelRendererMixin",
     "BuiltChunkMixin",
     "ChunkDataMixin",
@@ -22,5 +17,8 @@
     "InGameOverlayRendererMixin",
     "SpriteAtlasTextureMixin",
     "WorldRendererAccessor"
-  ]
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }
