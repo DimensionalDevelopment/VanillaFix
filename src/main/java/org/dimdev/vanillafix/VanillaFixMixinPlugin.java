@@ -25,6 +25,7 @@ public class VanillaFixMixinPlugin implements IMixinConfigPlugin {
         try {
             Class<?> clazz = Class.forName(mixinClassName);
             DisableIfModsAreLoaded disableIfModsAreLoaded = clazz.getAnnotation(DisableIfModsAreLoaded.class);
+            MixinConfigCondition mixinConfigCondition = clazz.getAnnotation(MixinConfigCondition.class);
             if (disableIfModsAreLoaded != null) {
                 String[] modids = disableIfModsAreLoaded.value();
                 for (String modid : modids) {
@@ -33,10 +34,10 @@ public class VanillaFixMixinPlugin implements IMixinConfigPlugin {
                     }
                 }
             }
-            if (/* Accessors / Invokers */ clazz.isInterface() || clazz.getAnnotation(MixinConfigCondition.class) == null) {
+            // Interfaces are only used for accessors and invokers
+            if (clazz.isInterface() || mixinConfigCondition == null) {
                 return true;
             }
-            MixinConfigCondition mixinConfigCondition = clazz.getAnnotation(MixinConfigCondition.class);
             try {
                 Field categoryField = ModConfig.class.getDeclaredField(mixinConfigCondition.category());
                 Object category = categoryField.get(VanillaFix.modConfig);

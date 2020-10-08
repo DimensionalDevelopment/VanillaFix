@@ -24,6 +24,11 @@ public class ModConfig implements ConfigData {
         @ConfigEntry.Gui.NoTooltip
         @ConfigEntry.Gui.RequiresRestart
         public boolean fixRecipeBookIngredientsWithTags = true;
+
+        @Comment("Updates the fall distance before notifying the block fallen upon that the entity has fallen on it")
+        @ConfigEntry.Gui.NoTooltip
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean updateFallDistance = true;
     }
 
     public static class ClientOnly {

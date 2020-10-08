@@ -15,13 +15,16 @@
     "irc": "irc://irc.esper.net:6667/dimensional-development"
   },
 
-  "icon": "logo.png",
+  "icon": "assets/logo.png",
   "license": "MIT",
 
   "environment": "*",
   "entrypoints": {
     "main": [
       "org.dimdev.vanillafix.VanillaFix"
+    ],
+    "modmenu": [
+      "org.dimdev.vanillafix.util.modsupport.client.ModMenuSupport"
     ]
   },
 
