@@ -2,13 +2,11 @@ package org.dimdev.vanillafix;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.Maps;
 import org.dimdev.vanillafix.util.config.DisableIfModsAreLoaded;
-import org.dimdev.vanillafix.util.config.ModConfigCondition;
 import org.dimdev.vanillafix.util.config.ModConfig;
+import org.dimdev.vanillafix.util.config.ModConfigCondition;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -16,8 +14,6 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class VanillaFixMixinPlugin implements IMixinConfigPlugin {
-    private static final Map<String, Class<?>> MIXIN_CLASSES = Maps.newHashMap();
-
     @Override
     public void onLoad(String mixinPackage) { }
 
