@@ -41,7 +41,7 @@ public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
     public void tickAnimatedSprites() {
         Profiler profiler = MinecraftClient.getInstance().getProfiler();
         profiler.push("determineVisibleTextures");
-        for (Object e : ((WorldRendererAccessor) Objects.requireNonNull(MinecraftClient.getInstance().world)).getVisibleChunks()) {
+        for (Object e : ((WorldRendererAccessor) Objects.requireNonNull(MinecraftClient.getInstance().worldRenderer)).getVisibleChunks()) {
             ChunkBuilder.BuiltChunk builtChunk = ((ChunkInfoAccessor) e).getChunk();
             for (Sprite sprite: ((ChunkDataExtensions) builtChunk.getData()).getVisibleTextures()) {
                 ((SpriteExtensions) sprite).setAnimationUpdateRequired(true);

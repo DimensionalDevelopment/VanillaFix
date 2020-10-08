@@ -22,7 +22,7 @@ public class ModConfig implements ConfigData {
     }
 
     public static class ClientOnly {
-        @Comment("Optimizes animated textures")
+        @Comment("Optimizes animated textures by ticking only visible textures")
         @ConfigEntry.Gui.NoTooltip
         @ConfigEntry.Gui.RequiresRestart
         public boolean optimizedAnimatedTextures = true;
