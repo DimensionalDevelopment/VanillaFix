@@ -14,6 +14,9 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Category("clientOnly")
     public ClientOnly clientOnly = new ClientOnly();
 
+    @ConfigEntry.Category("antiCheat")
+    public AntiCheat antiCheat = new AntiCheat();
+
     public static class BugFixes {
         @Comment("Disables loading the spawn chunks when the server starts. This drastically reduces world loading times, but can also cause invisible chunks to appear for the first few seconds.")
         @ConfigEntry.Gui.NoTooltip
@@ -36,5 +39,17 @@ public class ModConfig implements ConfigData {
         @ConfigEntry.Gui.NoTooltip
         @ConfigEntry.Gui.RequiresRestart
         public boolean optimizedAnimatedTextures = true;
+    }
+
+    public static class AntiCheat {
+        @Comment("Prevents players from stepping up one block (does not reduce hunger)")
+        @ConfigEntry.Gui.NoTooltip
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean fixStepHeight = true;
+
+        @Comment("Prevents players from being invulnerable during or after a teleport to a new dimension")
+        @ConfigEntry.Gui.NoTooltip
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean noPlayerInvulnerabilityAfterTeleport = true;
     }
 }
