@@ -27,13 +27,7 @@ public class VanillaFixMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         try {
-            Class<?> clazz;
-            if (MIXIN_CLASSES.containsKey(mixinClassName)) {
-                clazz = MIXIN_CLASSES.get(mixinClassName);
-            } else {
-                clazz = Class.forName(mixinClassName);
-                MIXIN_CLASSES.put(mixinClassName, clazz);
-            }
+            Class<?> clazz = Class.forName(mixinClassName);
             DisableIfModsAreLoaded disableIfModsAreLoaded = clazz.getAnnotation(DisableIfModsAreLoaded.class);
             ModConfigCondition modConfigCondition = clazz.getAnnotation(ModConfigCondition.class);
             if (disableIfModsAreLoaded != null) {
