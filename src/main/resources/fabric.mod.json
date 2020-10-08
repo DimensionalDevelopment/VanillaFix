@@ -24,7 +24,7 @@
       "org.dimdev.vanillafix.VanillaFix"
     ],
     "modmenu": [
-      "org.dimdev.vanillafix.util.modsupport.client.ModMenuSupport"
+      "org.dimdev.vanillafix.modsupport.client.ModMenuSupport"
     ]
   },
 

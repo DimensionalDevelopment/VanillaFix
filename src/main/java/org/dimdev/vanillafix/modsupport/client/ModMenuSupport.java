@@ -1,4 +1,4 @@
-package modsupport.client;
+package org.dimdev.vanillafix.modsupport.client;
 
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;

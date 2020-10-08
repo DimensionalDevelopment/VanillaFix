@@ -8,19 +8,38 @@ import org.apache.logging.log4j.Logger;
 import org.dimdev.vanillafix.util.config.ModConfig;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 
 public class VanillaFix implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
-    public static ConfigManager<ModConfig> configManager;
-    public static ModConfig modConfig;
+    private static final ConfigManager<ModConfig> CONFIG_MANAGER;
+    private static final ModConfig MOD_CONFIG;
+    private final ModContainer mod = FabricLoader.getInstance().getModContainer("vanillafix").orElseThrow(IllegalStateException::new);
 
     @Override
     public void onInitialize() {
-
+        if (this.mod.getMetadata().getVersion().getFriendlyString().contains("beta")) {
+            LOGGER.warn("================================================");
+            LOGGER.warn("You are running a beta version of VanillaFix!");
+            LOGGER.warn("VanillaFix Version: {}", this.mod.getMetadata().getVersion().getFriendlyString());
+            LOGGER.warn("If you find any incompatibilities or unexpected");
+            LOGGER.warn("behavior, please create a github issue to let us");
+            LOGGER.warn("know about the problem.");
+            LOGGER.warn("================================================");
+        }
     }
 
     static {
-        configManager = (ConfigManager<ModConfig>) AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
-        modConfig = configManager.getConfig();
+        CONFIG_MANAGER = (ConfigManager<ModConfig>) AutoConfig.register(ModConfig.class, JanksonConfigSerializer::new);
+        MOD_CONFIG = CONFIG_MANAGER.getConfig();
+    }
+
+    public static ModConfig config() {
+        return MOD_CONFIG;
+    }
+
+    public static void save() {
+        CONFIG_MANAGER.save();
     }
 }

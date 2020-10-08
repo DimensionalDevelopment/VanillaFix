@@ -2,8 +2,10 @@ package org.dimdev.vanillafix;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.Maps;
 import org.dimdev.vanillafix.util.config.DisableIfModsAreLoaded;
 import org.dimdev.vanillafix.util.config.ModConfigCondition;
 import org.dimdev.vanillafix.util.config.ModConfig;
@@ -14,6 +16,8 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class VanillaFixMixinPlugin implements IMixinConfigPlugin {
+    private static final Map<String, Class<?>> MIXIN_CLASSES = Maps.newHashMap();
+
     @Override
     public void onLoad(String mixinPackage) { }
 
@@ -23,7 +27,13 @@ public class VanillaFixMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         try {
-            Class<?> clazz = Class.forName(mixinClassName);
+            Class<?> clazz;
+            if (MIXIN_CLASSES.containsKey(mixinClassName)) {
+                clazz = MIXIN_CLASSES.get(mixinClassName);
+            } else {
+                clazz = Class.forName(mixinClassName);
+                MIXIN_CLASSES.put(mixinClassName, clazz);
+            }
             DisableIfModsAreLoaded disableIfModsAreLoaded = clazz.getAnnotation(DisableIfModsAreLoaded.class);
             ModConfigCondition modConfigCondition = clazz.getAnnotation(ModConfigCondition.class);
             if (disableIfModsAreLoaded != null) {
@@ -40,7 +50,7 @@ public class VanillaFixMixinPlugin implements IMixinConfigPlugin {
             }
             try {
                 Field categoryField = ModConfig.class.getDeclaredField(modConfigCondition.category());
-                Object category = categoryField.get(VanillaFix.modConfig);
+                Object category = categoryField.get(VanillaFix.config());
                 Field keyField = category.getClass().getDeclaredField(modConfigCondition.key());
                 return keyField.getBoolean(category);
             } catch (NoSuchFieldException e) {
