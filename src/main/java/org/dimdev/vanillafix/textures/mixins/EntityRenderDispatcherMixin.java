@@ -1,7 +1,7 @@
 package org.dimdev.vanillafix.textures.mixins;
 
 import org.dimdev.vanillafix.textures.SpriteExtensions;
-import org.dimdev.vanillafix.util.config.MixinConfigCondition;
+import org.dimdev.vanillafix.util.config.ModConfigCondition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,7 +18,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-@MixinConfigCondition(category = "clientOnly", key = "optimizedAnimatedTextures")
+@ModConfigCondition(category = "clientOnly", key = "optimizedAnimatedTextures")
 @Mixin(EntityRenderDispatcher.class)
 public class EntityRenderDispatcherMixin {
     @Inject(method = "renderFire", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)

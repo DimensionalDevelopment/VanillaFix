@@ -8,7 +8,6 @@
     "EntityMixin",
     "MinecraftServerMixin",
     "PlayerInventoryMixin",
-    "client.ClientLoginNetworkHandlerMixin",
     "client.ClientPlayerEntityMixin",
     "client.ClientPlayNetworkHandlerMixin",
     "client.MinecraftClientMixin",

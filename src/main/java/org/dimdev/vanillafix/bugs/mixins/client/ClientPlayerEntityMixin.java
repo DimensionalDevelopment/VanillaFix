@@ -1,6 +1,6 @@
 package org.dimdev.vanillafix.bugs.mixins.client;
 
-import org.dimdev.vanillafix.util.config.MixinConfigCondition;
+import org.dimdev.vanillafix.util.config.ModConfigCondition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -11,7 +11,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-@MixinConfigCondition(category = "clientOnly", key = "screenInNetherPortal")
+@ModConfigCondition(category = "clientOnly", key = "screenInNetherPortal")
 @Environment(EnvType.CLIENT)
 @Mixin(ClientPlayerEntity.class)
 public class ClientPlayerEntityMixin {

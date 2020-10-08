@@ -1,6 +1,6 @@
 package org.dimdev.vanillafix.bugs.mixins.client;
 
-import org.dimdev.vanillafix.util.config.MixinConfigCondition;
+import org.dimdev.vanillafix.util.config.ModConfigCondition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -11,7 +11,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-@MixinConfigCondition(category = "clientOnly", key = "fastInterdimensionalTeleportation")
+@ModConfigCondition(category = "clientOnly", key = "fastInterdimensionalTeleportation")
 @Environment(EnvType.CLIENT)
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMixin {

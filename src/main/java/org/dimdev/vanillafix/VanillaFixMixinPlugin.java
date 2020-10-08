@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.dimdev.vanillafix.util.config.DisableIfModsAreLoaded;
-import org.dimdev.vanillafix.util.config.MixinConfigCondition;
+import org.dimdev.vanillafix.util.config.ModConfigCondition;
 import org.dimdev.vanillafix.util.config.ModConfig;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -25,7 +25,7 @@ public class VanillaFixMixinPlugin implements IMixinConfigPlugin {
         try {
             Class<?> clazz = Class.forName(mixinClassName);
             DisableIfModsAreLoaded disableIfModsAreLoaded = clazz.getAnnotation(DisableIfModsAreLoaded.class);
-            MixinConfigCondition mixinConfigCondition = clazz.getAnnotation(MixinConfigCondition.class);
+            ModConfigCondition modConfigCondition = clazz.getAnnotation(ModConfigCondition.class);
             if (disableIfModsAreLoaded != null) {
                 String[] modids = disableIfModsAreLoaded.value();
                 for (String modid : modids) {
@@ -35,13 +35,13 @@ public class VanillaFixMixinPlugin implements IMixinConfigPlugin {
                 }
             }
             // Interfaces are only used for accessors and invokers
-            if (clazz.isInterface() || mixinConfigCondition == null) {
+            if (clazz.isInterface() || modConfigCondition == null) {
                 return true;
             }
             try {
-                Field categoryField = ModConfig.class.getDeclaredField(mixinConfigCondition.category());
+                Field categoryField = ModConfig.class.getDeclaredField(modConfigCondition.category());
                 Object category = categoryField.get(VanillaFix.modConfig);
-                Field keyField = category.getClass().getDeclaredField(mixinConfigCondition.key());
+                Field keyField = category.getClass().getDeclaredField(modConfigCondition.key());
                 return keyField.getBoolean(category);
             } catch (NoSuchFieldException e) {
                 throw new IllegalStateException("Invalid Category or Config Key declared", e);
