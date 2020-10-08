@@ -24,7 +24,10 @@
       "org.dimdev.vanillafix.VanillaFix"
     ],
     "modmenu": [
-      "org.dimdev.vanillafix.modsupport.client.ModMenuSupport"
+      "org.dimdev.vanillafix.client.modsupport.ModMenuSupport"
+    ],
+    "client": [
+      "org.dimdev.vanillafix.client.VanillaFixClient"
     ],
     "mm:early_riser": [
       "org.dimdev.vanillafix.VanillaFixEarlyRiser"
