@@ -4,11 +4,14 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
+import org.dimdev.vanillafix.util.config.DisableIfModsAreLoaded;
 import org.dimdev.vanillafix.util.config.MixinConfigCondition;
 import org.dimdev.vanillafix.util.config.ModConfig;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+
+import net.fabricmc.loader.api.FabricLoader;
 
 public class VanillaFixMixinPlugin implements IMixinConfigPlugin {
     @Override
@@ -21,6 +24,15 @@ public class VanillaFixMixinPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         try {
             Class<?> clazz = Class.forName(mixinClassName);
+            DisableIfModsAreLoaded disableIfModsAreLoaded = clazz.getAnnotation(DisableIfModsAreLoaded.class);
+            if (disableIfModsAreLoaded != null) {
+                String[] modids = disableIfModsAreLoaded.value();
+                for (String modid : modids) {
+                    if (FabricLoader.getInstance().isModLoaded(modid)) {
+                        return false;
+                    }
+                }
+            }
             if (/* Accessors / Invokers */ clazz.isInterface() || clazz.getAnnotation(MixinConfigCondition.class) == null) {
                 return true;
             }
