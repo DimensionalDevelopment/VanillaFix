@@ -19,6 +19,11 @@ public class ModConfig implements ConfigData {
         @ConfigEntry.Gui.NoTooltip
         @ConfigEntry.Gui.RequiresRestart
         public boolean disableInitialChunkLoad = true;
+
+        @Comment("Compare items by item type rather than NBT when looking for items for the crafting recipe. Fixes https://bugs.mojang.com/browse/MC-129057")
+        @ConfigEntry.Gui.NoTooltip
+        @ConfigEntry.Gui.RequiresRestart
+        public boolean fixRecipeBookIngredientsWithTags = true;
     }
 
     public static class ClientOnly {

@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_8",
   "plugin": "org.dimdev.vanillafix.VanillaFixMixinPlugin",
   "mixins": [
-    "MinecraftServerMixin"
+    "MinecraftServerMixin",
+    "PlayerInventoryMixin"
   ],
   "client": [
   ],
