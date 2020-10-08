@@ -1,7 +1,7 @@
 package org.dimdev.vanillafix.textures;
 
 public interface SpriteExtensions {
-    void setAnimationUpdateNeeded(boolean value);
+    void setAnimationUpdateRequired(boolean animationUpdateRequired);
 
-    boolean isAnimationUpdateNeeded();
+    boolean isAnimationUpdateRequired();
 }

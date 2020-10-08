@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
-import org.dimdev.vanillafix.util.config.MixinConfigValue;
+import org.dimdev.vanillafix.util.config.MixinConfigCondition;
 import org.dimdev.vanillafix.util.config.ModConfig;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -21,14 +21,14 @@ public class VanillaFixMixinPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         try {
             Class<?> clazz = Class.forName(mixinClassName);
-            if (clazz.getAnnotation(MixinConfigValue.class) == null) {
+            if (/* Accessors / Invokers */ clazz.isInterface() || clazz.getAnnotation(MixinConfigCondition.class) == null) {
                 return true;
             }
-            MixinConfigValue mixinConfigValue = clazz.getAnnotation(MixinConfigValue.class);
+            MixinConfigCondition mixinConfigCondition = clazz.getAnnotation(MixinConfigCondition.class);
             try {
-                Field categoryField = ModConfig.class.getDeclaredField(mixinConfigValue.category());
+                Field categoryField = ModConfig.class.getDeclaredField(mixinConfigCondition.category());
                 Object category = categoryField.get(VanillaFix.modConfig);
-                Field keyField = category.getClass().getDeclaredField(mixinConfigValue.key());
+                Field keyField = category.getClass().getDeclaredField(mixinConfigCondition.key());
                 return keyField.getBoolean(category);
             } catch (NoSuchFieldException e) {
                 throw new IllegalStateException("Invalid Category or Config Key declared", e);

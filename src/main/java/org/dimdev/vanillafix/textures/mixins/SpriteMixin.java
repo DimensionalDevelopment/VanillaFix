@@ -1,7 +1,7 @@
 package org.dimdev.vanillafix.textures.mixins;
 
 import org.dimdev.vanillafix.textures.SpriteExtensions;
-import org.dimdev.vanillafix.util.config.MixinConfigValue;
+import org.dimdev.vanillafix.util.config.MixinConfigCondition;
 import org.spongepowered.asm.mixin.Mixin;
 
 import net.minecraft.client.texture.Sprite;
@@ -10,18 +10,18 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-@MixinConfigValue(category = "clientOnly", key = "optimizedAnimatedTextures")
+@MixinConfigCondition(category = "clientOnly", key = "optimizedAnimatedTextures")
 @Mixin(Sprite.class)
 public class SpriteMixin implements SpriteExtensions {
-    private boolean animationUpdateNeeded;
+    private boolean animationUpdateRequired;
 
     @Override
-    public void setAnimationUpdateNeeded(boolean animationUpdateNeeded) {
-        this.animationUpdateNeeded = animationUpdateNeeded;
+    public void setAnimationUpdateRequired(boolean animationUpdateRequired) {
+        this.animationUpdateRequired = animationUpdateRequired;
     }
 
     @Override
-    public boolean isAnimationUpdateNeeded() {
-        return this.animationUpdateNeeded;
+    public boolean isAnimationUpdateRequired() {
+        return this.animationUpdateRequired;
     }
 }

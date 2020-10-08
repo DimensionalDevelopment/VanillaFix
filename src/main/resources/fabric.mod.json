@@ -33,5 +33,7 @@
   "mixins": [
     "vanillafix.bugs.mixins.json",
     "vanillafix.textures.mixins.json"
-  ]
+  ],
+
+  "accessWidener": "vanillafix_aw.txt"
 }

@@ -5,9 +5,22 @@
   "compatibilityLevel": "JAVA_8",
   "plugin": "org.dimdev.vanillafix.VanillaFixMixinPlugin",
   "client": [
+    "BakedQuadAccessor",
+    "EntityRenderDispatcherMixin",
+    "ItemRendererMixin",
     "SpriteMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "BlockModelRendererMixin",
+    "BuiltChunkMixin",
+    "ChunkDataMixin",
+    "ChunkInfoAccessor",
+    "FluidRendererMixin",
+    "InGameOverlayRendererMixin",
+    "SpriteAtlasTextureMixin",
+    "WorldRendererAccessor"
+  ]
 }

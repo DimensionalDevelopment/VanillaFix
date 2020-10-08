@@ -1,3 +1,5 @@
+import net.fabricmc.loom.LoomGradlePlugin
+
 buildscript {
 	repositories {
 		jcenter()
@@ -11,7 +13,7 @@ buildscript {
 	}
 }
 
-apply plugin: net.fabricmc.loom.LoomGradlePlugin
+apply plugin: LoomGradlePlugin
 apply plugin: 'maven-publish'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -31,6 +33,10 @@ repositories {
 	maven { url 'https://jitpack.io' }
 }
 
+minecraft {
+	accessWidener 'src/main/resources/vanillafix_aw.txt'
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
@@ -43,7 +49,7 @@ dependencies {
 
 	// Compatibility
 	modImplementation 'com.github.jellysquid3:lithium-fabric:90c2427'
-	modImplementation 'com.github.jellysquid3:sodium-fabric:2af6510'
+//	modImplementation 'com.github.jellysquid3:sodium-fabric:2af6510'
 	modImplementation 'com.github.jellysquid3:phosphor-fabric:0749029'
 
 	// Fun
