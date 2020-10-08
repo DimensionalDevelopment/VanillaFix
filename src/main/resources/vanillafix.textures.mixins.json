@@ -3,7 +3,7 @@
   "required": true,
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
-  "plugin": "org.dimdev.vanillafix.VanillaFixMixinPlugin",
+  "plugin": "org.dimdev.vanillafix.bugs.BugFixMixinPlugin",
   "client": [
     "BakedQuadAccessor",
     "EntityRenderDispatcherMixin",

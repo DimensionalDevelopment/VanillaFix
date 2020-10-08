@@ -3,7 +3,6 @@ package org.dimdev.vanillafix.textures.mixins;
 import java.util.List;
 
 import org.dimdev.vanillafix.textures.SpriteExtensions;
-import org.dimdev.vanillafix.util.config.ModConfigCondition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,7 +19,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-@ModConfigCondition(category = "clientOnly", key = "optimizedAnimatedTextures")
 @Mixin(ItemRenderer.class)
 public class ItemRendererMixin {
     @Inject(method = "renderBakedItemQuads", at = @At("HEAD"))

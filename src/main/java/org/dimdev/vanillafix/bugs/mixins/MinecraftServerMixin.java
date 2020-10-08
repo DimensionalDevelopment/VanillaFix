@@ -1,13 +1,11 @@
 package org.dimdev.vanillafix.bugs.mixins;
 
-import org.dimdev.vanillafix.util.config.ModConfigCondition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 
-@ModConfigCondition(category = "bugFixes", key = "disableInitialChunkLoad")
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
     /**

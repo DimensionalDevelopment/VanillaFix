@@ -13,16 +13,16 @@ import net.fabricmc.loader.api.ModContainer;
 
 public class VanillaFix implements ModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
+    public static final ModContainer MOD = FabricLoader.getInstance().getModContainer("vanillafix").orElseThrow(IllegalStateException::new);
     private static final ConfigManager<ModConfig> CONFIG_MANAGER;
     private static final ModConfig MOD_CONFIG;
-    private final ModContainer mod = FabricLoader.getInstance().getModContainer("vanillafix").orElseThrow(IllegalStateException::new);
 
     @Override
     public void onInitialize() {
-        if (this.mod.getMetadata().getVersion().getFriendlyString().contains("beta")) {
+        if (MOD.getMetadata().getVersion().getFriendlyString().contains("beta")) {
             LOGGER.warn("================================================");
             LOGGER.warn("You are running a beta version of VanillaFix!");
-            LOGGER.warn("VanillaFix Version: {}", this.mod.getMetadata().getVersion().getFriendlyString());
+            LOGGER.warn("VanillaFix Version: {}", MOD.getMetadata().getVersion().getFriendlyString());
             LOGGER.warn("If you find any incompatibilities or unexpected");
             LOGGER.warn("behavior, please create a github issue to let us");
             LOGGER.warn("know about the problem.");

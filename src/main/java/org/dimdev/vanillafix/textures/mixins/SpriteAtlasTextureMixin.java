@@ -6,7 +6,6 @@ import java.util.Objects;
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.dimdev.vanillafix.textures.ChunkDataExtensions;
 import org.dimdev.vanillafix.textures.SpriteExtensions;
-import org.dimdev.vanillafix.util.config.ModConfigCondition;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -23,11 +22,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-@ModConfigCondition(category = "clientOnly", key = "optimizedAnimatedTextures")
 @Mixin(SpriteAtlasTexture.class)
 public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
 
-    @Shadow @Final private List<Sprite> animatedSprites;
+    @Shadow
+    @Final
+    private List<Sprite> animatedSprites;
 
     /**
      * @reason Replaces the updateAnimations method to only tick animated textures
@@ -43,7 +43,7 @@ public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
         profiler.push("determineVisibleTextures");
         for (Object e : ((WorldRendererAccessor) Objects.requireNonNull(MinecraftClient.getInstance().worldRenderer)).getVisibleChunks()) {
             ChunkBuilder.BuiltChunk builtChunk = ((ChunkInfoAccessor) e).getChunk();
-            for (Sprite sprite: ((ChunkDataExtensions) builtChunk.getData()).getVisibleTextures()) {
+            for (Sprite sprite : ((ChunkDataExtensions) builtChunk.getData()).getVisibleTextures()) {
                 ((SpriteExtensions) sprite).setAnimationUpdateRequired(true);
             }
         }

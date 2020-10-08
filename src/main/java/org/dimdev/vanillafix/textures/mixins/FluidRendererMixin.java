@@ -3,7 +3,6 @@ package org.dimdev.vanillafix.textures.mixins;
 import org.dimdev.vanillafix.textures.ChunkDataExtensions;
 import org.dimdev.vanillafix.textures.SpriteExtensions;
 import org.dimdev.vanillafix.textures.TemporaryStorage;
-import org.dimdev.vanillafix.util.config.ModConfigCondition;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,7 +23,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-@ModConfigCondition(category = "clientOnly", key = "optimizedAnimatedTextures")
 @Mixin(FluidRenderer.class)
 public class FluidRendererMixin {
     @Shadow

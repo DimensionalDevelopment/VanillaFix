@@ -25,6 +25,9 @@
     ],
     "modmenu": [
       "org.dimdev.vanillafix.modsupport.client.ModMenuSupport"
+    ],
+    "mm:early_riser": [
+      "org.dimdev.vanillafix.VanillaFixEarlyRiser"
     ]
   },
 
@@ -34,8 +37,7 @@
   },
 
   "mixins": [
-    "vanillafix.bugs.mixins.json",
-    "vanillafix.textures.mixins.json"
+    "vanillafix.bugs.mixins.json"
   ],
 
   "accessWidener": "vanillafix_aw.txt"

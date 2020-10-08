@@ -4,7 +4,6 @@ import java.util.Set;
 
 import com.google.common.collect.Sets;
 import org.dimdev.vanillafix.textures.ChunkDataExtensions;
-import org.dimdev.vanillafix.util.config.ModConfigCondition;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
@@ -15,7 +14,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-@ModConfigCondition(category = "clientOnly", key = "optimizedAnimatedTextures")
 @Mixin(ChunkBuilder.ChunkData.class)
 public class ChunkDataMixin implements ChunkDataExtensions {
     @Unique
