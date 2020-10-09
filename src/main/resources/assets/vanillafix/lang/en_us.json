@@ -1,5 +1,6 @@
 {
   "text.autoconfig.vanillafix.category.bugFixes": "Bug Fixes",
   "text.autoconfig.vanillafix.category.clientOnly": "Clientside",
-  "text.autoconfig.vanillafix.category.antiCheat": "Anti Cheat"
+  "text.autoconfig.vanillafix.category.antiCheat": "Anti Cheat",
+  "text.autoconfig.vanillafix.title": "VanillaFix Configuration"
 }

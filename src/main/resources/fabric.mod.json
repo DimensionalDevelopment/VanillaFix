@@ -29,7 +29,7 @@
     "client": [
       "org.dimdev.vanillafix.client.VanillaFixClient"
     ],
-    "mm:early_riser": [
+    "mm:early_risers": [
       "org.dimdev.vanillafix.VanillaFixEarlyRiser"
     ]
   },
