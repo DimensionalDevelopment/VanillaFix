@@ -33,6 +33,11 @@ public class ModConfig implements ConfigData {
         @NoTooltip
         @RequiresRestart
         public boolean updateFallDistance = true;
+
+        @Comment("Fixes a bug where the stone shore biome has a different water color than other coastal cold biomes")
+        @NoTooltip
+        @RequiresRestart
+        public boolean fixStoneShoreColors = true;
     }
 
     public static class ClientOnly {

@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "plugin": "org.dimdev.vanillafix.bugs.BugFixMixinPlugin",
   "mixins": [
+    "BuiltinBiomesMixin",
     "EntityMixin",
     "MinecraftServerMixin",
     "PlayerInventoryMixin",
