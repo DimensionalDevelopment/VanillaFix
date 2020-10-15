@@ -60,6 +60,11 @@ public class ModConfig implements ConfigData {
         @NoTooltip
         @RequiresRestart
         public boolean fastInterdimensionalTeleportation = true;
+
+        @Comment("Prevents showing particles that can not be seen")
+        @NoTooltip
+        @RequiresRestart
+        public boolean cullParticles = true;
     }
 
     public static class AntiCheat {

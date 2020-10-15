@@ -6,8 +6,12 @@ public class VanillaFixEarlyRiser implements Runnable {
     @Override
     public void run() {
         if (VanillaFix.CONFIG.clientOnly.optimizedAnimatedTextures) {
-            VanillaFix.LOGGER.debug("Registering Animated Texture Optimization Mixins");
+            VanillaFix.LOGGER.info("Registering Animated Texture Optimization Mixins");
             Mixins.addConfiguration("vanillafix.textures.mixins.json");
+        }
+        if (VanillaFix.CONFIG.clientOnly.cullParticles) {
+            VanillaFix.LOGGER.info("Registering Particle Optimization Mixins");
+            Mixins.addConfiguration("vanillafix.particles.mixins.json");
         }
     }
 }

@@ -1,0 +1,13 @@
+{
+  "package": "org.dimdev.vanillafix.particles.mixins",
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "ParticleManagerMixin",
+    "WorldRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
