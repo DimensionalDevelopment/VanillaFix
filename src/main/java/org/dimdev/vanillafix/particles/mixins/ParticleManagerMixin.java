@@ -1,5 +1,6 @@
 package org.dimdev.vanillafix.particles.mixins;
 
+import org.dimdev.vanillafix.particles.WorldRendererExtensions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -17,6 +18,6 @@ import net.fabricmc.api.Environment;
 public class ParticleManagerMixin {
     @Redirect(method = "renderParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/Particle;buildGeometry(Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V"))
     public void cull(Particle particle, VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
-
+        WorldRendererExtensions.cull(particle, vertexConsumer, camera, tickDelta);
     }
 }
