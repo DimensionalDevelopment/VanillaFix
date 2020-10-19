@@ -10,7 +10,7 @@ public class ModConfig {
     public AntiCheat antiCheat = new AntiCheat();
 
     public static class BugFixes {
-        @Comment("Disables loading the spawn chunks when the server starts. This drastically reduces world loading times, but can also cause invisible chunks to appear for the first few seconds.")
+        @Comment("Disables loading the spawn chunks when the server starts. This drastically reduces world loading times. As a side effect, invisible chunks may appear for the first few seconds when creating a new world.")
         public boolean disableInitialChunkLoad = true;
 
         @Comment("Compare items by item type rather than NBT when looking for items for the crafting recipe. Fixes https://bugs.mojang.com/browse/MC-129057")
