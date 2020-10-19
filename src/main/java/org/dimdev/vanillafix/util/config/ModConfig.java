@@ -18,8 +18,8 @@ public class ModConfig {
 
         @Comment("Updates the fall distance before notifying the block fallen upon that the entity has fallen on it")
         public boolean updateFallDistance = true;
+
         @Comment("Fixes a bug where the stone shore biome has a different water color than other coastal cold biomes")
-        
         public boolean fixStoneShoreColors = true;
     }
 

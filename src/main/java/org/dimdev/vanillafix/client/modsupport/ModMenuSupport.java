@@ -28,6 +28,7 @@ public class ModMenuSupport implements ModMenuApi {
         return (parent) -> {
             ConfigBuilder builder = ConfigBuilder.create()
                     .setParentScreen(parent)
+                    .setSavingRunnable(VanillaFix::save)
                     .setTitle(new TranslatableText("vanillafix.config.title"));
             BiMap<String, ConfigCategory> categories = HashBiMap.create();
             ConfigEntryBuilder entryBuilder = builder.entryBuilder();
@@ -46,8 +47,8 @@ public class ModMenuSupport implements ModMenuApi {
                         if (Modifier.isStatic(innerMods) || Modifier.isFinal(innerMods) || Modifier.isTransient(innerMods)) {
                             continue;
                         }
-                        String innerName = field.getName();
-                        Class<?> innerType = field.getType();
+                        String innerName = innerField.getName();
+                        Class<?> innerType = innerField.getType();
                         Text text = new TranslatableText("vanillafix.config.value." + name + "." + innerName);
                         if (innerType == boolean.class || innerType == Boolean.class) {
                             BooleanListEntry booleanListEntry = entryBuilder.startBooleanToggle(text, innerField.getBoolean(value))

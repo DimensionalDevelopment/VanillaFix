@@ -1,3 +1,17 @@
 {
-  "vanillafix.config.title": "VanillaFix Configuration"
+  "vanillafix.config.title": "VanillaFix Configuration",
+  "vanillafix.config.category.bugFixes": "Bug Fixed",
+  "vanillafix.config.category.clientOnly": "Client Only",
+  "vanillafix.config.category.antiCheat": "Anti Cheat",
+  "vanillafix.config.value.bugFixes.disableInitialChunkLoad": "Disable Initial Chunk Load",
+  "vanillafix.config.value.bugFixes.fixRecipeBookIngredientsWithTags": "Fix Recipe Book Ingredients with Tags",
+  "vanillafix.config.value.bugFixes.updateFallDistance": "Update Entity Fall Distance",
+  "vanillafix.config.value.bugFixes.fixStoneShoreColors": "Fix Stone Shore Colors",
+  "vanillafix.config.value.clientOnly.optimizedAnimatedTextures": "Tick only Visible Textures",
+  "vanillafix.config.value.clientOnly.screenInNetherPortal": "Allow opening screens in Nether portals",
+  "vanillafix.config.value.clientOnly.splitScreenAndTextureProfiler": "Split Profiler",
+  "vanillafix.config.value.clientOnly.fastInterdimensionalTeleportation": "Fast Interdimensional Teleportation",
+  "vanillafix.config.value.clientOnly.cullParticles": "Cull invisible particles",
+  "vanillafix.config.value.antiCheat.fixStepHeight": "Fix Step Height",
+  "vanillafix.config.value.antiCheat.noPlayerInvulnerabilityAfterTeleport": "Fix Teleportation Invulnerability"
 }
