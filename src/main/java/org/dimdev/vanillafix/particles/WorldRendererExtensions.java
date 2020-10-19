@@ -9,7 +9,7 @@ import net.minecraft.client.render.VertexConsumer;
 public interface WorldRendererExtensions {
     Frustum getFrustum();
 
-    static void cull(Particle particle, VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
+    static void renderIfVisible(Particle particle, VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
         if (((WorldRendererExtensions) MinecraftClient.getInstance().worldRenderer).getFrustum().isVisible(particle.getBoundingBox())) {
             particle.buildGeometry(vertexConsumer, camera, tickDelta);
         }

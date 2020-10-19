@@ -7,7 +7,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
-import static org.dimdev.vanillafix.VanillaFix.CONFIG;
+import static org.dimdev.vanillafix.VanillaFix.config;
 
 public class BugFixMixinPlugin implements IMixinConfigPlugin {
 
@@ -25,23 +25,23 @@ public class BugFixMixinPlugin implements IMixinConfigPlugin {
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         switch (mixinClassName) {
             case "org.dimdev.vanillafix.bugs.mixins.step.ServerPlayerEntityMixin":
-                return CONFIG.antiCheat.fixStepHeight;
+                return config().antiCheat.fixStepHeight;
             case "org.dimdev.vanillafix.bugs.mixins.EntityMixin":
-                return CONFIG.bugFixes.updateFallDistance;
+                return config().bugFixes.updateFallDistance;
             case "org.dimdev.vanillafix.bugs.mixins.MinecraftServerMixin":
-                return CONFIG.bugFixes.disableInitialChunkLoad;
+                return config().bugFixes.disableInitialChunkLoad;
             case "org.dimdev.vanillafix.bugs.mixins.PlayerInventoryMixin":
-                return CONFIG.bugFixes.fixRecipeBookIngredientsWithTags;
+                return config().bugFixes.fixRecipeBookIngredientsWithTags;
             case "org.dimdev.vanillafix.bugs.mixins.invulnerable.ServerPlayerEntityMixin":
-                return CONFIG.antiCheat.noPlayerInvulnerabilityAfterTeleport;
+                return config().antiCheat.noPlayerInvulnerabilityAfterTeleport;
             case "org.dimdev.vanillafix.bugs.mixins.client.MinecraftClientMixin":
-                return CONFIG.clientOnly.splitScreenAndTextureProfiler;
+                return config().clientOnly.splitScreenAndTextureProfiler;
             case "org.dimdev.vanillafix.bugs.mixins.client.ClientPlayerEntityMixin":
-                return CONFIG.clientOnly.screenInNetherPortal;
+                return config().clientOnly.screenInNetherPortal;
             case "org.dimdev.vanillafix.bugs.mixins.client.ClientPlayNetworkHandlerMixin":
-                return CONFIG.clientOnly.fastInterdimensionalTeleportation;
+                return config().clientOnly.fastInterdimensionalTeleportation;
             case "org.dimdev.vanillafix.bugs.mixins.BuiltinBiomesMixin":
-                return CONFIG.bugFixes.fixStoneShoreColors;
+                return config().bugFixes.fixStoneShoreColors;
         }
         return true;
     }

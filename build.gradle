@@ -1,5 +1,3 @@
-import net.fabricmc.loom.LoomGradlePlugin
-
 buildscript {
 	repositories {
 		jcenter()
@@ -9,12 +7,14 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath "net.fabricmc:fabric-loom:0.5-SNAPSHOT"
+		classpath 'net.fabricmc:fabric-loom:0.5-SNAPSHOT'
+		classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
 	}
 }
 
-apply plugin: LoomGradlePlugin
+apply plugin: 'fabric-loom'
 apply plugin: 'maven-publish'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -37,7 +37,16 @@ minecraft {
 	accessWidener 'src/main/resources/vanillafix_aw.txt'
 }
 
+configurations {
+	shade
+}
+
+tasks.remapJar.dependsOn(shadowJar)
+(tasks.remapJar.input as FileSystemLocationProperty<? extends FileSystemLocation>).set(shadowJar.archivePath)
+
 dependencies {
+	implementation "blue.endless:jankson:1.1.0"
+	shade "blue.endless:jankson:1.1.0"
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
@@ -49,38 +58,22 @@ dependencies {
 
 	// Compatibility
 	modImplementation 'com.github.jellysquid3:lithium-fabric:90c2427'
-//	modImplementation 'com.github.jellysquid3:sodium-fabric:2af6510'
 	modImplementation 'com.github.jellysquid3:phosphor-fabric:0749029'
 
 	// Fun
-	modImplementation ('me.shedaniel:RoughlyEnoughItems:5.6.1')  {
+	modRuntime ('me.shedaniel:RoughlyEnoughItems:5.6.1')  {
 		exclude module: 'fabric-api'
 	}
 
-	// Config
-	modImplementation ('me.sargunvohra.mcmods:autoconfig1u:3.2.2')  {
-		exclude module: 'fabric-api'
-	}
 	modImplementation ('me.shedaniel.cloth:config-2:4.8.2') {
 		exclude module: 'fabric-api'
 	}
+	include 'me.shedaniel.cloth:config-2:4.8.2'
 
 	// Accessing the config
 	modImplementation('io.github.prospector:modmenu:1.14.6+build.31') {
 		exclude module: 'fabric-api'
 	}
-}
-
-task unzip(type: Copy) {
-	def zipFile = file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar")
-	def outputDir = file("${buildDir}/unpacked/dist")
-
-	if(outputDir.exists()){
-		outputDir.deleteDir()
-	}
-
-	from zipTree(zipFile)
-	into outputDir
 }
 
 processResources {
@@ -115,22 +108,7 @@ jar {
 	from "LICENSE"
 }
 
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
-		}
-	}
-
-	// select the repositories you want to publish to
-	repositories {
-		// uncomment to publish to the local maven
-		// mavenLocal()
-	}
+shadowJar {
+	configurations = [project.configurations.shade]
+	relocate 'blue.endless.jankson', 'org.dimdev.vanillafix.shadowed.blue.endless.jankson'
 }
