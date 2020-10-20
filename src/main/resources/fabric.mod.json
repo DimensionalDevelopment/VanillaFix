@@ -40,9 +40,7 @@
   },
 
   "mixins": [
-    "vanillafix.bugs.mixins.json",
-    "vanillafix.textures.mixins.json",
-    "vanillafix.particles.mixins.json"
+    "vanillafix.bugs.mixins.json"
   ],
 
   "accessWidener": "vanillafix_aw.txt"
