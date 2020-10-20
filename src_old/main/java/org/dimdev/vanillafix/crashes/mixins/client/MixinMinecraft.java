@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix.crashes.mixins.client;
+package org.dimdev.vanillafix.cProblemToastrashes.mixins.client;
 
 import com.google.common.util.concurrent.ListenableFutureTask;
 import lumien.custommainmenu.gui.GuiCustom;
