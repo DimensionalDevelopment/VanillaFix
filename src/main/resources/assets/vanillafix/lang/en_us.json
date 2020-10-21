@@ -7,6 +7,7 @@
   "vanillafix.config.value.bugFixes.fixRecipeBookIngredientsWithTags": "Fix Recipe Book Ingredients with Tags",
   "vanillafix.config.value.bugFixes.updateFallDistance": "Update Entity Fall Distance",
   "vanillafix.config.value.bugFixes.fixStoneShoreColors": "Fix Stone Shore Colors",
+  "vanillafix.config.value.bugFixes.phantomMobCap": "Phantom Mob Cap",
   "vanillafix.config.value.clientOnly.optimizedAnimatedTextures": "Tick only Visible Textures",
   "vanillafix.config.value.clientOnly.screenInNetherPortal": "Allow opening screens in Nether portals",
   "vanillafix.config.value.clientOnly.splitScreenAndTextureProfiler": "Split Profiler",

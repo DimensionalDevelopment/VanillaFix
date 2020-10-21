@@ -1,6 +1,7 @@
 package org.dimdev.vanillafix.util.config;
 
 import blue.endless.jankson.Comment;
+import org.dimdev.vanillafix.util.annotation.DoesNotRequireARestart;
 
 public class ModConfig {
     public BugFixes bugFixes = new BugFixes();
@@ -21,6 +22,10 @@ public class ModConfig {
 
         @Comment("Fixes a bug where the stone shore biome has a different water color than other coastal cold biomes")
         public boolean fixStoneShoreColors = true;
+
+        @DoesNotRequireARestart
+        @Comment("Sets the mob cap for phantoms. Setting this to any negative number will disable phantom check.")
+        public int phantomMobCap = -1;
     }
 
     public static class ClientOnly {

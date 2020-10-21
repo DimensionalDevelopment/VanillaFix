@@ -1,12 +1,10 @@
 package org.dimdev.vanillafix;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import blue.endless.jankson.Jankson;
-import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.impl.SyntaxError;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
