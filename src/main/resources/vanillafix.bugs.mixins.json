@@ -8,6 +8,7 @@
     "BuiltinBiomesMixin",
     "EntityMixin",
     "MinecraftServerMixin",
+    "PhantomSpawnerMixin",
     "PlayerInventoryMixin",
     "client.ClientPlayerEntityMixin",
     "client.ClientPlayNetworkHandlerMixin",
