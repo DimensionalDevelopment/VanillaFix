@@ -23,9 +23,6 @@ public class ModConfig {
         @Comment("Fixes a bug where the stone shore biome has a different water color than other coastal cold biomes")
         public boolean fixStoneShoreColors = true;
 
-        @Comment("Fixes a bug where enderdragons would seemingly gain an infinite amount of velocity when a living entity is spawned in the same position as them")
-        public boolean infiniteEnderdragonVelocityFix = true;
-
         @DoesNotRequireARestart
         @Comment("Sets the mob cap for phantoms. Setting this to any negative number will disable phantom check.")
         public int phantomMobCap = -1;
