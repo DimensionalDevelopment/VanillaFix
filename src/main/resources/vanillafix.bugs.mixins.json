@@ -6,6 +6,7 @@
   "plugin": "org.dimdev.vanillafix.bugs.BugFixMixinPlugin",
   "mixins": [
     "BuiltinBiomesMixin",
+    "EnderDragonEntityMixin",
     "EntityMixin",
     "MinecraftServerMixin",
     "PhantomSpawnerMixin",
