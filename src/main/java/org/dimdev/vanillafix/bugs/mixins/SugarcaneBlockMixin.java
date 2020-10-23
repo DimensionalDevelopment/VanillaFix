@@ -1,5 +1,6 @@
 package org.dimdev.vanillafix.bugs.mixins;
 
+import org.dimdev.vanillafix.VanillaFix;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,7 +22,7 @@ import net.minecraft.world.WorldView;
 public class SugarcaneBlockMixin {
     @Inject(method = "canPlaceAt", at = @At("HEAD"), cancellable = true)
     public void checkCanPlace(BlockState state, WorldView world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if (world.getFluidState(pos).isIn(FluidTags.WATER)) {
+        if (world.getFluidState(pos).isIn(FluidTags.WATER) && VanillaFix.config().bugFixes.underwaterSugarcaneFix) {
             cir.setReturnValue(Boolean.FALSE);
         }
     }
