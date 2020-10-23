@@ -42,6 +42,8 @@ public class BugFixMixinPlugin implements IMixinConfigPlugin {
                 return config().clientOnly.fastInterdimensionalTeleportation;
             case "org.dimdev.vanillafix.bugs.mixins.BuiltinBiomesMixin":
                 return config().bugFixes.fixStoneShoreColors;
+            case "org.dimdev.vanillafix.bugs.mixins.SignBlockEntityMixin":
+                return config().bugFixes.fixSignCommands;
         }
         return true;
     }
