@@ -62,6 +62,9 @@ public class ModMenuSupport implements ModMenuApi {
                                         }
                                     })
                                     .build();
+                            if (innerField.getAnnotation(DoesNotRequireARestart.class) != null) {
+                                booleanListEntry.setRequiresRestart(false);
+                            }
                             cat.addEntry(booleanListEntry);
                         } else if (innerType == int.class || innerType == Integer.class) {
                             IntegerListEntry integerListEntry = entryBuilder.startIntField(text, innerField.getInt(value))
@@ -87,6 +90,9 @@ public class ModMenuSupport implements ModMenuApi {
                                             throw new AssertionError();
                                         }
                                     }).build();
+                            if (innerField.getAnnotation(DoesNotRequireARestart.class) != null) {
+                                floatListEntry.setRequiresRestart(false);
+                            }
                             cat.addEntry(floatListEntry);
                         }
                     }
