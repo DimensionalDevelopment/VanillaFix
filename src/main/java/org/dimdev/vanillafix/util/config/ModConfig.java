@@ -11,10 +11,10 @@ public class ModConfig {
     public AntiCheat antiCheat = new AntiCheat();
 
     public static class BugFixes {
-        @Comment("Disables loading the spawn chunks when the server starts. This drastically reduces world loading times. As a side effect, invisible chunks may appear for the first few seconds when creating a new world.")
+        @Comment("Disables loading the spawn chunks when the server starts. This drastically reduces world loading times. As a side effect, invisible chunks may appear for the first few seconds when creating a new world")
         public boolean disableInitialChunkLoad = true;
 
-        @Comment("Compare items by item type rather than NBT when looking for items for the crafting recipe. Fixes https://bugs.mojang.com/browse/MC-129057")
+        @Comment("Compare items by item type rather than NBT when looking for items for the crafting recipe")
         public boolean fixRecipeBookIngredientsWithTags = true;
 
         @Comment("Updates the fall distance before notifying the block fallen upon that the entity has fallen on it")
@@ -24,8 +24,12 @@ public class ModConfig {
         public boolean fixStoneShoreColors = true;
 
         @DoesNotRequireARestart
-        @Comment("Sets the mob cap for phantoms. Setting this to any negative number will disable phantom check.")
+        @Comment("Sets the mob cap for phantoms. Setting this to any negative number will disable phantom check")
         public int phantomMobCap = -1;
+
+        @DoesNotRequireARestart
+        @Comment("Prevent placing sugarcane underwater.")
+        public boolean underwaterSugarcaneFix = true;
     }
 
     public static class ClientOnly {
@@ -38,7 +42,7 @@ public class ModConfig {
         @Comment("Set the profiler's location to \"gui\" from \"texture\" when running gui logic")
         public boolean splitScreenAndTextureProfiler = true;
 
-        @Comment("Makes interdimensional teleportation nearly as fast as same-dimension teleportation by removing the \"Downloading terrain...\" screen.")
+        @Comment("Makes interdimensional teleportation nearly as fast as same-dimension teleportation by removing the \"Downloading terrain...\" screen")
         public boolean fastInterdimensionalTeleportation = true;
 
         @Comment("Prevents showing particles that can not be seen")
