@@ -3,6 +3,8 @@ package org.dimdev.vanillafix.client.modsupport;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
@@ -11,8 +13,6 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import me.shedaniel.clothconfig2.gui.entries.BooleanListEntry;
 import me.shedaniel.clothconfig2.gui.entries.FloatListEntry;
 import me.shedaniel.clothconfig2.gui.entries.IntegerListEntry;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import org.dimdev.vanillafix.VanillaFix;
 
 import net.minecraft.text.Text;
@@ -51,7 +51,7 @@ public class ModMenuSupport implements ModMenuApi {
                         Class<?> innerType = innerField.getType();
                         Text text = new TranslatableText("vanillafix.config.value." + name + "." + innerName);
                         if (innerType == boolean.class || innerType == Boolean.class) {
-                            BooleanListEntry booleanListEntry = entryBuilder.startBooleanToggle(text, innerField.getBoolean(value))
+                            BooleanListEntry entry = entryBuilder.startBooleanToggle(text, innerField.getBoolean(value))
                                     .requireRestart()
                                     .setSaveConsumer(bl -> {
                                         try {
@@ -61,9 +61,9 @@ public class ModMenuSupport implements ModMenuApi {
                                         }
                                     })
                                     .build();
-                            cat.addEntry(booleanListEntry);
+                            cat.addEntry(entry);
                         } else if (innerType == int.class || innerType == Integer.class) {
-                            IntegerListEntry integerListEntry = entryBuilder.startIntField(text, innerField.getInt(value))
+                            IntegerListEntry entry = entryBuilder.startIntField(text, innerField.getInt(value))
                                     .requireRestart()
                                     .setSaveConsumer(i -> {
                                         try {
@@ -72,9 +72,9 @@ public class ModMenuSupport implements ModMenuApi {
                                             throw new AssertionError();
                                         }
                                     }).build();
-                            cat.addEntry(integerListEntry);
+                            cat.addEntry(entry);
                         } else if (innerType == float.class || innerType == Float.class) {
-                            FloatListEntry floatListEntry = entryBuilder.startFloatField(text, innerField.getFloat(value))
+                            FloatListEntry entry = entryBuilder.startFloatField(text, innerField.getFloat(value))
                                     .requireRestart()
                                     .setSaveConsumer(f -> {
                                         try {
@@ -83,7 +83,7 @@ public class ModMenuSupport implements ModMenuApi {
                                             throw new AssertionError();
                                         }
                                     }).build();
-                            cat.addEntry(floatListEntry);
+                            cat.addEntry(entry);
                         }
                     }
                 }

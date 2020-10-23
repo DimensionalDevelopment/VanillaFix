@@ -7,8 +7,8 @@
     "defaultRequire": 1
   },
   "client": [
-    "MinecraftClientMixin",
-    "WorldRendererMixin",
-    "KeyboardMixin"
+    "client.MinecraftClientMixin",
+    "client.WorldRendererMixin",
+    "client.KeyboardMixin"
   ]
 }

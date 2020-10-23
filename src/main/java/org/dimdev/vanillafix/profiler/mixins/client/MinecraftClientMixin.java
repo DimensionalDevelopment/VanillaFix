@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix.profiler.mixins;
+package org.dimdev.vanillafix.profiler.mixins.client;
 
 import org.dimdev.vanillafix.profiler.MinecraftClientExtensions;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.util.profiler.ProfilerSystem;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

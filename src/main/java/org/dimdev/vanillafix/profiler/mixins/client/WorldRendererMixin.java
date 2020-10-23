@@ -1,4 +1,4 @@
-package org.dimdev.vanillafix.profiler.mixins;
+package org.dimdev.vanillafix.profiler.mixins.client;
 
 import java.util.Objects;
 
