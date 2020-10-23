@@ -17,5 +17,9 @@ public class VanillaFixEarlyRiser implements Runnable {
             VanillaFix.LOGGER.debug("Registering Particle Optimization Mixins");
             Mixins.addConfiguration("vanillafix.particles.mixins.json");
         }
+        if (VanillaFix.config().general.profilerImprovements) {
+            VanillaFix.LOGGER.debug("Registering Profiler Improvements Mixins");
+            Mixins.addConfiguration("vanillafix.profiler.mixins.json");
+        }
     }
 }

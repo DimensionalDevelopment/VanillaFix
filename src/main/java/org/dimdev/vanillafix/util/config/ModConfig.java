@@ -13,8 +13,8 @@ public class ModConfig {
     public AntiCheat antiCheat = new AntiCheat();
 
     public static class General {
-        @Comment("Stores blockstate properties in a bitfield rather than in a table. Reduces memory usage")
-        public boolean bitfieldBlockstates = true;
+        @Comment("Improve the profiler by splitting it into more sections")
+        public boolean profilerImprovements = true;
     }
 
     public static class BugFixes {
@@ -53,7 +53,7 @@ public class ModConfig {
         @Comment("Allows opening screens when inside a nether portal")
         public boolean screenInNetherPortal = true;
 
-        @Comment("Set the profiler's location to \"gui\" from \"texture\" when running gui logic")
+        @Comment("Set the profilers location to \"gui\" from \"texture\" when running gui logic")
         public boolean splitScreenAndTextureProfiler = true;
 
         @Comment("Makes interdimensional teleportation nearly as fast as same-dimension teleportation by removing the \"Downloading terrain...\" screen")
