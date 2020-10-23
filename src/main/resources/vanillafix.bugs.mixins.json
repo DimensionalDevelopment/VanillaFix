@@ -13,13 +13,13 @@
     "PlayerInventoryMixin",
     "SignBlockEntityMixin",
     "SugarcaneBlockMixin",
-    "client.ClientPlayerEntityMixin",
-    "client.ClientPlayNetworkHandlerMixin",
-    "client.MinecraftClientMixin",
     "invulnerable.ServerPlayerEntityMixin",
     "step.ServerPlayerEntityMixin"
   ],
   "client": [
+    "client.ClientPlayerEntityMixin",
+    "client.ClientPlayNetworkHandlerMixin",
+    "client.MinecraftClientMixin"
   ],
   "injectors": {
     "defaultRequire": 1

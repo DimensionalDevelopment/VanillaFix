@@ -20,5 +20,6 @@
   "vanillafix.config.value.clientOnly.fastInterdimensionalTeleportation": "Fast Interdimensional Teleportation",
   "vanillafix.config.value.clientOnly.cullParticles": "Cull invisible particles",
   "vanillafix.config.value.antiCheat.fixStepHeight": "Fix Step Height",
-  "vanillafix.config.value.antiCheat.noPlayerInvulnerabilityAfterTeleport": "Fix Teleportation Invulnerability"
+  "vanillafix.config.value.antiCheat.noPlayerInvulnerabilityAfterTeleport": "Fix Teleportation Invulnerability",
+  "vanillafix.debug.switch_profiler.help": "F3 + S = Cycle client <-> integrated server profiler"
 }
