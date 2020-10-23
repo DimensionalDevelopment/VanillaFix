@@ -3,6 +3,8 @@
   "vanillafix.config.category.bugFixes": "Bug Fixed",
   "vanillafix.config.category.clientOnly": "Client Only",
   "vanillafix.config.category.antiCheat": "Anti Cheat",
+  "vanillafix.config.category.general": "General",
+  "vanillafix.config.value.general.bitfieldBlockstates": "Bitfield Blockstates",
   "vanillafix.config.value.bugFixes.disableInitialChunkLoad": "Disable Initial Chunk Load",
   "vanillafix.config.value.bugFixes.fixRecipeBookIngredientsWithTags": "Fix Recipe Book Ingredients with Tags",
   "vanillafix.config.value.bugFixes.updateFallDistance": "Update Entity Fall Distance",

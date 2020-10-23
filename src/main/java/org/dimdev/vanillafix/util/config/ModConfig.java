@@ -4,11 +4,18 @@ import blue.endless.jankson.Comment;
 import org.dimdev.vanillafix.util.annotation.DoesNotRequireARestart;
 
 public class ModConfig {
+    public General general = new General();
+
     public BugFixes bugFixes = new BugFixes();
 
     public ClientOnly clientOnly = new ClientOnly();
 
     public AntiCheat antiCheat = new AntiCheat();
+
+    public static class General {
+        @Comment("Stores blockstate properties in a bitfield rather than in a table. Reduces memory usage")
+        public boolean bitfieldBlockstates = true;
+    }
 
     public static class BugFixes {
         @Comment("Disables loading the spawn chunks when the server starts. This drastically reduces world loading times. As a side effect, invisible chunks may appear for the first few seconds when creating a new world")
