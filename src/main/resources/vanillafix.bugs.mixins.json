@@ -11,6 +11,7 @@
     "MinecraftServerMixin",
     "PhantomSpawnerMixin",
     "PlayerInventoryMixin",
+    "SignBlockEntityMixin",
     "SugarcaneBlockMixin",
     "client.ClientPlayerEntityMixin",
     "client.ClientPlayNetworkHandlerMixin",

@@ -34,6 +34,9 @@ public class ModConfig {
         @DoesNotRequireARestart
         @Comment("Prevents consuming of food that is being eaten on death when keepInventory is enabled")
         public boolean doNotConsumeFoodOnDeath = true;
+
+        @Comment("Prevents running commands longer than 255 characters from a sign")
+        public boolean fixSignCommands = true;
     }
 
     public static class ClientOnly {
