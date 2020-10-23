@@ -19,10 +19,10 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.launch.knot.Knot;
 
-public class ModStacktraceHacks {
+public class StacktraceModIdentifier {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private ModStacktraceHacks() {
+    private StacktraceModIdentifier() {
     }
 
     public static Set<ModContainer> identifyFromStacktrace(Throwable e) {
