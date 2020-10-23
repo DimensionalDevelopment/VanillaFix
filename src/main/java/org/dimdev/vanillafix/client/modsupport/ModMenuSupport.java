@@ -30,7 +30,6 @@ public class ModMenuSupport implements ModMenuApi {
                     .setParentScreen(parent)
                     .setSavingRunnable(VanillaFix::save)
                     .setTitle(new TranslatableText("vanillafix.config.title"));
-            BiMap<String, ConfigCategory> categories = HashBiMap.create();
             ConfigEntryBuilder entryBuilder = builder.entryBuilder();
             try {
                 for (Field field : VanillaFix.config().getClass().getDeclaredFields()) {
@@ -40,7 +39,6 @@ public class ModMenuSupport implements ModMenuApi {
                     }
                     String name = field.getName();
                     ConfigCategory cat = builder.getOrCreateCategory(new TranslatableText("vanillafix.config.category." + name));
-                    categories.put(name, cat);
                     Object value = field.get(VanillaFix.config());
                     for (Field innerField: value.getClass().getDeclaredFields()) {
                         int innerMods = innerField.getModifiers();
