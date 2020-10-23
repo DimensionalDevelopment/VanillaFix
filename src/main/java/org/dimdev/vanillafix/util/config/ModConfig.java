@@ -30,6 +30,10 @@ public class ModConfig {
         @DoesNotRequireARestart
         @Comment("Prevent placing sugarcane underwater.")
         public boolean underwaterSugarcaneFix = true;
+
+        @DoesNotRequireARestart
+        @Comment("Prevents consuming of food that is being eaten on death when keepInventory is enabled")
+        public boolean doNotConsumeFoodOnDeath = true;
     }
 
     public static class ClientOnly {

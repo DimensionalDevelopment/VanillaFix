@@ -9,6 +9,7 @@
   "vanillafix.config.value.bugFixes.fixStoneShoreColors": "Fix Stone Shore Colors",
   "vanillafix.config.value.bugFixes.phantomMobCap": "Phantom Mob Cap",
   "vanillafix.config.value.bugFixes.underwaterSugarcaneFix": "Underwater Sugarcane fix",
+  "vanillafix.config.value.bugFixes.doNotConsumeFoodOnDeath": "Fix consumption of food on death",
   "vanillafix.config.value.clientOnly.optimizedAnimatedTextures": "Tick only Visible Textures",
   "vanillafix.config.value.clientOnly.screenInNetherPortal": "Allow opening screens in Nether portals",
   "vanillafix.config.value.clientOnly.splitScreenAndTextureProfiler": "Split Profiler",
