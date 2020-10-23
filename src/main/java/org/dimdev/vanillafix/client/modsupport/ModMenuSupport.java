@@ -14,7 +14,6 @@ import me.shedaniel.clothconfig2.gui.entries.IntegerListEntry;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.dimdev.vanillafix.VanillaFix;
-import org.dimdev.vanillafix.util.annotation.DoesNotRequireARestart;
 
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -62,9 +61,6 @@ public class ModMenuSupport implements ModMenuApi {
                                         }
                                     })
                                     .build();
-                            if (innerField.getAnnotation(DoesNotRequireARestart.class) != null) {
-                                booleanListEntry.setRequiresRestart(false);
-                            }
                             cat.addEntry(booleanListEntry);
                         } else if (innerType == int.class || innerType == Integer.class) {
                             IntegerListEntry integerListEntry = entryBuilder.startIntField(text, innerField.getInt(value))
@@ -76,9 +72,6 @@ public class ModMenuSupport implements ModMenuApi {
                                             throw new AssertionError();
                                         }
                                     }).build();
-                            if (innerField.getAnnotation(DoesNotRequireARestart.class) != null) {
-                                integerListEntry.setRequiresRestart(false);
-                            }
                             cat.addEntry(integerListEntry);
                         } else if (innerType == float.class || innerType == Float.class) {
                             FloatListEntry floatListEntry = entryBuilder.startFloatField(text, innerField.getFloat(value))
@@ -90,9 +83,6 @@ public class ModMenuSupport implements ModMenuApi {
                                             throw new AssertionError();
                                         }
                                     }).build();
-                            if (innerField.getAnnotation(DoesNotRequireARestart.class) != null) {
-                                floatListEntry.setRequiresRestart(false);
-                            }
                             cat.addEntry(floatListEntry);
                         }
                     }
