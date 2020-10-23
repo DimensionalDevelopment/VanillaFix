@@ -8,6 +8,13 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 
+/**
+ * Disables running commands that are longer than 255 characters from a sign
+ * when command blocks are disabled on the server.
+ *
+ * Bugs Fixed:
+ * - https://bugs.mojang.com/browse/MC-190478
+ */
 @Mixin(SignBlockEntity.class)
 public class SignBlockEntityMixin {
     @Redirect(method = "onActivate", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/command/CommandManager;execute(Lnet/minecraft/server/command/ServerCommandSource;Ljava/lang/String;)I"))
