@@ -43,8 +43,8 @@ public class ModConfig {
     }
 
     public static class ClientOnly {
-        @Comment("Optimizes animated textures by ticking only visible textures")
-        public boolean optimizedAnimatedTextures = true;
+        @Comment("Optimizes animated textures by ticking only visible textures. Disabled by default as it currently has quite a few issues")
+        public boolean optimizedAnimatedTextures = false;
 
         @Comment("Allows opening screens when inside a nether portal")
         public boolean screenInNetherPortal = true;
