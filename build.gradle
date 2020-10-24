@@ -25,10 +25,6 @@ group = project.maven_group
 
 repositories {
 	mavenCentral()
-	maven {
-		name "Modmuss50 Repository"
-		url 'https://maven.fabricmc.net/'
-	}
 	maven { url "https://dl.bintray.com/shedaniel/shedaniel-mods" }
 	maven { url 'https://jitpack.io' }
 }
