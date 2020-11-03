@@ -13,7 +13,9 @@ public class VanillaFixEarlyRiser implements Runnable {
             VanillaFix.LOGGER.debug("Registering Animated Texture Optimization Mixins");
             Mixins.addConfiguration("vanillafix.textures.mixins.json");
         }
-        if (VanillaFix.config().clientOnly.cullParticles) {
+        if (VanillaFix.config().clientOnly.cullParticles ||
+                // sodium already does this too
+                !(FabricLoader.getInstance().isModLoaded("sodium"))) {
             VanillaFix.LOGGER.debug("Registering Particle Optimization Mixins");
             Mixins.addConfiguration("vanillafix.particles.mixins.json");
         }

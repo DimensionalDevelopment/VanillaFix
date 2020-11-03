@@ -33,9 +33,9 @@ public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
      * @reason Replaces the tickAnimatedSprites method to only tick animated textures
      * that are in one of the loaded BuiltChunks. This can lead to an FPS more than
      * three times higher on large modpacks with many textures.
-     * <p>
+     *
      * Also breaks down the "root.tick.textures" profiler by texture name.
-     * @author ?
+     * @author Runemoro
      */
     @Overwrite
     public void tickAnimatedSprites() {
