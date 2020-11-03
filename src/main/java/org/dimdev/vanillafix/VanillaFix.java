@@ -27,9 +27,6 @@ public class VanillaFix implements ModInitializer {
             LOGGER.warn("================================================");
             LOGGER.warn("You are running a beta version of VanillaFix!");
             LOGGER.warn("VanillaFix Version: {}", MOD.getMetadata().getVersion().getFriendlyString());
-            LOGGER.warn("If you find any incompatibilities or unexpected");
-            LOGGER.warn("behavior, please create a github issue to let us");
-            LOGGER.warn("know about the problem.");
             LOGGER.warn("================================================");
         }
     }
