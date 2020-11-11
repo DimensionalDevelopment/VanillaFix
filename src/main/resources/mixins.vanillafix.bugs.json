@@ -23,7 +23,8 @@
     "client.MixinEntityRenderer",
     "client.MixinServerPinger$1",
     "client.MixinThreadDownloadImageData",
-    "client.MixinEnumConnectionState"
+    "client.MixinEnumConnectionState",
+    "client.MixinTextureManager"
   ],
   "injectors": {
     "maxShiftBy": 10
