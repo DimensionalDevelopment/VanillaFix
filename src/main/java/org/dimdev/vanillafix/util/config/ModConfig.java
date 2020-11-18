@@ -1,6 +1,7 @@
 package org.dimdev.vanillafix.util.config;
 
 import blue.endless.jankson.Comment;
+import org.dimdev.vanillafix.util.annotation.Exclude;
 
 public class ModConfig {
     public General general = new General();
@@ -9,6 +10,7 @@ public class ModConfig {
 
     public ClientOnly clientOnly = new ClientOnly();
 
+    @Exclude
     public AntiCheat antiCheat = new AntiCheat();
 
     public static class General {

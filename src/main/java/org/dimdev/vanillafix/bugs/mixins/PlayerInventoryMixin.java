@@ -1,5 +1,6 @@
 package org.dimdev.vanillafix.bugs.mixins;
 
+import org.dimdev.vanillafix.util.annotation.MixinConfigValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -7,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 
+@MixinConfigValue(category = "bugFixes", value = "fixRecipeBookIngredientsWithTags")
 @Mixin(PlayerInventory.class)
 public class PlayerInventoryMixin {
     /**

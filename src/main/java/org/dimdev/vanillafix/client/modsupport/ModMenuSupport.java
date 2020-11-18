@@ -14,6 +14,7 @@ import me.shedaniel.clothconfig2.gui.entries.BooleanListEntry;
 import me.shedaniel.clothconfig2.gui.entries.FloatListEntry;
 import me.shedaniel.clothconfig2.gui.entries.IntegerListEntry;
 import org.dimdev.vanillafix.VanillaFix;
+import org.dimdev.vanillafix.util.annotation.Exclude;
 
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -34,7 +35,7 @@ public class ModMenuSupport implements ModMenuApi {
             try {
                 for (Field field : VanillaFix.config().getClass().getDeclaredFields()) {
                     int mods = field.getModifiers();
-                    if (Modifier.isStatic(mods) || Modifier.isFinal(mods) || Modifier.isTransient(mods)) {
+                    if (Modifier.isStatic(mods) || Modifier.isFinal(mods) || Modifier.isTransient(mods) || field.isAnnotationPresent(Exclude.class)) {
                         continue;
                     }
                     String name = field.getName();

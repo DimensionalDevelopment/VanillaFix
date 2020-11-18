@@ -20,9 +20,11 @@ public class BugFixMixinPlugin implements IMixinConfigPlugin {
         return null;
     }
 
-    // TODO: make this better
+    // TODO: use asm
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        System.out.println(mixinClassName);
+
         switch (mixinClassName) {
             case "org.dimdev.vanillafix.bugs.mixins.step.ServerPlayerEntityMixin":
                 return config().antiCheat.fixStepHeight;

@@ -1,6 +1,7 @@
 package org.dimdev.vanillafix.bugs.mixins;
 
 import org.dimdev.vanillafix.VanillaFix;
+import org.dimdev.vanillafix.util.annotation.MixinConfigValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -10,6 +11,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
+@MixinConfigValue(category = "bugFixes", value = "doNotConsumeFoodOnDeath")
 @Mixin(ItemStack.class)
 public class ItemStackMixin {
     /**

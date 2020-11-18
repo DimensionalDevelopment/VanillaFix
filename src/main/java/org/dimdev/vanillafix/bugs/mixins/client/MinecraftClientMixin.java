@@ -1,5 +1,6 @@
 package org.dimdev.vanillafix.bugs.mixins.client;
 
+import org.dimdev.vanillafix.util.annotation.MixinConfigValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,6 +13,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
+@MixinConfigValue(category = "clientOnly", value = "splitScreenAndTextureProfiler")
 @Mixin(MinecraftClient.class)
 @Environment(EnvType.CLIENT)
 public class MinecraftClientMixin {

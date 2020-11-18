@@ -1,0 +1,50 @@
+{
+  "org.dimdev.vanillafix.bugs.mixins.BuiltinBiomesMixin": {
+    "category": "bugFixes",
+    "value": "fixStoneShoreColors"
+  },
+  "org.dimdev.vanillafix.bugs.mixins.EntityMixin": {
+    "category": "bugFixes",
+    "value": "updateFallDistance"
+  },
+  "org.dimdev.vanillafix.bugs.mixins.ItemStackMixin": {
+    "category": "bugFixes",
+    "value": "doNotConsumeFoodOnDeath"
+  },
+  "org.dimdev.vanillafix.bugs.mixins.MinecraftServerMixin": {
+    "category": "bugFixes",
+    "value": "disableInitialChunkLoad"
+  },
+  "org.dimdev.vanillafix.bugs.mixins.PlayerInventoryMixin": {
+    "category": "bugFixes",
+    "value": "fixRecipeBookIngredientsWithTags"
+  },
+  "org.dimdev.vanillafix.bugs.mixins.SignBlockEntityMixin": {
+    "category": "bugFixes",
+    "value": "fixSignCommands"
+  },
+  "org.dimdev.vanillafix.bugs.mixins.SugarcaneBlockMixin": {
+    "category": "bugFixes",
+    "value": "underwaterSugarcaneFix"
+  },
+  "org.dimdev.vanillafix.bugs.mixins.invulnerable.ServerPlayerEntityMixin": {
+    "category": "antiCheat",
+    "value": "noPlayerInvulnerabilityAfterTeleport"
+  },
+  "org.dimdev.vanillafix.bugs.mixins.step.ServerPlayerEntityMixin": {
+    "category": "antiCheat",
+    "value": "fixStepHeight"
+  },
+  "org.dimdev.vanillafix.bugs.mixins.client.ClientPlayerEntityMixin": {
+    "category": "clientOnly",
+    "value": "screenInNetherPortal"
+  },
+  "org.dimdev.vanillafix.bugs.mixins.client.ClientPlayNetworkHandlerMixin": {
+    "category": "clientOnly",
+    "value": "fastInterdimensionalTeleportation"
+  },
+  "org.dimdev.vanillafix.bugs.mixins.client.MinecraftClientMixin": {
+    "category": "clientOnly",
+    "value": "splitScreenAndTextureProfiler"
+  }
+}

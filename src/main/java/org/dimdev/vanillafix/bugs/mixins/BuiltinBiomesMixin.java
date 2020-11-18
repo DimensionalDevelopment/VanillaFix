@@ -1,6 +1,7 @@
 package org.dimdev.vanillafix.bugs.mixins;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import org.dimdev.vanillafix.util.annotation.MixinConfigValue;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,6 +17,7 @@ import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.biome.DefaultBiomeCreator;
 
+@MixinConfigValue(category = "bugFixes", value = "fixStoneShoreColors")
 @Mixin(BuiltinBiomes.class)
 public class BuiltinBiomesMixin {
     @Shadow
@@ -31,7 +33,7 @@ public class BuiltinBiomesMixin {
     @Inject(method = "register", at = @At("HEAD"), cancellable = true)
     private static void interceptRegister(int rawId, RegistryKey<Biome> registryKey, Biome biome, CallbackInfoReturnable<Biome> cir) {
         if (registryKey.equals(BiomeKeys.STONE_SHORE)) {
-            cir.setReturnValue(registerUnsafely(rawId, registryKey, DefaultBiomeCreator.createBeach(0.1F, 0.8F, 0.2F, 0.3F, 4020182, false, true)));
+            cir.setReturnValue(registerUnsafely(rawId, registryKey, DefaultBiomeCreator.createBeach(0.1F, 0.8F, 0.2F, 0.3F, 0x3d57d6, false, true)));
         }
     }
 

@@ -1,11 +1,13 @@
 package org.dimdev.vanillafix.bugs.mixins.invulnerable;
 
+import org.dimdev.vanillafix.util.annotation.MixinConfigValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 
+@MixinConfigValue(category = "antiCheat", value = "noPlayerInvulnerabilityAfterTeleport")
 @Mixin(ServerPlayerEntity.class)
 public class ServerPlayerEntityMixin {
     /**

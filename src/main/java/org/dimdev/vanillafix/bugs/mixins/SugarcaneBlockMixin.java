@@ -1,6 +1,7 @@
 package org.dimdev.vanillafix.bugs.mixins;
 
 import org.dimdev.vanillafix.VanillaFix;
+import org.dimdev.vanillafix.util.annotation.MixinConfigValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,6 +19,7 @@ import net.minecraft.world.WorldView;
  * Bugs Fixed:
  * - https://bugs.mojang.com/browse/MC-929
  */
+@MixinConfigValue(category = "bugFixes", value = "underwaterSugarcaneFix")
 @Mixin(SugarCaneBlock.class)
 public class SugarcaneBlockMixin {
     @Inject(method = "canPlaceAt", at = @At("HEAD"), cancellable = true)

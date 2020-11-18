@@ -1,5 +1,6 @@
 package org.dimdev.vanillafix.bugs.mixins.client;
 
+import org.dimdev.vanillafix.util.annotation.MixinConfigValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -17,6 +18,7 @@ import net.fabricmc.api.Environment;
  * render distance to load, but that's also the vanilla behaviour for same-dimension
  * teleportation.
  */
+@MixinConfigValue(category = "clientOnly", value = "fastInterdimensionalTeleportation")
 @Environment(EnvType.CLIENT)
 @Mixin(ClientPlayNetworkHandler.class)
 public class ClientPlayNetworkHandlerMixin {

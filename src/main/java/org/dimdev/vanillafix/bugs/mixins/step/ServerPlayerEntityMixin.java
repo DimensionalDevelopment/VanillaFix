@@ -1,6 +1,7 @@
 package org.dimdev.vanillafix.bugs.mixins.step;
 
 import com.mojang.authlib.GameProfile;
+import org.dimdev.vanillafix.util.annotation.MixinConfigValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,6 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+@MixinConfigValue(category = "antiCheat", value = "fixStepHeight")
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity {
     public ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {

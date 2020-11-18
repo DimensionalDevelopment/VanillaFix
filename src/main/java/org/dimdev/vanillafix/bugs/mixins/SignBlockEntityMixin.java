@@ -1,5 +1,6 @@
 package org.dimdev.vanillafix.bugs.mixins;
 
+import org.dimdev.vanillafix.util.annotation.MixinConfigValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -15,6 +16,7 @@ import net.minecraft.server.command.ServerCommandSource;
  * Bugs Fixed:
  * - https://bugs.mojang.com/browse/MC-190478
  */
+@MixinConfigValue(category = "bugFixes", value = "fixSignCommands")
 @Mixin(SignBlockEntity.class)
 public class SignBlockEntityMixin {
     @Redirect(method = "onActivate", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/command/CommandManager;execute(Lnet/minecraft/server/command/ServerCommandSource;Ljava/lang/String;)I"))

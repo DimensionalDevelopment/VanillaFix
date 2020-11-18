@@ -1,5 +1,6 @@
 package org.dimdev.vanillafix.bugs.mixins;
 
+import org.dimdev.vanillafix.util.annotation.MixinConfigValue;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 
+@MixinConfigValue(category = "bugFixes", value = "updateFallDistance")
 @Mixin(Entity.class)
 public class EntityMixin {
     @Shadow
