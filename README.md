@@ -1,6 +1,7 @@
 # VanillaFix
 [![Discord](https://img.shields.io/discord/214574167192764416.svg)](https://discord.gg/Z2EsuxJ)
 [![CurseForge](http://cf.way2muchnoise.eu/vanillafix.svg)](https://minecraft.curseforge.com/projects/vanillafix)
+![Fabric](https://img.shields.io/badge/fabric-1.16.4-success)
 
 VanillaFix is a Minecraft mod which optimizes the game by fixes bugs and annoyances and adding general optimizations.
 
