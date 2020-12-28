@@ -1,31 +1,23 @@
 package org.dimdev.vanillafix.util.serialization;
 
-import blue.endless.jankson.JsonArray;
-import blue.endless.jankson.JsonElement;
-import blue.endless.jankson.JsonNull;
-import blue.endless.jankson.JsonObject;
-import blue.endless.jankson.JsonPrimitive;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import blue.endless.jankson.JsonArray;
+import blue.endless.jankson.JsonElement;
+import blue.endless.jankson.JsonNull;
+import blue.endless.jankson.JsonObject;
+import blue.endless.jankson.JsonPrimitive;
 import com.google.common.collect.Lists;
-import com.google.gson.internal.LazilyParsedNumber;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
 
-public class JanksonOps implements DynamicOps<JsonElement> {
-    public static final JanksonOps INSTANCE = new JanksonOps(false);
-    public static final JanksonOps COMPRESSED = new JanksonOps(true);
-    private final boolean compressed;
-
-    private JanksonOps(boolean compressed) {
-        this.compressed = compressed;
-    }
+public enum JanksonOps implements DynamicOps<JsonElement> {
+    INSTANCE;
 
     @Override
     public JsonElement empty() {
@@ -33,26 +25,38 @@ public class JanksonOps implements DynamicOps<JsonElement> {
     }
 
     @Override
+    public JsonElement createString(String value) {
+        return new JsonPrimitive(value);
+    }
+
+    @Override
+    public JsonElement createNumeric(Number i) {
+        return new JsonPrimitive(i);
+    }
+
+    @Override
+    public JsonElement createBoolean(boolean value) {
+        return new JsonPrimitive(value);
+    }
+
+    @Override
     public <U> U convertTo(DynamicOps<U> outOps, JsonElement input) {
         if (input instanceof JsonObject) {
             return this.convertMap(outOps, input);
-        }
-        if (input instanceof JsonArray) {
+        } else if (input instanceof JsonArray) {
             return this.convertList(outOps, input);
-        }
-        if (input instanceof JsonNull) {
+        } else if (input instanceof JsonNull) {
             return outOps.empty();
         }
-        final JsonPrimitive primitive = (JsonPrimitive) input;
-        if (primitive.getValue() instanceof String) {
-            return outOps.createString(String.valueOf(primitive.getValue()));
+        JsonPrimitive inputPrimitive = (JsonPrimitive) input;
+        if (inputPrimitive.getValue() instanceof String) {
+            return outOps.createString(String.valueOf(inputPrimitive.getValue()));
+        } else if (inputPrimitive.getValue() instanceof Boolean) {
+            return outOps.createBoolean((Boolean) inputPrimitive.getValue());
         }
-        if (primitive.getValue() instanceof Boolean) {
-            return outOps.createBoolean((Boolean) primitive.getValue());
-        }
-        final BigDecimal value = this.getAsBigDecimal(primitive);
+        BigDecimal numberExact = inputPrimitive.getValue() instanceof BigDecimal ? (BigDecimal) inputPrimitive.getValue() : new BigDecimal(inputPrimitive.getValue().toString());
         try {
-            final long l = value.longValueExact();
+            long l = numberExact.longValueExact();
             if ((byte) l == l) {
                 return outOps.createByte((byte) l);
             }
@@ -63,8 +67,8 @@ public class JanksonOps implements DynamicOps<JsonElement> {
                 return outOps.createInt((int) l);
             }
             return outOps.createLong(l);
-        } catch (final ArithmeticException e) {
-            final double d = value.doubleValue();
+        } catch (ArithmeticException e) {
+            double d = numberExact.doubleValue();
             if ((float) d == d) {
                 return outOps.createFloat((float) d);
             }
@@ -76,41 +80,21 @@ public class JanksonOps implements DynamicOps<JsonElement> {
     public DataResult<Number> getNumberValue(JsonElement input) {
         if (input instanceof JsonPrimitive) {
             if (((JsonPrimitive) input).getValue() instanceof Number) {
-                return DataResult.success(this.getAsNumber((JsonPrimitive) input));
+                return DataResult.success((Number) ((JsonPrimitive) input).getValue());
             } else if (((JsonPrimitive) input).getValue() instanceof Boolean) {
-                return DataResult.success(this.getAsBoolean((JsonPrimitive) input) ? 1 : 0);
+                return DataResult.success(((Boolean) ((JsonPrimitive) input).getValue()) ? (byte) 1 : (byte) 0);
             }
-            if (this.compressed && ((JsonPrimitive) input).getValue() instanceof String) {
-                try {
-                    return DataResult.success(Integer.parseInt(String.valueOf(((JsonPrimitive) input).getValue())));
-                } catch (final NumberFormatException e) {
-                    return DataResult.error("Not a number: " + e + " " + input);
-                }
-            }
-        }
-        if (input instanceof JsonPrimitive && ((JsonPrimitive) input).getValue() instanceof Boolean) {
-            return DataResult.success(((JsonPrimitive) input).getValue() instanceof Boolean ? 1 : 0);
         }
         return DataResult.error("Not a number: " + input);
-    }
-
-    @Override
-    public JsonElement createNumeric(Number i) {
-        return new JsonPrimitive(i);
-    }
-
-    @Override
-    public JsonElement createBoolean(final boolean value) {
-        return new JsonPrimitive(value);
     }
 
     @Override
     public DataResult<Boolean> getBooleanValue(JsonElement input) {
         if (input instanceof JsonPrimitive) {
             if (((JsonPrimitive) input).getValue() instanceof Boolean) {
-                return DataResult.success(this.getAsBoolean((JsonPrimitive) input));
+                return DataResult.success((Boolean) ((JsonPrimitive) input).getValue());
             } else if (((JsonPrimitive) input).getValue() instanceof Number) {
-                return DataResult.success(this.getAsNumber((JsonPrimitive) input).byteValue() != 0);
+                return DynamicOps.super.getBooleanValue(input);
             }
         }
         return DataResult.error("Not a boolean: " + input);
@@ -118,44 +102,37 @@ public class JanksonOps implements DynamicOps<JsonElement> {
 
     @Override
     public DataResult<String> getStringValue(JsonElement input) {
-        if (input instanceof JsonPrimitive) {
-            if (((JsonPrimitive) input).getValue() instanceof String || ((JsonPrimitive) input).getValue() instanceof Number && this.compressed) {
-                return DataResult.success(String.valueOf(((JsonPrimitive) input).getValue()));
-            }
+        if (input instanceof JsonPrimitive && ((JsonPrimitive) input).getValue() instanceof String) {
+            return DataResult.success(String.valueOf(((JsonPrimitive) input).getValue()));
         }
         return DataResult.error("Not a string: " + input);
     }
 
     @Override
-    public JsonElement createString(String value) {
-        return new JsonPrimitive(value);
-    }
-
-    @Override
     public DataResult<JsonElement> mergeToList(JsonElement list, JsonElement value) {
         if (!(list instanceof JsonArray) && list != this.empty()) {
-            return DataResult.error("mergeToList called with not a list: " + list, list);
+            return DataResult.error("mergeToList not called with a list: " + list, list);
         }
 
-        final JsonArray result = new JsonArray();
+        JsonArray array = new JsonArray();
         if (list != this.empty()) {
             //noinspection ConstantConditions
-            result.addAll((JsonArray) list);
+            array.addAll((JsonArray) list);
         }
-        result.add(value);
-        return DataResult.success(result);
+        array.add(value);
+        return DataResult.success(array);
     }
 
     @Override
     public DataResult<JsonElement> mergeToMap(JsonElement map, JsonElement key, JsonElement value) {
         if (!(map instanceof JsonObject) && map != this.empty()) {
-            return DataResult.error("mergeToMap called with not a map: " + map, map);
+            return DataResult.error("mergeToMap not called with a map: " + map, map);
         }
-        if (!(key instanceof JsonPrimitive) || !(((JsonPrimitive) key).getValue() instanceof String) && !this.compressed) {
-            return DataResult.error("key is not a string: " + key, map);
+        if (!(key instanceof JsonPrimitive) || !(((JsonPrimitive) key).getValue() instanceof String)) {
+            return DataResult.error("Key is not a string: " + key, map);
         }
 
-        final JsonObject output = new JsonObject();
+        JsonObject output = new JsonObject();
         if (map != this.empty()) {
             //noinspection ConstantConditions
             ((JsonObject) map).forEach(output::put);
@@ -168,47 +145,47 @@ public class JanksonOps implements DynamicOps<JsonElement> {
     @Override
     public DataResult<JsonElement> mergeToMap(JsonElement map, MapLike<JsonElement> values) {
         if (!(map instanceof JsonObject) && map != this.empty()) {
-            return DataResult.error("mergeToMap called with not a map: " + map, map);
+            return DataResult.error("mergeToMap not called with a map: " + map, map);
         }
 
-        final JsonObject output = new JsonObject();
+        JsonObject newMap = new JsonObject();
         if (map != this.empty()) {
             //noinspection ConstantConditions
-            ((JsonObject) map).forEach(output::put);
+            ((JsonObject) map).forEach(newMap::put);
         }
 
-        final List<JsonElement> missed = Lists.newArrayList();
+        List<JsonElement> missed = Lists.newArrayList();
 
         values.entries().forEach(entry -> {
-            final JsonElement key = entry.getFirst();
+            JsonElement key = entry.getFirst();
             //noinspection ConstantConditions
-            if (!(key instanceof JsonPrimitive) || !(((JsonPrimitive) map).getValue() instanceof String) && !this.compressed) {
+            if (!(key instanceof JsonPrimitive) || !(((JsonPrimitive) map).getValue() instanceof String)) {
                 missed.add(key);
                 return;
             }
-            output.put(String.valueOf(((JsonPrimitive) key).getValue()), entry.getSecond());
+            newMap.put(String.valueOf(((JsonPrimitive) key).getValue()), entry.getSecond());
         });
 
         if (!missed.isEmpty()) {
-            return DataResult.error("some keys are not strings: " + missed, output);
+            return DataResult.error("Keys are not strings: " + missed, newMap);
         }
 
-        return DataResult.success(output);
+        return DataResult.success(newMap);
     }
 
     @Override
     public DataResult<Stream<Pair<JsonElement, JsonElement>>> getMapValues(JsonElement input) {
         if (!(input instanceof JsonObject)) {
-            return DataResult.error("Not a JSON object: " + input);
+            return DataResult.error("Not a json object: " + input);
         }
         return DataResult.success((((JsonObject) input).entrySet().stream().map(entry -> Pair.of(new JsonPrimitive(entry.getKey()), entry.getValue() instanceof JsonNull ? null : entry.getValue()))));
     }
 
     @Override
-    public JsonElement createMap(Stream<Pair<JsonElement, JsonElement>> map) {
-        final JsonObject result = new JsonObject();
-        map.forEach(p -> result.put(p.getFirst().toJson(), p.getSecond()));
-        return result;
+    public JsonElement createMap(Stream<Pair<JsonElement, JsonElement>> pairStream) {
+        JsonObject jsonObject = new JsonObject();
+        pairStream.forEach(p -> jsonObject.put(p.getFirst().toJson(), p.getSecond()));
+        return jsonObject;
     }
 
     @Override
@@ -221,34 +198,18 @@ public class JanksonOps implements DynamicOps<JsonElement> {
 
     @Override
     public JsonElement createList(Stream<JsonElement> input) {
-        final JsonArray result = new JsonArray();
-        input.forEach(result::add);
-        return result;
+        JsonArray array = new JsonArray();
+        input.forEach(array::add);
+        return array;
     }
 
     @Override
     public JsonElement remove(JsonElement input, String key) {
         if (input instanceof JsonObject) {
-            final JsonObject result = new JsonObject();
+            JsonObject result = new JsonObject();
             ((JsonObject) input).entrySet().stream().filter(entry -> !Objects.equals(entry.getKey(), key)).forEach(entry -> result.put(entry.getKey(), entry.getValue()));
             return result;
         }
         return input;
-    }
-
-    public BigDecimal getAsBigDecimal(JsonPrimitive value) {
-        return value.getValue() instanceof BigDecimal ? (BigDecimal) value.getValue() : new BigDecimal(value.getValue().toString());
-    }
-
-    public Number getAsNumber(JsonPrimitive value) {
-        return value.getValue() instanceof String ? new LazilyParsedNumber((String) value.getValue()) : (Number) value.getValue();
-    }
-
-    public boolean getAsBoolean(JsonPrimitive value) {
-        if (value.getValue() instanceof Boolean) {
-            return (Boolean) value.getValue();
-        } else {
-            return Boolean.parseBoolean(String.valueOf(value.getValue()));
-        }
     }
 }
