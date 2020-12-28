@@ -25,38 +25,38 @@ import net.fabricmc.api.Environment;
 @Mixin(SpriteAtlasTexture.class)
 public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
 
-    @Shadow
-    @Final
-    private List<Sprite> animatedSprites;
+	@Shadow
+	@Final
+	private List<Sprite> animatedSprites;
 
-    /**
-     * @reason Replaces the tickAnimatedSprites method to only tick animated textures
-     * that are in one of the loaded BuiltChunks. This can lead to an FPS more than
-     * three times higher on large modpacks with many textures.
-     *
-     * Also breaks down the "root.tick.textures" profiler by texture name.
-     * @author Runemoro
-     */
-    @Overwrite
-    public void tickAnimatedSprites() {
-        Profiler profiler = MinecraftClient.getInstance().getProfiler();
-        profiler.push("determineVisibleTextures");
-        for (Object e : ((WorldRendererAccessor) Objects.requireNonNull(MinecraftClient.getInstance().worldRenderer)).getVisibleChunks()) {
-            ChunkBuilder.BuiltChunk builtChunk = ((ChunkInfoAccessor) e).getChunk();
-            for (Sprite sprite : ((ChunkDataExtensions) builtChunk.getData()).getVisibleTextures()) {
-                ((SpriteExtensions) sprite).setAnimationUpdateRequired(true);
-            }
-        }
-        profiler.pop();
+	/**
+	 * @reason Replaces the tickAnimatedSprites method to only tick animated textures
+	 * that are in one of the loaded BuiltChunks. This can lead to an FPS more than
+	 * three times higher on large modpacks with many textures.
+	 * <p>
+	 * Also breaks down the "root.tick.textures" profiler by texture name.
+	 * @author Runemoro
+	 */
+	@Overwrite
+	public void tickAnimatedSprites() {
+		Profiler profiler = MinecraftClient.getInstance().getProfiler();
+		profiler.push("determineVisibleTextures");
+		for (Object e : ((WorldRendererAccessor) Objects.requireNonNull(MinecraftClient.getInstance().worldRenderer)).getVisibleChunks()) {
+			ChunkBuilder.BuiltChunk builtChunk = ((ChunkInfoAccessor) e).getChunk();
+			for (Sprite sprite : ((ChunkDataExtensions) builtChunk.getData()).getVisibleTextures()) {
+				((SpriteExtensions) sprite).setAnimationUpdateRequired(true);
+			}
+		}
+		profiler.pop();
 
-        RenderSystem.bindTexture(this.getGlId());
-        for (Sprite animatedSprite : this.animatedSprites) {
-            if (((SpriteExtensions) animatedSprite).isAnimationUpdateRequired()) {
-                profiler.push(animatedSprite.getId().toString());
-                animatedSprite.tickAnimation();
-                ((SpriteExtensions) animatedSprite).setAnimationUpdateRequired(false);
-                profiler.pop();
-            }
-        }
-    }
+		RenderSystem.bindTexture(this.getGlId());
+		for (Sprite animatedSprite : this.animatedSprites) {
+			if (((SpriteExtensions) animatedSprite).isAnimationUpdateRequired()) {
+				profiler.push(animatedSprite.getId().toString());
+				animatedSprite.tickAnimation();
+				((SpriteExtensions) animatedSprite).setAnimationUpdateRequired(false);
+				profiler.pop();
+			}
+		}
+	}
 }

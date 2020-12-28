@@ -19,9 +19,9 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 @Mixin(EntityRenderDispatcher.class)
 public class EntityRenderDispatcherMixin {
-    @Inject(method = "renderFire", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
-    private void renderFire(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, CallbackInfo ci, Sprite fire0, Sprite fire1) {
-        ((SpriteExtensions) fire0).setAnimationUpdateRequired(true);
-        ((SpriteExtensions) fire1).setAnimationUpdateRequired(true);
-    }
+	@Inject(method = "renderFire", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;push()V"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+	private void renderFire(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity, CallbackInfo ci, Sprite fire0, Sprite fire1) {
+		((SpriteExtensions) fire0).setAnimationUpdateRequired(true);
+		((SpriteExtensions) fire1).setAnimationUpdateRequired(true);
+	}
 }

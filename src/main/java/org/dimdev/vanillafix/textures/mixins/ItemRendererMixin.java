@@ -21,14 +21,14 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 @Mixin(ItemRenderer.class)
 public class ItemRendererMixin {
-    @Inject(method = "renderBakedItemQuads", at = @At("HEAD"))
-    private void beforeRenderItem(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay, CallbackInfo ci) {
-        for (BakedQuad quad : quads) {
-            Sprite sprite = ((BakedQuadAccessor) quad).getSprite();
-            if (sprite == null) {
-                continue;
-            }
-            ((SpriteExtensions) sprite).setAnimationUpdateRequired(true);
-        }
-    }
+	@Inject(method = "renderBakedItemQuads", at = @At("HEAD"))
+	private void beforeRenderItem(MatrixStack matrices, VertexConsumer vertices, List<BakedQuad> quads, ItemStack stack, int light, int overlay, CallbackInfo ci) {
+		for (BakedQuad quad : quads) {
+			Sprite sprite = ((BakedQuadAccessor) quad).getSprite();
+			if (sprite == null) {
+				continue;
+			}
+			((SpriteExtensions) sprite).setAnimationUpdateRequired(true);
+		}
+	}
 }

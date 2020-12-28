@@ -17,12 +17,12 @@ import net.minecraft.world.gen.PhantomSpawner;
  */
 @Mixin(PhantomSpawner.class)
 public class PhantomSpawnerMixin {
-    @Inject(method = "spawn", at = @At(value = "INVOKE_ASSIGN", target = "Ljava/util/List;iterator()Ljava/util/Iterator;", remap = false), cancellable = true)
-    public void preventSpawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals, CallbackInfoReturnable<Integer> cir) {
-        if (!(VanillaFix.config().bugFixes.phantomMobCap < 0)) {
-            if (world.getEntitiesByType(EntityType.PHANTOM, e -> true).size() > VanillaFix.config().bugFixes.phantomMobCap) {
-                cir.setReturnValue(0);
-            }
-        }
-    }
+	@Inject(method = "spawn", at = @At(value = "INVOKE_ASSIGN", target = "Ljava/util/List;iterator()Ljava/util/Iterator;", remap = false), cancellable = true)
+	public void preventSpawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals, CallbackInfoReturnable<Integer> cir) {
+		if (!(VanillaFix.config().bugFixes.phantomMobCap < 0)) {
+			if (world.getEntitiesByType(EntityType.PHANTOM, e -> true).size() > VanillaFix.config().bugFixes.phantomMobCap) {
+				cir.setReturnValue(0);
+			}
+		}
+	}
 }

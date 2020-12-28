@@ -17,14 +17,14 @@ import net.fabricmc.api.Environment;
 @Mixin(MinecraftClient.class)
 @Environment(EnvType.CLIENT)
 public class MinecraftClientMixin {
-    @Shadow
-    private Profiler profiler;
+	@Shadow
+	private Profiler profiler;
 
-    /**
-     * @reason Fix GUI logic being included as part of "root.tick.textures" (https://bugs.mojang.com/browse/MC-129556)
-     */
-    @Inject(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;currentScreen:Lnet/minecraft/client/gui/screen/Screen;", ordinal = 0))
-    private void endStartGUISection(CallbackInfo ci) {
-        this.profiler.swap("gui");
-    }
+	/**
+	 * @reason Fix GUI logic being included as part of "root.tick.textures" (https://bugs.mojang.com/browse/MC-129556)
+	 */
+	@Inject(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MinecraftClient;currentScreen:Lnet/minecraft/client/gui/screen/Screen;", ordinal = 0))
+	private void endStartGUISection(CallbackInfo ci) {
+		this.profiler.swap("gui");
+	}
 }

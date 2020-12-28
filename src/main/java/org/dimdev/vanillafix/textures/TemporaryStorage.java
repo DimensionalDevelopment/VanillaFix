@@ -11,5 +11,5 @@ import net.fabricmc.api.Environment;
  */
 @Environment(EnvType.CLIENT)
 public final class TemporaryStorage {
-    public static final ThreadLocal<ChunkBuilder.ChunkData> CURRENT_CHUNK_DATA = new ThreadLocal<>(); // Thread ID -> Chunk Data being rebuilt
+	public static final ThreadLocal<ChunkBuilder.ChunkData> CURRENT_CHUNK_DATA = new ThreadLocal<>(); // Thread ID -> Chunk Data being rebuilt
 }

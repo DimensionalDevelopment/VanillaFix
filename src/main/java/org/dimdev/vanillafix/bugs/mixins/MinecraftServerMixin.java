@@ -10,12 +10,12 @@ import net.minecraft.server.WorldGenerationProgressListener;
 @MixinConfigValue(category = "bugFixes", value = "disableInitialChunkLoad")
 @Mixin(MinecraftServer.class)
 public class MinecraftServerMixin {
-    /**
-     * @reason Disable initial chunk load. This makes world load much faster, but in exchange
-     * the player may see incomplete chunks (like when teleporting to a new area).
-     * @author ?
-     */
-    @Overwrite
-    private void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
-    }
+	/**
+	 * @reason Disable initial chunk load. This makes world load much faster, but in exchange
+	 * the player may see incomplete chunks (like when teleporting to a new area).
+	 * @author ?
+	 */
+	@Overwrite
+	private void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
+	}
 }

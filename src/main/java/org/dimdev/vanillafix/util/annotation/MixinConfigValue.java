@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MixinConfigValue {
-    String category();
+	String category();
 
-    String value();
+	String value();
 }

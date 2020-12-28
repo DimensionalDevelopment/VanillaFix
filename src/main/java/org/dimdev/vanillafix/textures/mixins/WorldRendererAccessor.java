@@ -12,6 +12,6 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 @Mixin(WorldRenderer.class)
 public interface WorldRendererAccessor {
-    @Accessor("visibleChunks")
-    ObjectList<?> getVisibleChunks();
+	@Accessor("visibleChunks")
+	ObjectList<?> getVisibleChunks();
 }

@@ -16,11 +16,11 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 @Mixin(ChunkBuilder.ChunkData.class)
 public class ChunkDataMixin implements ChunkDataExtensions {
-    @Unique
-    private final Set<Sprite> visibleTextures = Sets.newHashSet();
+	@Unique
+	private final Set<Sprite> visibleTextures = Sets.newHashSet();
 
-    @Override
-    public Set<Sprite> getVisibleTextures() {
-        return this.visibleTextures;
-    }
+	@Override
+	public Set<Sprite> getVisibleTextures() {
+		return this.visibleTextures;
+	}
 }

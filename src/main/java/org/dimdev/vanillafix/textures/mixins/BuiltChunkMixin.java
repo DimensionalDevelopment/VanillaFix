@@ -15,11 +15,11 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 @Mixin(ChunkBuilder.BuiltChunk.class)
 public abstract class BuiltChunkMixin {
-    @Shadow
-    public abstract ChunkBuilder.ChunkData getData();
+	@Shadow
+	public abstract ChunkBuilder.ChunkData getData();
 
-    @Inject(method = "rebuild", at = @At("HEAD"))
-    private void onRebuild(CallbackInfo ci) {
-        TemporaryStorage.CURRENT_CHUNK_DATA.set(this.getData());
-    }
+	@Inject(method = "rebuild", at = @At("HEAD"))
+	private void onRebuild(CallbackInfo ci) {
+		TemporaryStorage.CURRENT_CHUNK_DATA.set(this.getData());
+	}
 }

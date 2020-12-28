@@ -11,15 +11,15 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 @Mixin(Sprite.class)
 public class SpriteMixin implements SpriteExtensions {
-    private boolean animationUpdateRequired;
+	private boolean animationUpdateRequired;
 
-    @Override
-    public void setAnimationUpdateRequired(boolean animationUpdateRequired) {
-        this.animationUpdateRequired = animationUpdateRequired;
-    }
+	@Override
+	public void setAnimationUpdateRequired(boolean animationUpdateRequired) {
+		this.animationUpdateRequired = animationUpdateRequired;
+	}
 
-    @Override
-    public boolean isAnimationUpdateRequired() {
-        return this.animationUpdateRequired;
-    }
+	@Override
+	public boolean isAnimationUpdateRequired() {
+		return this.animationUpdateRequired;
+	}
 }

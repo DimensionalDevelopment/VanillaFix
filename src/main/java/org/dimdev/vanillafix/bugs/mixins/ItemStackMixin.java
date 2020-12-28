@@ -14,15 +14,15 @@ import net.minecraft.world.World;
 @MixinConfigValue(category = "bugFixes", value = "doNotConsumeFoodOnDeath")
 @Mixin(ItemStack.class)
 public class ItemStackMixin {
-    /**
-     * Prevents consuming food if the entity is dead
-     * Bugs Fixed:
-     * - https://bugs.mojang.com/browse/MC-133218
-     */
-    @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
-    public void interceptFinishUsing(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
-        if ((!user.isAlive() || user.isDead()) && VanillaFix.config().bugFixes.doNotConsumeFoodOnDeath) {
-            cir.setReturnValue((ItemStack) (Object) this);
-        }
-    }
+	/**
+	 * Prevents consuming food if the entity is dead
+	 * Bugs Fixed:
+	 * - https://bugs.mojang.com/browse/MC-133218
+	 */
+	@Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
+	public void interceptFinishUsing(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> cir) {
+		if ((!user.isAlive() || user.isDead()) && VanillaFix.config().bugFixes.doNotConsumeFoodOnDeath) {
+			cir.setReturnValue((ItemStack) (Object) this);
+		}
+	}
 }

@@ -5,5 +5,5 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface MinecraftClientExtensions {
-    void toggleProfiler();
+	void toggleProfiler();
 }

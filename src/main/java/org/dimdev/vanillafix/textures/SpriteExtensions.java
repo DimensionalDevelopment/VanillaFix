@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface SpriteExtensions {
-    void setAnimationUpdateRequired(boolean animationUpdateRequired);
+	void setAnimationUpdateRequired(boolean animationUpdateRequired);
 
-    boolean isAnimationUpdateRequired();
+	boolean isAnimationUpdateRequired();
 }

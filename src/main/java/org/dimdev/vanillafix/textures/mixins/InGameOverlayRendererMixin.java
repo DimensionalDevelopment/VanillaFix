@@ -19,13 +19,13 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 @Mixin(InGameOverlayRenderer.class)
 public class InGameOverlayRendererMixin {
-    @Inject(method = "renderFireOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;getTextureManager()Lnet/minecraft/client/texture/TextureManager;"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
-    private static void beforeRenderFireInFirstPerson(MinecraftClient mc, MatrixStack matrixStack, CallbackInfo ci, BufferBuilder bufferBuilder, Sprite sprite) {
-        ((SpriteExtensions) sprite).setAnimationUpdateRequired(true);
-    }
+	@Inject(method = "renderFireOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;getTextureManager()Lnet/minecraft/client/texture/TextureManager;"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+	private static void beforeRenderFireInFirstPerson(MinecraftClient mc, MatrixStack matrixStack, CallbackInfo ci, BufferBuilder bufferBuilder, Sprite sprite) {
+		((SpriteExtensions) sprite).setAnimationUpdateRequired(true);
+	}
 
-    @Inject(method = "renderInWallOverlay", at = @At("HEAD"))
-    private static void beforeRenderFireInFirstPerson(MinecraftClient minecraftClient, Sprite sprite, MatrixStack matrixStack, CallbackInfo ci) {
-        ((SpriteExtensions) sprite).setAnimationUpdateRequired(true);
-    }
+	@Inject(method = "renderInWallOverlay", at = @At("HEAD"))
+	private static void beforeRenderFireInFirstPerson(MinecraftClient minecraftClient, Sprite sprite, MatrixStack matrixStack, CallbackInfo ci) {
+		((SpriteExtensions) sprite).setAnimationUpdateRequired(true);
+	}
 }

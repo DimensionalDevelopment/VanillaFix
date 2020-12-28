@@ -18,19 +18,21 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin implements MinecraftClientExtensions {
-    @Shadow public abstract boolean isIntegratedServerRunning();
+	@Shadow
+	public abstract boolean isIntegratedServerRunning();
 
-    @Shadow private @Nullable IntegratedServer server;
-    @Unique
-    private boolean useIntegratedServerProfiler = false;
+	@Shadow
+	private @Nullable IntegratedServer server;
+	@Unique
+	private boolean useIntegratedServerProfiler = false;
 
-    @ModifyVariable(method = "handleProfilerKeyPress", at = @At("HEAD"), ordinal = 0)
-    private int getKeyCountForProfilerNameUpdate(int digit) {
-        return Screen.hasControlDown() ? digit + 10 : digit;
-    }
+	@ModifyVariable(method = "handleProfilerKeyPress", at = @At("HEAD"), ordinal = 0)
+	private int getKeyCountForProfilerNameUpdate(int digit) {
+		return Screen.hasControlDown() ? digit + 10 : digit;
+	}
 
-    @Override
-    public void toggleProfiler() {
-        this.useIntegratedServerProfiler = this.isIntegratedServerRunning() && !this.useIntegratedServerProfiler;
-    }
+	@Override
+	public void toggleProfiler() {
+		this.useIntegratedServerProfiler = this.isIntegratedServerRunning() && !this.useIntegratedServerProfiler;
+	}
 }

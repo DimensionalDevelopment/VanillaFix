@@ -15,12 +15,12 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 @Mixin(ClientPlayerEntity.class)
 public class ClientPlayerEntityMixin {
-    /**
-     * @reason Enables opening GUIs in nether portals. (see https://bugs.mojang.com/browse/MC-2071)
-     * This works by making minecraft think that GUI pauses the game
-     */
-    @Redirect(method = "updateNausea", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;isPauseScreen()Z"))
-    private boolean onPauseCheck(Screen guiScreen) {
-        return true;
-    }
+	/**
+	 * @reason Enables opening GUIs in nether portals. (see https://bugs.mojang.com/browse/MC-2071)
+	 * This works by making minecraft think that GUI pauses the game
+	 */
+	@Redirect(method = "updateNausea", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;isPauseScreen()Z"))
+	private boolean onPauseCheck(Screen guiScreen) {
+		return true;
+	}
 }

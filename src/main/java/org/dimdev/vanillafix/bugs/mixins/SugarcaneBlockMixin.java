@@ -22,10 +22,10 @@ import net.minecraft.world.WorldView;
 @MixinConfigValue(category = "bugFixes", value = "underwaterSugarcaneFix")
 @Mixin(SugarCaneBlock.class)
 public class SugarcaneBlockMixin {
-    @Inject(method = "canPlaceAt", at = @At("HEAD"), cancellable = true)
-    public void checkCanPlace(BlockState state, WorldView world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        if (world.getFluidState(pos).isIn(FluidTags.WATER) && VanillaFix.config().bugFixes.underwaterSugarcaneFix) {
-            cir.setReturnValue(Boolean.FALSE);
-        }
-    }
+	@Inject(method = "canPlaceAt", at = @At("HEAD"), cancellable = true)
+	public void checkCanPlace(BlockState state, WorldView world, BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
+		if (world.getFluidState(pos).isIn(FluidTags.WATER) && VanillaFix.config().bugFixes.underwaterSugarcaneFix) {
+			cir.setReturnValue(Boolean.FALSE);
+		}
+	}
 }

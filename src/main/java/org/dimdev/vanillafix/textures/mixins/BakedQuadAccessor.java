@@ -12,6 +12,6 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 @Mixin(BakedQuad.class)
 public interface BakedQuadAccessor {
-    @Accessor
-    Sprite getSprite();
+	@Accessor
+	Sprite getSprite();
 }
