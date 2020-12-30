@@ -20,8 +20,15 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 archivesBaseName = project.archives_base_name
-version = project.mod_version
+version = computeVersion(project.mod_version)
 group = project.maven_group
+
+static def computeVersion(String version) {
+	if (version.contains("beta")) {
+		return version + "-" + Calendar.getInstance().getTime().format("dd-MM-yyyy")
+	}
+	return version
+}
 
 repositories {
 	mavenCentral()

@@ -23,5 +23,13 @@ public class VanillaFixEarlyRiser implements Runnable {
 			VanillaFix.LOGGER.debug("Registering Profiler Improvements Mixins");
 			Mixins.addConfiguration("vanillafix.profiler.mixins.json");
 		}
+
+		// haha asm go brr
+//		String clazzName = FabricLoader.getInstance().getMappingResolver().mapClassName("intermediary", "net.minecraft.class_4584");
+//		ClassTinkerers.addTransformation(clazzName, node -> {
+//			node.methods.stream().map(node -> {
+//
+//			})
+//		});
 	}
 }

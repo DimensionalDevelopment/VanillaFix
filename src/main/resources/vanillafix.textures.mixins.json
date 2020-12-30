@@ -5,16 +5,16 @@
   "compatibilityLevel": "JAVA_8",
   "client": [
     "BakedQuadAccessor",
-    "EntityRenderDispatcherMixin",
-    "ItemRendererMixin",
-    "SpriteMixin",
     "BlockModelRendererMixin",
     "BuiltChunkMixin",
     "ChunkDataMixin",
     "ChunkInfoAccessor",
+    "EntityRenderDispatcherMixin",
     "FluidRendererMixin",
     "InGameOverlayRendererMixin",
+    "ItemRendererMixin",
     "SpriteAtlasTextureMixin",
+    "SpriteMixin",
     "WorldRendererAccessor"
   ],
   "injectors": {
