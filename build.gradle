@@ -51,8 +51,8 @@ dependencies {
 	include "com.github.Chocohead:Fabric-ASM:v2.1"
 
 	// Compatibility
-	modImplementation 'com.github.jellysquid3:lithium-fabric:90c2427'
-	modImplementation 'com.github.jellysquid3:phosphor-fabric:0749029'
+	modImplementation 'com.github.jellysquid3:lithium-fabric:5c9712e'
+	modImplementation 'com.github.jellysquid3:phosphor-fabric:4c43554'
 
 	// Fun
 	modRuntime ('me.shedaniel:RoughlyEnoughItems:5.6.1')  {

@@ -7,16 +7,20 @@ import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.Comment;
 
 @Config(name = "vanillafix")
 public class ModConfig implements ConfigData {
+	@ConfigEntry.Category("general")
 	@ConfigEntry.Gui.TransitiveObject
 	public General general = new General();
 
+	@ConfigEntry.Category("bugFixes")
 	@ConfigEntry.Gui.TransitiveObject
 	public BugFixes bugFixes = new BugFixes();
 
+	@ConfigEntry.Category("clientOnly")
 	@ConfigEntry.Gui.TransitiveObject
 	public ClientOnly clientOnly = new ClientOnly();
 
-	@ConfigEntry.Gui.Excluded
+	@ConfigEntry.Category("antiCheat")
+	@ConfigEntry.Gui.TransitiveObject
 	public AntiCheat antiCheat = new AntiCheat();
 
 	public static class General {
