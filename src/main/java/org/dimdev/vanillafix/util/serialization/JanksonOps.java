@@ -5,16 +5,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import blue.endless.jankson.JsonArray;
-import blue.endless.jankson.JsonElement;
-import blue.endless.jankson.JsonNull;
-import blue.endless.jankson.JsonObject;
-import blue.endless.jankson.JsonPrimitive;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
+import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.JsonArray;
+import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.JsonElement;
+import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.JsonNull;
+import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.JsonObject;
+import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.JsonPrimitive;
 
 public enum JanksonOps implements DynamicOps<JsonElement> {
 	INSTANCE;

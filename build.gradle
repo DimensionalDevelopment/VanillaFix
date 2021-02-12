@@ -7,14 +7,13 @@ buildscript {
 		}
 	}
 	dependencies {
-		classpath 'net.fabricmc:fabric-loom:0.5-SNAPSHOT'
+		classpath 'net.fabricmc:fabric-loom:0.6-SNAPSHOT'
 		classpath 'com.github.jengelman.gradle.plugins:shadow:6.1.0'
 	}
 }
 
 apply plugin: 'fabric-loom'
 apply plugin: 'maven-publish'
-apply plugin: 'com.github.johnrengelman.shadow'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
@@ -34,30 +33,22 @@ repositories {
 	mavenCentral()
 	maven { url "https://dl.bintray.com/shedaniel/shedaniel-mods" }
 	maven { url 'https://jitpack.io' }
+	jcenter()
 }
 
 minecraft {
 	accessWidener 'src/main/resources/vanillafix_aw.txt'
 }
 
-configurations {
-	shade
-}
-
-tasks.remapJar.dependsOn(shadowJar)
-(tasks.remapJar.input as FileSystemLocationProperty<? extends FileSystemLocation>).set(shadowJar.archivePath)
-
 dependencies {
-	implementation "blue.endless:jankson:1.1.0"
-	shade "blue.endless:jankson:1.1.0"
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	minecraft "com.mojang:minecraft:1.16.5"
+	mappings "net.fabricmc:yarn:1.16.5+build.3:v2"
+	modImplementation "net.fabricmc:fabric-loader:0.11.1"
+	modImplementation "net.fabricmc.fabric-api:fabric-api:0.30.0+1.16"
 
 	// Cos why not
-	modImplementation "com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}"
-	include "com.github.Chocohead:Fabric-ASM:${project.fabric_asm_version}"
+	modImplementation "com.github.Chocohead:Fabric-ASM:v2.1"
+	include "com.github.Chocohead:Fabric-ASM:v2.1"
 
 	// Compatibility
 	modImplementation 'com.github.jellysquid3:lithium-fabric:90c2427'
@@ -72,6 +63,7 @@ dependencies {
 		exclude module: 'fabric-api'
 	}
 	include 'me.shedaniel.cloth:config-2:4.8.2'
+	modImplementation include('me.sargunvohra.mcmods:autoconfig1u:3.3.1')
 
 	// Accessing the config
 	modImplementation('io.github.prospector:modmenu:1.14.6+build.31') {
@@ -111,7 +103,3 @@ jar {
 	from "LICENSE"
 }
 
-shadowJar {
-	configurations = [project.configurations.shade]
-	relocate 'blue.endless.jankson', 'org.dimdev.vanillafix.shadowed.blue.endless.jankson'
-}
