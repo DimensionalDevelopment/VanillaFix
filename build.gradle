@@ -1,26 +1,32 @@
 buildscript {
     repositories {
-        jcenter()
-        maven { url "http://files.minecraftforge.net/maven" }
-        maven { url "http://repo.spongepowered.org/maven" }
+        maven { url = 'https://files.minecraftforge.net/maven' }
+        mavenCentral()
     }
     dependencies {
-        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.4"
-        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
-        classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
+        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
     }
 }
 
-apply plugin: "java"
-apply plugin: "com.github.johnrengelman.shadow"
-apply plugin: "net.minecraftforge.gradle.forge"
-apply plugin: "org.spongepowered.mixin"
+plugins {
+    id "java" 
+    id "com.github.johnrengelman.shadow" version "2.0.4"
+    id "org.spongepowered.mixin" version "0.7-SNAPSHOT" apply false
+}
+
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin' 
 
 repositories {
-    maven { url "http://repo.spongepowered.org/maven" }
-    maven { url "https://maven.covers1624.net" }
-    maven { url "http://www.dimdev.org/maven" }
-    maven { url "http://maven.tterrag.com/" }
+    maven {
+        url "https://repo.spongepowered.org/repository/maven-public/"
+    }
+    maven {
+        url "https://maven.covers1624.net"
+    }
+    maven {
+        url "http://maven.tterrag.com/"
+    }
     ivy {
         url "https://google.com/404"
         ivyPattern("https://google.com/404") // Workaround for https://github.com/gradle/gradle/issues/4107
@@ -28,7 +34,45 @@ repositories {
     }
 }
 
+minecraft {
+    mappings channel: 'stable', version: '39-1.12'
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            property 'fml.coreMods.load', 'org.dimdev.vanillafix.VanillaFixLoadingPlugin'
+            property 'mixin.hotSwap', 'true'
+            property 'mixin.checks.interfaces', 'true'
+            property 'mixin.debug.export', 'true'
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            property 'fml.coreMods.load', 'org.dimdev.vanillafix.VanillaFixLoadingPlugin'
+            property 'mixin.hotSwap', 'true'
+            property 'mixin.checks.interfaces', 'true'
+            property 'mixin.debug.export', 'true'
+        }
+    }
+}
+
 dependencies {
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2855'
+
     implementation("org.spongepowered:mixin:0.8") {
         exclude module: "asm-commons"
         exclude module: "asm-tree"
@@ -38,73 +82,63 @@ dependencies {
         exclude module: "gson"
         exclude module: "commons-io"
     }
-    compileOnly "2535:884:Chisel-MC1.12.2-0.2.0.31@jar"
-    compileOnly "2530:225:OpenBlocks-1.12.2-1.7.6@jar"
-    compileOnly "2525:230:OpenModsLib-1.12.2-0.11.5@jar"
-    compileOnly "2568:0:TConstruct-1.12.2-2.10.1.84@jar"
-    compileOnly "2568:0:TConstruct-1.12.2-2.10.1.84@jar"
-    compileOnly "2511:625:Avaritia-1.12-3.2.0.13-universal@jar"
-    compileOnly "codechicken:CodeChickenLib:1.12.2-3.1.9.344:deobf"
-    compileOnly "2482:584:CustomMainMenu-MC1.12.2-2.0.8@jar"
-    compileOnly "team.chisel.ctm:CTM:MC1.12-0.2.3.12"
+    compileOnly fg.deobf("2535:884:Chisel-MC1.12.2-0.2.0.31@jar")
+    compileOnly fg.deobf("2530:225:OpenBlocks-1.12.2-1.7.6@jar")
+    compileOnly fg.deobf("2525:230:OpenModsLib-1.12.2-0.11.5@jar")
+    compileOnly fg.deobf("2568:0:TConstruct-1.12.2-2.10.1.84@jar")
+    compileOnly fg.deobf("2568:0:TConstruct-1.12.2-2.10.1.84@jar")
+    compileOnly fg.deobf("2511:625:Avaritia-1.12-3.2.0.13-universal@jar")
+    compileOnly fg.deobf("codechicken:CodeChickenLib:1.12.2-3.1.9.344:deobf")
+    compileOnly fg.deobf("2482:584:CustomMainMenu-MC1.12.2-2.0.8@jar")
+    compileOnly fg.deobf("team.chisel.ctm:CTM:MC1.12-0.2.3.12")
 }
 
-def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
-def versionSuffix = travisBuildNumber != null ? travisBuildNumber : "SNAPSHOT"
-
-version "1.0.10-$versionSuffix"
+version "1.0.10"
 group "org.dimdev.vanillafix"
 archivesBaseName = "VanillaFix"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-minecraft {
-    version "1.12.2-14.23.5.2847"
-    runDir "run"
-    mappings "stable_39"
-    makeObfSourceJar false
-
-    def args = [
-            "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin",
-            "-Dmixin.hotSwap=true",
-            "-Dmixin.checks.interfaces=true",
-            "-Dmixin.debug.export=true"
-    ]
-    clientJvmArgs.addAll(args)
-    serverJvmArgs.addAll(args)
-}
-
 mixin {
     add sourceSets.main, "mixins.vanillafix.refmap.json"
 }
 
 reobf {
-    shadowJar {
-        mappingType = "SEARGE"
-    }
+    shadowJar
 }
 
 processResources {
     filesMatching("mcmod.info") {
-        expand "version": project.version, "mcversion": project.minecraft.version
+        expand "version": project.version, "mcversion": "1.12.2"
     }
 
     // Re-run this task when these change
     inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+    inputs.property "mcversion", "1.12.2"
 }
 
 jar {
     classifier "nolibs"
-    manifest.attributes(
-            "FMLCorePluginContainsFMLMod": "true",
+    manifest {
+        attributes([
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixLoadingPlugin",
             "ForceLoadAsMod": "true",
-            "FMLAT": "vanillafix_at.cfg"
-    )
+            "FMLAT": "vanillafix_at.cfg",
+            "FMLCorePluginContainsFMLMod": "true",
+            "Specification-Title": "vanillafix",
+            "Specification-Vendor": "Dimensional Development",
+            "Specification-Version": "1", // We are version 1 of ourselves
+            "Implementation-Title": project.name,
+            "Implementation-Version": "${version}",
+            "Implementation-Vendor" :"Dimensional Development",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
 }
+
+jar.finalizedBy('reobfJar') 
 
 shadowJar {
     classifier ""
@@ -121,7 +155,3 @@ artifacts {
     archives shadowJar
     archives sourcesJar
 }
-
-// These are broken
-runClient.group "other"
-runServer.group "other"
