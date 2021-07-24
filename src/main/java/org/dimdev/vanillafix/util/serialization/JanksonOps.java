@@ -10,11 +10,11 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
-import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.JsonArray;
-import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.JsonElement;
-import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.JsonNull;
-import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.JsonObject;
-import me.sargunvohra.mcmods.autoconfig1u.shadowed.blue.endless.jankson.JsonPrimitive;
+import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.JsonArray;
+import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.JsonElement;
+import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.JsonNull;
+import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.JsonObject;
+import me.shedaniel.cloth.clothconfig.shadowed.blue.endless.jankson.JsonPrimitive;
 
 public enum JanksonOps implements DynamicOps<JsonElement> {
 	INSTANCE;

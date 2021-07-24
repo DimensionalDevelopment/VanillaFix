@@ -24,7 +24,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 @Mixin(SpriteAtlasTexture.class)
 public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
-
+/*
 	@Shadow
 	@Final
 	private List<Sprite> animatedSprites;
@@ -36,7 +36,7 @@ public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
 	 * <p>
 	 * Also breaks down the "root.tick.textures" profiler by texture name.
 	 * @author Runemoro
-	 */
+	 *\/
 	@Overwrite
 	public void tickAnimatedSprites() {
 		Profiler profiler = MinecraftClient.getInstance().getProfiler();
@@ -59,4 +59,5 @@ public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
 			}
 		}
 	}
+*/
 }

@@ -19,11 +19,11 @@ public class EntityMixin {
 
 	/**
 	 * @reason Fixes a vanilla bug where the entity's fall distance is not updated before invoking the
-	 * block's onFallenUpon when it falls on the ground, meaning that the last fall state update won't
+	 * block's onLandedUpon when it falls on the ground, meaning that the last fall state update won't
 	 * be included in the fall distance.
 	 */
-	@Inject(method = "fall", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;onLandedUpon(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/Entity;F)V"))
-	private void beforeOnFallenUpon(double y, boolean onGroundIn, BlockState state, BlockPos pos, CallbackInfo ci) {
+	@Inject(method = "fall", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;onLandedUpon(Lnet/minecraft/world/World;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/entity/Entity;F)V"))
+	private void beforeOnLandedUpon(double y, boolean onGroundIn, BlockState state, BlockPos pos, CallbackInfo ci) {
 		if (y < 0) this.fallDistance -= y;
 	}
 }

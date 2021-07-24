@@ -23,17 +23,17 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 @Mixin(WorldRenderer.class)
-public class WorldRendererMixin implements WorldRendererExtensions {
-	@Unique
-	private Frustum frustum;
+public class WorldRendererMixin { //implements WorldRendererExtensions {
+	//@Unique
+	//private Frustum frustum;
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Frustum;setPosition(DDD)V", ordinal = 1), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
-	public void intercept(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci, Profiler profiler, Vec3d vec3d, double d, double e, double f, Matrix4f matrix4f2, boolean bl, Frustum frustum2) {
-		this.frustum = frustum2;
-	}
+	//@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Frustum;setPosition(DDD)V", ordinal = 1), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+	//public void intercept(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci, Profiler profiler, Vec3d vec3d, double d, double e, double f, Matrix4f matrix4f2, boolean bl, Frustum frustum2) {
+	//	this.frustum = frustum2;
+	//}
 
-	@Override
-	public Frustum getFrustum() {
-		return this.frustum;
-	}
+	//@Override
+	//public Frustum getFrustum() {
+	//	return this.frustum;
+	//}
 }
