@@ -19,8 +19,10 @@ public class PlayerInventoryMixin {
 	 * Bugs fixed:
 	 * - https://bugs.mojang.com/browse/MC-129057
 	 */
-	//@Redirect(method = "indexOf", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;areItemsEqual(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z"))
-	//private boolean stackEqualExact(PlayerInventory inventoryPlayer, ItemStack left, ItemStack right) {
-	//	return left.getItem() == right.getItem();
-	//}
+/*	FIXME: crashes immediately... https://gist.github.com/wafflecoffee/64daa9293d582bac3e504c6c83491813
+	@Redirect(method = "indexOf", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;areItemsEqual(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z"))
+	private boolean stackEqualExact(PlayerInventory inventoryPlayer, ItemStack left, ItemStack right) {
+		return left.getItem() == right.getItem();
+	}
+*/
 }

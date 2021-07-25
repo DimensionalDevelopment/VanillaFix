@@ -53,7 +53,7 @@ public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
 		for (Sprite animatedSprite : this.animatedSprites) {
 			if (((SpriteExtensions) animatedSprite).isAnimationUpdateRequired()) {
 				profiler.push(animatedSprite.getId().toString());
-				animatedSprite.tickAnimation();
+				animatedSprite.tickAnimation(); // FIXME: What can this be replaced with? `tickAnimation()` can't be found; if it's just commented out, it causes a crash when joining a world https://gist.github.com/wafflecoffee/6061f77c6d3af18d3a895607d4cbf8d4
 				((SpriteExtensions) animatedSprite).setAnimationUpdateRequired(false);
 				profiler.pop();
 			}
