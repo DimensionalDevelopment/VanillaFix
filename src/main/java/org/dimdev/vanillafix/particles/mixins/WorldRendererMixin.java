@@ -23,7 +23,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 @Mixin(WorldRenderer.class)
-public class WorldRendererMixin implements WorldRendererExtensions {
+public class WorldRendererMixin {/*implements WorldRendererExtensions { // FIXME: crashes upon launching game https://gist.github.com/wafflecoffee/96d4402fd4262448eb87bd6e368b80c0
 	@Unique
 	private Frustum frustum;
 
@@ -36,4 +36,5 @@ public class WorldRendererMixin implements WorldRendererExtensions {
 	public Frustum getFrustum() {
 		return this.frustum;
 	}
+	*/
 }

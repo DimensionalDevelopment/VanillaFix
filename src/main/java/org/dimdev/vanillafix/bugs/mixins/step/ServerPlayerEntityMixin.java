@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -32,7 +31,7 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity {
 	 * to jump (not increasing hunger).
 	 */
 	@Inject(method = "<init>", at = @At("RETURN"))
-	private void afterInit(MinecraftServer server, ServerWorld world, GameProfile profile, ServerPlayerInteractionManager interactionManager, CallbackInfo ci) {
+	private void afterInit(MinecraftServer server, ServerWorld world, GameProfile profile, CallbackInfo ci) {
 		this.stepHeight = 0.7F;
 	}
 }

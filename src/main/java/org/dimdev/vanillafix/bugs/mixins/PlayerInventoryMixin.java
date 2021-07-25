@@ -13,14 +13,16 @@ import net.minecraft.item.ItemStack;
 public class PlayerInventoryMixin {
 	/**
 	 * Compare items by item type rather than NBT when looking for items for the crafting
-	 * recipe. Note that the item is still checked (in findSlotMatchingUnusedItem) to
-	 * make sure it is not enchanted or renamed.
+	 * recipe. Note that the item is still checked (in indexOf) to make sure it is not
+	 * enchanted or renamed.
 	 * <p>
 	 * Bugs fixed:
 	 * - https://bugs.mojang.com/browse/MC-129057
 	 */
-	@Redirect(method = "method_7371", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;areItemsEqual(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z"))
-	private boolean stackEqualExact(PlayerInventory inventoryPlayer, ItemStack stack1, ItemStack stack2) {
-		return stack1.getItem() == stack2.getItem();
+/*	FIXME: crashes immediately... https://gist.github.com/wafflecoffee/64daa9293d582bac3e504c6c83491813
+	@Redirect(method = "indexOf", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;areItemsEqual(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z"))
+	private boolean stackEqualExact(PlayerInventory inventoryPlayer, ItemStack left, ItemStack right) {
+		return left.getItem() == right.getItem();
 	}
+*/
 }

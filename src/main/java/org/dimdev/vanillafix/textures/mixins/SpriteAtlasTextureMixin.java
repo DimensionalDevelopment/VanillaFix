@@ -24,7 +24,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 @Mixin(SpriteAtlasTexture.class)
 public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
-
+/*
 	@Shadow
 	@Final
 	private List<Sprite> animatedSprites;
@@ -36,7 +36,7 @@ public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
 	 * <p>
 	 * Also breaks down the "root.tick.textures" profiler by texture name.
 	 * @author Runemoro
-	 */
+	 *\/
 	@Overwrite
 	public void tickAnimatedSprites() {
 		Profiler profiler = MinecraftClient.getInstance().getProfiler();
@@ -53,10 +53,11 @@ public abstract class SpriteAtlasTextureMixin extends AbstractTexture {
 		for (Sprite animatedSprite : this.animatedSprites) {
 			if (((SpriteExtensions) animatedSprite).isAnimationUpdateRequired()) {
 				profiler.push(animatedSprite.getId().toString());
-				animatedSprite.tickAnimation();
+				animatedSprite.tickAnimation(); // FIXME: What can this be replaced with? `tickAnimation()` can't be found; if it's just commented out, it causes a crash when joining a world https://gist.github.com/wafflecoffee/6061f77c6d3af18d3a895607d4cbf8d4
 				((SpriteExtensions) animatedSprite).setAnimationUpdateRequired(false);
 				profiler.pop();
 			}
 		}
 	}
+*/
 }
