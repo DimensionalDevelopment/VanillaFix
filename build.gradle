@@ -60,6 +60,7 @@ mixin {
 }
 
 sourceSets {
+    api
     main
 }
 
@@ -78,6 +79,7 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:1.12.2-14.23.5.2860"
+    compileOnly sourceSets.api.output
 
     annotationProcessor("org.spongepowered:mixin:0.8.3:processor")
     implementation("org.spongepowered:mixin:0.8.3") {
