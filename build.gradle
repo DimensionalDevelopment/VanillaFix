@@ -1,19 +1,20 @@
 buildscript {
     repositories {
-        jcenter()
-        maven { url "http://files.minecraftforge.net/maven" }
-        maven { url "http://repo.spongepowered.org/maven" }
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2" }
+        maven { url "https://maven.minecraftforge.net" }
+        maven { url "https://repo.spongepowered.org/repository/maven-public" }
     }
     dependencies {
-        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.4"
-        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
-        classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
+        classpath "gradle.plugin.com.github.johnrengelman:shadow:7.1.2"
+        classpath "net.minecraftforge.gradle:ForgeGradle:5.1.+"
+        classpath "org.spongepowered:mixingradle:0.7-SNAPSHOT"
     }
 }
 
 apply plugin: "java"
 apply plugin: "com.github.johnrengelman.shadow"
-apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: "net.minecraftforge.gradle"
 apply plugin: "org.spongepowered.mixin"
 
 def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
@@ -27,19 +28,31 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 minecraft {
-    version "1.12.2-14.23.5.2768"
-    runDir "run"
-    mappings "stable_39"
-    makeObfSourceJar false
+    mappings channel: "stable", version: "39-1.12"
 
-    def args = [
-            "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin",
-            "-Dmixin.hotSwap=true",
-            "-Dmixin.checks.interfaces=true",
-            "-Dmixin.debug.export=true"
-    ]
-    clientJvmArgs.addAll(args)
-    serverJvmArgs.addAll(args)
+    accessTransformer = file('src/main/resources/META-INF/vanillafix_at.cfg')
+
+    runs {
+        client {
+            jvmArg "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin"
+            jvmArg "-Dmixin.hotSwap=true"
+            jvmArg "-Dmixin.checks.interfaces=true"
+            jvmArg "-Dmixin.debug.export=true"
+            property "forge.logging.console.level", "debug"
+            property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
+            workingDirectory project.file("run")
+        }
+
+        server {
+            jvmArg "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin"
+            jvmArg "-Dmixin.hotSwap=true"
+            jvmArg "-Dmixin.checks.interfaces=true"
+            jvmArg "-Dmixin.debug.export=true"
+            property "forge.logging.console.level", "debug"
+            property "forge.logging.markers", "SCAN,REGISTRIES,REGISTRYDUMP"
+            workingDirectory project.file("run")
+        }
+    }
 }
 
 mixin {
@@ -51,7 +64,7 @@ sourceSets {
 }
 
 repositories {
-    maven { url "http://repo.spongepowered.org/maven" }
+    maven { url "https://repo.spongepowered.org/repository/maven-public" }
     maven { url "http://chickenbones.net/maven/" }
     maven { url "http://www.dimdev.org/maven" }
     maven { url "http://maven.tterrag.com/" }
@@ -63,7 +76,10 @@ repositories {
 }
 
 dependencies {
-    implementation("org.dimdev:mixin:0.7.11-SNAPSHOT") {
+    minecraft "net.minecraftforge:forge:1.12.2-14.23.5.2860"
+
+    annotationProcessor("org.spongepowered:mixin:0.8.3:processor")
+    implementation("org.spongepowered:mixin:0.8.3") {
         exclude module: "asm-commons"
         exclude module: "asm-tree"
         exclude module: "launchwrapper"
@@ -92,6 +108,10 @@ jar {
     )
 }
 
+java {
+    withSourcesJar()
+}
+
 processResources {
     filesMatching("mcmod.info") {
         expand "version": project.version, "mcversion": project.minecraft.version
@@ -105,11 +125,6 @@ processResources {
 shadowJar {
     classifier ""
     exclude "LICENSE.txt", "dummyThing"
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier "sources"
-    from sourceSets.main.allSource
 }
 
 artifacts {
