@@ -16,6 +16,40 @@ apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "org.spongepowered.mixin"
 
+def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
+def versionSuffix = travisBuildNumber != null ? travisBuildNumber : "SNAPSHOT"
+
+version "1.1.1-$versionSuffix"
+group "org.dimdev.vanillafix"
+archivesBaseName = "VanillaFix"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+minecraft {
+    version "1.12.2-14.23.5.2768"
+    runDir "run"
+    mappings "stable_39"
+    makeObfSourceJar false
+
+    def args = [
+            "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin",
+            "-Dmixin.hotSwap=true",
+            "-Dmixin.checks.interfaces=true",
+            "-Dmixin.debug.export=true"
+    ]
+    clientJvmArgs.addAll(args)
+    serverJvmArgs.addAll(args)
+}
+
+mixin {
+    add sourceSets.main, "mixins.vanillafix.refmap.json"
+}
+
+sourceSets {
+    main
+}
+
 repositories {
     maven { url "http://repo.spongepowered.org/maven" }
     maven { url "http://chickenbones.net/maven/" }
@@ -49,44 +83,13 @@ dependencies {
     compileOnly "team.chisel.ctm:CTM:MC1.12-0.2.3.12"
 }
 
-def travisBuildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
-def versionSuffix = travisBuildNumber != null ? travisBuildNumber : "SNAPSHOT"
-
-version "1.1.1-$versionSuffix"
-group "org.dimdev.vanillafix"
-archivesBaseName = "VanillaFix"
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-sourceSets {
-    main
-}
-
-minecraft {
-    version "1.12.2-14.23.5.2768"
-    runDir "run"
-    mappings "stable_39"
-    makeObfSourceJar false
-
-    def args = [
-            "-Dfml.coreMods.load=org.dimdev.vanillafix.VanillaFixLoadingPlugin",
-            "-Dmixin.hotSwap=true",
-            "-Dmixin.checks.interfaces=true",
-            "-Dmixin.debug.export=true"
-    ]
-    clientJvmArgs.addAll(args)
-    serverJvmArgs.addAll(args)
-}
-
-mixin {
-    add sourceSets.main, "mixins.vanillafix.refmap.json"
-}
-
-reobf {
-    shadowJar {
-        mappingType = "SEARGE"
-    }
+jar {
+    classifier "thin"
+    manifest.attributes(
+            "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixLoadingPlugin",
+            "FMLCorePluginContainsFMLMod": "true",
+            "FMLAT": "vanillafix_at.cfg"
+    )
 }
 
 processResources {
@@ -97,15 +100,6 @@ processResources {
     // Re-run this task when these change
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
-}
-
-jar {
-    classifier "thin"
-    manifest.attributes(
-            "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixLoadingPlugin",
-            "FMLCorePluginContainsFMLMod": "true",
-            "FMLAT": "vanillafix_at.cfg"
-    )
 }
 
 shadowJar {
@@ -122,6 +116,12 @@ artifacts {
     archives jar
     archives shadowJar
     archives sourcesJar
+}
+
+reobf {
+    shadowJar {
+        mappingType = "SEARGE"
+    }
 }
 
 // These are broken
