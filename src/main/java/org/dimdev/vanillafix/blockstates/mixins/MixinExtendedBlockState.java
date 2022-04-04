@@ -18,10 +18,6 @@ import java.util.Optional;
 
 @Mixin(ExtendedBlockState.class)
 public abstract class MixinExtendedBlockState extends MixinBlockStateContainer {
-    public MixinExtendedBlockState(Block block, IProperty<?>[] properties, ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties) {
-        super(block, properties, unlistedProperties);
-    }
-
     @Inject(method = "createState", remap = false, at = @At("HEAD"), cancellable = true)
     protected void overrideCreateState(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties, CallbackInfoReturnable<BlockStateContainer.StateImplementation> cir) {
         if (vanillafix$isNumerical()) {

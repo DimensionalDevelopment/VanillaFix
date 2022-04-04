@@ -13,6 +13,10 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 import org.dimdev.vanillafix.blockstates.IPatchedBlockStateContainer;
 import org.dimdev.vanillafix.blockstates.NumericalBlockState;
 import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -29,52 +33,50 @@ public abstract class MixinBlockStateContainer implements IPatchedBlockStateCont
     @Shadow @Final private ImmutableList<IBlockState> validStates;
     // @formatter:on
 
-    private final ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties;
-    private final Map<IProperty<?>, Integer> propertyOffsets = new HashMap<>();
-    protected ImmutableList<IBlockState> validStatesCache = null;
-    @SuppressWarnings({"FieldCanBeLocal", "unused"}) private final Object x; // workaround for mixin bug
+    protected ImmutableList<IBlockState> validStatesCache;
+    private ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties;
+    private Map<IProperty<?>, Integer> propertyOffsets;
 
-    @Overwrite
-    public MixinBlockStateContainer(Block block, IProperty<?>[] properties, ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties) {
-        this.block = block;
+    @Inject(
+            method = "<init>(Lnet/minecraft/block/Block;[Lnet/minecraft/block/properties/IProperty;Lcom/google/common/collect/ImmutableMap;)V",
+            at = @At(
+                    value = "RETURN"
+            )
+    )
+    private void onInit(Block block, IProperty<?>[] properties, ImmutableMap<net.minecraftforge.common.property.IUnlistedProperty<?>, java.util.Optional<?>> unlistedProperties, CallbackInfo callbackInfo) {
         this.unlistedProperties = unlistedProperties;
+        this.propertyOffsets = new HashMap<>();
 
-        // Immutable map builder won't work, some mods have duplicate properties
-        Map<String, IProperty<?>> propertyMap = new LinkedHashMap<>();
         int offset = 0;
-
         for (IProperty<?> property : properties) {
-            validateProperty(block, property);
-            propertyMap.put(property.getName(), property);
-
             if (vanillafix$isNumerical()) {
                 NumericalBlockState.makePropertyInfo(property);
-                propertyOffsets.put(property, offset);
+                this.propertyOffsets.put(property, offset);
                 offset += MathHelper.log2(property.getAllowedValues().size()) + 1;
             }
         }
+    }
 
-        this.properties = ImmutableSortedMap.copyOf(propertyMap);
+    @Redirect(
+            method = "<init>(Lnet/minecraft/block/Block;[Lnet/minecraft/block/properties/IProperty;Lcom/google/common/collect/ImmutableMap;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/util/math/Cartesian;cartesianProduct(Ljava/lang/Iterable;)Ljava/lang/Iterable;"
+            )
+    )
+    private Iterable<?> onCartesianProduct(Iterable<? extends Iterable<?>> instance) {
+        return instance != Collections.EMPTY_LIST ? Cartesian.cartesianProduct(instance) : instance;
+    }
 
-        if (!vanillafix$isNumerical()) {
-            Map<Map<IProperty<?>, Comparable<?>>, BlockStateContainer.StateImplementation> map2 = Maps.newLinkedHashMap();
-            List<BlockStateContainer.StateImplementation> validStates = Lists.newArrayList();
-
-            for (List<Comparable<?>> list : Cartesian.cartesianProduct(getAllowedValues())) {
-                Map<IProperty<?>, Comparable<?>> map1 = MapPopulator.createMap(this.properties.values(), list);
-                BlockStateContainer.StateImplementation blockstatecontainer$stateimplementation = createState(block, ImmutableMap.copyOf(map1), unlistedProperties);
-                map2.put(map1, blockstatecontainer$stateimplementation);
-                validStates.add(blockstatecontainer$stateimplementation);
-            }
-
-            for (BlockStateContainer.StateImplementation blockstatecontainer$stateimplementation1 : validStates) {
-                blockstatecontainer$stateimplementation1.buildPropertyValueTable(map2);
-            }
-
-            this.validStates = ImmutableList.copyOf(validStates);
-        }
-
-        x = new Object();
+    @Redirect(
+            method = "<init>(Lnet/minecraft/block/Block;[Lnet/minecraft/block/properties/IProperty;Lcom/google/common/collect/ImmutableMap;)V",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/block/state/BlockStateContainer;getAllowedValues()Ljava/util/List;"
+            )
+    )
+    private List<?> onGetAllowedValues(BlockStateContainer instance) {
+        return !vanillafix$isNumerical() ? getAllowedValues() : Collections.EMPTY_LIST;
     }
 
     @Overwrite
