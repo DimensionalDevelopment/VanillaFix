@@ -65,13 +65,14 @@ sourceSets {
 
 repositories {
     maven { url "https://repo.spongepowered.org/repository/maven-public" }
-    maven { url "http://chickenbones.net/maven/" }
-    maven { url "http://www.dimdev.org/maven" }
-    maven { url "http://maven.tterrag.com/" }
-    ivy {
-        url "https://google.com/404"
-        ivyPattern("https://google.com/404") // Workaround for https://github.com/gradle/gradle/issues/4107
-        artifactPattern("https://media.forgecdn.net/files/[organisation]/[module]/[revision].[ext]")
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+        metadataSources {
+            artifact()
+        }
     }
 }
 
@@ -88,15 +89,14 @@ dependencies {
         exclude module: "gson"
         exclude module: "commons-io"
     }
-    compileOnly "2535:884:Chisel-MC1.12.2-0.2.0.31@jar"
-    compileOnly "2530:225:OpenBlocks-1.12.2-1.7.6@jar"
-    compileOnly "2525:230:OpenModsLib-1.12.2-0.11.5@jar"
-    compileOnly "2568:0:TConstruct-1.12.2-2.10.1.84@jar"
-    compileOnly "2568:0:TConstruct-1.12.2-2.10.1.84@jar"
-    compileOnly "2511:625:Avaritia-1.12-3.2.0.13-universal@jar"
-    compileOnly "codechicken:CodeChickenLib:1.12.2-3.1.9.344:deobf"
-    compileOnly "2482:584:CustomMainMenu-MC1.12.2-2.0.8@jar"
-    compileOnly "team.chisel.ctm:CTM:MC1.12-0.2.3.12"
+    compileOnly fg.deobf( "curse.maven:avaritia-1-10-261348:3143349" )
+    compileOnly fg.deobf( "curse.maven:chisel-235279:2535884" )
+    compileOnly fg.deobf( "curse.maven:codechicken-lib-1-8-242818:2779848" )
+    compileOnly fg.deobf( "curse.maven:ctm-267602:2915363" )
+    compileOnly fg.deobf( "curse.maven:custom-main-menu-226406:2857869" )
+    compileOnly fg.deobf( "curse.maven:openblocks-228816:2699056" )
+    compileOnly fg.deobf( "curse.maven:openmodslib-228815:2699055" )
+    compileOnly fg.deobf( "curse.maven:tinkers-construct-74072:2902483" )
 }
 
 jar {
