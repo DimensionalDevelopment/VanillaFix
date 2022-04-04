@@ -24,7 +24,7 @@ public abstract class MixinExtendedBlockState extends MixinBlockStateContainer {
 
     @Inject(method = "createState", remap = false, at = @At("HEAD"), cancellable = true)
     protected void overrideCreateState(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties, CallbackInfoReturnable<BlockStateContainer.StateImplementation> cir) {
-        if (isNumerical) {
+        if (vanillafix$isNumerical()) {
             cir.setReturnValue(null);
         }
     }

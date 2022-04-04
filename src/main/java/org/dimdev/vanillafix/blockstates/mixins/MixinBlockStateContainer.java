@@ -29,9 +29,6 @@ public abstract class MixinBlockStateContainer implements IPatchedBlockStateCont
     @Shadow @Final private ImmutableList<IBlockState> validStates;
     // @formatter:on
 
-    @SuppressWarnings("EqualsBetweenInconvertibleTypes") // mixin
-    protected
-    boolean isNumerical = getClass().equals(BlockStateContainer.class) || getClass().equals(ExtendedBlockState.class);
     private final ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties;
     private final Map<IProperty<?>, Integer> propertyOffsets = new HashMap<>();
     protected ImmutableList<IBlockState> validStatesCache = null;
@@ -50,7 +47,7 @@ public abstract class MixinBlockStateContainer implements IPatchedBlockStateCont
             validateProperty(block, property);
             propertyMap.put(property.getName(), property);
 
-            if (isNumerical) {
+            if (vanillafix$isNumerical()) {
                 NumericalBlockState.makePropertyInfo(property);
                 propertyOffsets.put(property, offset);
                 offset += MathHelper.log2(property.getAllowedValues().size()) + 1;
@@ -59,7 +56,7 @@ public abstract class MixinBlockStateContainer implements IPatchedBlockStateCont
 
         this.properties = ImmutableSortedMap.copyOf(propertyMap);
 
-        if (!isNumerical) {
+        if (!vanillafix$isNumerical()) {
             Map<Map<IProperty<?>, Comparable<?>>, BlockStateContainer.StateImplementation> map2 = Maps.newLinkedHashMap();
             List<BlockStateContainer.StateImplementation> validStates = Lists.newArrayList();
 
@@ -82,7 +79,7 @@ public abstract class MixinBlockStateContainer implements IPatchedBlockStateCont
 
     @Overwrite
     public ImmutableList<IBlockState> getValidStates() {
-        if (!isNumerical) {
+        if (!vanillafix$isNumerical()) {
             return validStates;
         }
 
@@ -103,7 +100,7 @@ public abstract class MixinBlockStateContainer implements IPatchedBlockStateCont
 
     @Overwrite(remap = false)
     protected BlockStateContainer.StateImplementation createState(Block block, ImmutableMap<IProperty<?>, Comparable<?>> properties, @Nullable ImmutableMap<IUnlistedProperty<?>, Optional<?>> unlistedProperties) {
-        if (!isNumerical) {
+        if (!vanillafix$isNumerical()) {
             return new BlockStateContainer.StateImplementation(block, properties);
         }
 
@@ -121,7 +118,7 @@ public abstract class MixinBlockStateContainer implements IPatchedBlockStateCont
 
     @Overwrite
     public IBlockState getBaseState() {
-        if (!isNumerical) {
+        if (!vanillafix$isNumerical()) {
             return validStates.get(0);
         }
 
@@ -139,5 +136,10 @@ public abstract class MixinBlockStateContainer implements IPatchedBlockStateCont
     @Override
     public Map<IProperty<?>, Integer> getPropertyOffsets() {
         return propertyOffsets;
+    }
+
+    @SuppressWarnings({"ConstantConditions", "EqualsBetweenInconvertibleTypes"})
+    protected boolean vanillafix$isNumerical() {
+        return getClass().equals(BlockStateContainer.class) || getClass().equals(ExtendedBlockState.class);
     }
 }
