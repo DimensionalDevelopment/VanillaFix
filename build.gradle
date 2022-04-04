@@ -110,6 +110,8 @@ dependencies {
 }
 
 jar {
+    enabled = false
+    dependsOn("shadowJar")
     manifest {
         attributes([
                 "FMLCorePluginContainsFMLMod": "true",
