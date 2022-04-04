@@ -1,6 +1,5 @@
 package org.dimdev.vanillafix.modsupport.mixins;
 
-import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModClassLoader;
 import net.minecraftforge.fml.common.ModContainer;
@@ -12,8 +11,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.transformer.MixinTransformer;
-import org.spongepowered.asm.mixin.transformer.Proxy;
+import org.spongepowered.asm.mixin.transformer.ext.Extensions;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -43,21 +41,52 @@ public class MixinLoader {
         // Add and reload mixin configs
         if (VanillaFixLoadingPlugin.config.textureFixes) Mixins.addConfiguration("mixins.vanillafix.textures.modsupport.json");
         if (VanillaFixLoadingPlugin.config.dynamicResources) Mixins.addConfiguration("mixins.vanillafix.dynamicresources.modsupport.json");
-        Proxy mixinProxy = (Proxy) Launch.classLoader.getTransformers().stream().filter(transformer -> transformer instanceof Proxy).findFirst().get();
+        
         try {
-            Field transformerField = Proxy.class.getDeclaredField("transformer");
+            // This will very likely break on the next major mixin release.
+            Class<?> proxyClass = Class.forName("org.spongepowered.asm.mixin.transformer.Proxy");
+            Field transformerField = proxyClass.getDeclaredField("transformer");
             transformerField.setAccessible(true);
-            MixinTransformer transformer = (MixinTransformer) transformerField.get(mixinProxy);
-
-            Method selectConfigsMethod = MixinTransformer.class.getDeclaredMethod("selectConfigs", MixinEnvironment.class);
+            Object transformer = transformerField.get(null);
+        
+            Class<?> mixinTransformerClass = Class.forName("org.spongepowered.asm.mixin.transformer.MixinTransformer");
+            Field processorField = mixinTransformerClass.getDeclaredField("processor");
+            processorField.setAccessible(true);
+            Object processor = processorField.get(transformer);
+        
+            Class<?> mixinProcessorClass = Class.forName("org.spongepowered.asm.mixin.transformer.MixinProcessor");
+        
+            Field extensionsField = mixinProcessorClass.getDeclaredField("extensions");
+            extensionsField.setAccessible(true);
+            Object extensions = extensionsField.get(processor);
+        
+            Method selectConfigsMethod = mixinProcessorClass.getDeclaredMethod("selectConfigs", MixinEnvironment.class);
             selectConfigsMethod.setAccessible(true);
-            selectConfigsMethod.invoke(transformer, MixinEnvironment.getCurrentEnvironment());
-
-            Method prepareConfigsMethod = MixinTransformer.class.getDeclaredMethod("prepareConfigs", MixinEnvironment.class);
-            prepareConfigsMethod.setAccessible(true);
-            prepareConfigsMethod.invoke(transformer, MixinEnvironment.getCurrentEnvironment());
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            selectConfigsMethod.invoke(processor, MixinEnvironment.getCurrentEnvironment());
+        
+            // Mixin 0.8.4+
+            try {
+                Method prepareConfigs = mixinProcessorClass.getDeclaredMethod("prepareConfigs", MixinEnvironment.class, Extensions.class);
+                prepareConfigs.setAccessible(true);
+                prepareConfigs.invoke(processor, MixinEnvironment.getCurrentEnvironment(), extensions);
+                return;
+            } catch (NoSuchMethodException ex) {
+                // no-op
+            }
+        
+            // Mixin 0.8+
+            try {
+                Method prepareConfigs = mixinProcessorClass.getDeclaredMethod("prepareConfigs", MixinEnvironment.class);
+                prepareConfigs.setAccessible(true);
+                prepareConfigs.invoke(processor, MixinEnvironment.getCurrentEnvironment());
+                return;
+            } catch (NoSuchMethodException ex) {
+                // no-op
+            }
+        
+            throw new UnsupportedOperationException("Unsupported Mixin");
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 }

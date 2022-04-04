@@ -1,7 +1,7 @@
 package org.dimdev.vanillafix;
 
 import net.minecraft.launchwrapper.Launch;
-import org.spongepowered.asm.lib.tree.ClassNode;
+import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
@@ -52,10 +52,24 @@ public class ModCompatibilityMixinPlugin implements IMixinConfigPlugin {
     public List<String> getMixins() {
         return null;
     }
-
+    
     @Override
-    public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
-
+    public final void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+        // no-op
+    }
+    
+    // Mixin 0.7 Compatibility
+    public final void preApply(String targetClassName, org.spongepowered.asm.lib.tree.ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+        // no-op
+    }
+    
     @Override
-    public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
+    public final void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+        // no-op
+    }
+    
+    // Mixin 0.7 Compatibility
+    public final void postApply(String targetClassName, org.spongepowered.asm.lib.tree.ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+        // no-op
+    }
 }
