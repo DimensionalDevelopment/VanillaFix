@@ -5,7 +5,6 @@ if: tag IS blank
 git:
   depth: 5
 
-install: ./gradlew setupCIWorkspace
 script: ./gradlew clean build
 
 before_cache: find $HOME/.gradle/ -name '*.lock' -print -exec rm -f {} \;
