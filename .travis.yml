@@ -23,5 +23,5 @@ deploy:
   file: "{$RELEASE_FILE_LIST}"
   on:
     repo: DimensionalDevelopment/VanillaFix
-    branch: 1.0.10
+    branch: 1.12-Stable
     tags: false
