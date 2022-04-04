@@ -21,7 +21,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import javax.annotation.Nullable;
 import java.util.*;
 
-@SuppressWarnings({"ResultOfMethodCallIgnored", "ConstructorNotProtectedInAbstractClass"})
 @Mixin(BlockStateContainer.class)
 public abstract class MixinBlockStateContainer implements IPatchedBlockStateContainer {
     // @formatter:off
