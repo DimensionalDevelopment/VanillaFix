@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 buildscript {
     repositories {
         mavenCentral()
@@ -64,6 +66,12 @@ sourceSets {
     main
 }
 
+configurations {
+    compileJar {
+        implementation.extendsFrom(compileJar)
+    }
+}
+
 repositories {
     maven { url "https://repo.spongepowered.org/repository/maven-public" }
     maven {
@@ -82,7 +90,7 @@ dependencies {
     compileOnly sourceSets.api.output
 
     annotationProcessor("org.spongepowered:mixin:0.8.3:processor")
-    implementation("org.spongepowered:mixin:0.8.3") {
+    compileJar("org.spongepowered:mixin:0.8.3") {
         exclude module: "asm-commons"
         exclude module: "asm-tree"
         exclude module: "launchwrapper"
@@ -102,12 +110,13 @@ dependencies {
 }
 
 jar {
-    classifier "thin"
-    manifest.attributes(
-            "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixLoadingPlugin",
-            "FMLCorePluginContainsFMLMod": "true",
-            "FMLAT": "vanillafix_at.cfg"
-    )
+    manifest {
+        attributes([
+                "FMLCorePluginContainsFMLMod": "true",
+                "FMLCorePlugin": "org.dimdev.vanillafix.VanillaFixLoadingPlugin",
+                "FMLAT": "vanillafix_at.cfg"
+        ])
+    }
 }
 
 java {
@@ -115,32 +124,41 @@ java {
 }
 
 processResources {
-    filesMatching("mcmod.info") {
-        expand "version": project.version, "mcversion": project.minecraft.version
+    duplicatesStrategy(DuplicatesStrategy.INCLUDE)
+    from (sourceSets.main.resources.srcDirs) {
+        include("mcmod.info")
+        expand("version": version)
     }
-
-    // Re-run this task when these change
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
 }
 
 shadowJar {
-    classifier ""
-    exclude "LICENSE.txt", "dummyThing"
+    archiveClassifier.set(null)
+    configurations = [project.configurations.compileJar]
+}
+
+task thinShadowJar(type: ShadowJar) {
+    archiveClassifier.set("thin")
+    configurations = [project.configurations.shadow]
+    relocators = shadowJar.relocators
+
+    dependencies {
+        exclude(dependency("org.spongepowered:mixin"))
+    }
+
+    manifest {
+        inheritFrom jar.manifest
+    }
+
+    from sourceSets.main.output
 }
 
 artifacts {
-    archives jar
     archives shadowJar
     archives sourcesJar
+    archives thinShadowJar
 }
 
 reobf {
-    shadowJar {
-        mappingType = "SEARGE"
-    }
+    shadowJar {}
+    thinShadowJar {}
 }
-
-// These are broken
-runClient.group "other"
-runServer.group "other"
