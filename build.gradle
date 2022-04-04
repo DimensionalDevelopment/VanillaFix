@@ -1,21 +1,26 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url 'https://maven.minecraftforge.net' }
+        maven { url "https://plugins.gradle.org/m2/" }
+        maven { url "https://repo.spongepowered.org/repository/maven-public" }
         mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+        classpath "gradle.plugin.com.github.johnrengelman:shadow:7.1.1"
+        classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.+'
+        classpath "org.spongepowered:mixingradle:0.7-SNAPSHOT"
     }
 }
 
-plugins {
-    id "java" 
-    id "com.github.johnrengelman.shadow" version "2.0.4"
-    id "org.spongepowered.mixin" version "0.7-SNAPSHOT" apply false
-}
-
 apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.spongepowered.mixin' 
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: "com.github.johnrengelman.shadow"
+
+configurations {
+    compileJar {
+        implementation.extendsFrom(compileJar)
+    }
+}
 
 repositories {
     maven {
@@ -25,17 +30,25 @@ repositories {
         url "https://maven.covers1624.net"
     }
     maven {
-        url "http://maven.tterrag.com/"
+        url "https://maven.tterrag.com/"
     }
     ivy {
-        url "https://google.com/404"
-        ivyPattern("https://google.com/404") // Workaround for https://github.com/gradle/gradle/issues/4107
-        artifactPattern("https://media.forgecdn.net/files/[organisation]/[module]/[revision].[ext]")
+        url "https://media.forgecdn.net/files/"
+
+        patternLayout {
+            artifact "[organisation]/[module]/[revision].[ext]"
+        }
+
+        metadataSources {
+            artifact()
+        }
     }
 }
 
 minecraft {
     mappings channel: 'stable', version: '39-1.12'
+
+    accessTransformer = file("src/main/resources/META-INF/vanillafix_at.cfg")
 
     runs {
         client {
@@ -73,7 +86,8 @@ minecraft {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2855'
 
-    implementation("org.spongepowered:mixin:0.8") {
+    annotationProcessor("org.spongepowered:mixin:0.8.3:processor")
+    compileJar("org.spongepowered:mixin:0.8.3") {
         exclude module: "asm-commons"
         exclude module: "asm-tree"
         exclude module: "launchwrapper"
@@ -104,8 +118,8 @@ mixin {
     add sourceSets.main, "mixins.vanillafix.refmap.json"
 }
 
-reobf {
-    shadowJar
+java {
+    withSourcesJar()
 }
 
 processResources {
@@ -141,17 +155,34 @@ jar {
 jar.finalizedBy('reobfJar') 
 
 shadowJar {
-    classifier ""
-    exclude "LICENSE.txt", "dummyThing"
+    archiveClassifier.set(null)
+    configurations = [project.configurations.compileJar]
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier "sources"
-    from sourceSets.main.allSource
+task thinShadowJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    archiveClassifier.set("thin")
+    configurations = [project.configurations.compileJar]
+    relocators = shadowJar.relocators
+
+    dependencies {
+        exclude(dependency("org.spongepowered:mixin"))
+    }
+
+    manifest {
+        inheritFrom jar.manifest
+    }
+
+    from sourceSets.main.output
 }
 
 artifacts {
     archives jar
     archives shadowJar
     archives sourcesJar
+    archives thinShadowJar
+}
+
+reobf {
+    shadowJar {}
+    thinShadowJar {}
 }

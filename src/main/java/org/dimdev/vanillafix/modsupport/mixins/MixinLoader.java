@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.transformer.MixinProcessor;
+import org.spongepowered.asm.mixin.transformer.ext.Extensions;
 import org.spongepowered.asm.mixin.transformer.Proxy;
 
 import java.lang.reflect.Field;
@@ -42,29 +42,53 @@ public class MixinLoader {
 
         // Add and reload mixin configs
         if (VanillaFixLoadingPlugin.config.textureFixes) Mixins.addConfiguration("mixins.vanillafix.textures.modsupport.json");
-        Proxy mixinProxy = (Proxy) Launch.classLoader.getTransformers().stream().filter(transformer -> transformer instanceof Proxy).findFirst().get();
+
         try {
-            //This will very likely break on the next major mixin release.
-            Class mixinTransformerClass = Class.forName("org.spongepowered.asm.mixin.transformer.MixinTransformer");
+            // This will very likely break on the next major mixin release.
+            Class<?> proxyClass = Class.forName("org.spongepowered.asm.mixin.transformer.Proxy");
+            Field transformerField = proxyClass.getDeclaredField("transformer");
 
-            Field transformerField = Proxy.class.getDeclaredField("transformer");
             transformerField.setAccessible(true);
-            Object transformer = transformerField.get(mixinProxy);
+            Object transformer = transformerField.get(null);
 
-            //Get MixinProcessor from MixinTransformer
+            Class<?> mixinTransformerClass = Class.forName("org.spongepowered.asm.mixin.transformer.MixinTransformer");
             Field processorField = mixinTransformerClass.getDeclaredField("processor");
             processorField.setAccessible(true);
             Object processor = processorField.get(transformer);
 
-            Method selectConfigsMethod = MixinProcessor.class.getDeclaredMethod("selectConfigs", MixinEnvironment.class);
+            Class<?> mixinProcessorClass = Class.forName("org.spongepowered.asm.mixin.transformer.MixinProcessor");
+
+            Field extensionsField = mixinProcessorClass.getDeclaredField("extensions");
+            extensionsField.setAccessible(true);
+            Object extensions = extensionsField.get(processor);
+
+            Method selectConfigsMethod = mixinProcessorClass.getDeclaredMethod("selectConfigs", MixinEnvironment.class);
             selectConfigsMethod.setAccessible(true);
             selectConfigsMethod.invoke(processor, MixinEnvironment.getCurrentEnvironment());
 
-            Method prepareConfigsMethod = MixinProcessor.class.getDeclaredMethod("prepareConfigs", MixinEnvironment.class);
-            prepareConfigsMethod.setAccessible(true);
-            prepareConfigsMethod.invoke(processor, MixinEnvironment.getCurrentEnvironment());
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+            // Mixin 0.8.4+
+            try {
+                Method prepareConfigs = mixinProcessorClass.getDeclaredMethod("prepareConfigs", MixinEnvironment.class, Extensions.class);
+                prepareConfigs.setAccessible(true);
+                prepareConfigs.invoke(processor, MixinEnvironment.getCurrentEnvironment(), extensions);
+                return;
+            } catch (NoSuchMethodException ex) {
+                // no-op
+            }
+
+            // Mixin 0.8+
+            try {
+                Method prepareConfigs = mixinProcessorClass.getDeclaredMethod("prepareConfigs", MixinEnvironment.class);
+                prepareConfigs.setAccessible(true);
+                prepareConfigs.invoke(processor, MixinEnvironment.getCurrentEnvironment());
+                return;
+            } catch (NoSuchMethodException ex) {
+                // no-op
+            }
+
+            throw new UnsupportedOperationException("Unsupported Mixin");
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 }
