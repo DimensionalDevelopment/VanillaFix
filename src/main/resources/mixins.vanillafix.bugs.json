@@ -13,7 +13,9 @@
     "MixinInventoryPlayer",
     "MixinChunk",
     "MixinMinecraftServer",
-    "MixinSPacketPong"
+    "MixinSPacketPong",
+    "MixinNettyCompressionEncoder",
+    "MixinNettyCompressionDecoder"
   ],
   "client": [
     "client.MixinMinecraft",
